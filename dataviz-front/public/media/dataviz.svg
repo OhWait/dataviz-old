@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<svg
+	width="325"
+	height="50"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg"
+>
+	<style type="text/css">
+		.st0{fill:#273942;}
+		.st1{fill:#B7CDD8;}
+		.st2{fill:#E2E2F7;}
+		.st3{fill:#52677A;}
+		.st4{fill:#354F5C;}
+		.st5{fill:#CE521F;}
+		.st6{fill:#EBEBEB;}
+		.st7{fill:#8E96A3;}
+		.st8{fill:#3D4D5C;}
+		.st9{fill:#3E9697;}
+		.st10{fill:#68B7CE;}
+		.st11{fill:#E8E8E8;}
+		.st12{fill:#FFFFFF;}
+		.st13{fill:#828282;}
+		.st14{fill:#CCCCCC;}
+		.st15{fill:#606060;}
+		.st16{fill:#C6C6C6;}
+		.st17{opacity:0.15;}
+		.st18{fill:#1D1E1C;}
+		.st19{fill:#FFD700;}
+		.st20{fill:#FF9700;}
+		.st21{fill:#FFFFE8;}
+		.st22{fill:#F2DAB8;}
+		.st23{fill:#D44D41;}
+		.st24{opacity:0.3;}
+		.st25{opacity:0.3;fill:#FFFFFF;}
+		.st26{fill:#F01C01;}
+		.st27{fill:#DBDAD9;}
+		.st28{opacity:0.4;fill:#FFFFFF;}
+		.st29{opacity:0.2;}
+		.st30{opacity:0.2;fill:#020202;}
+		.st31{fill:#F3554B;}
+		.st32{fill:#BF2C28;}
+		.st33{fill:#1F6A7B;}
+		.st34{fill:#0594AF;}
+		.st35{fill:#38A9B4;}
+		.st36{opacity:0.2;fill:#1D1E1C;}
+		.st37{opacity:0.64;fill:#A6D9ED;}
+		.st38{fill-rule:evenodd;clip-rule:evenodd;fill:#F0F0F0;}
+		.st39{fill-rule:evenodd;clip-rule:evenodd;fill:#E1DDDD;}
+		.st40{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+		.st41{fill-rule:evenodd;clip-rule:evenodd;fill:#AF3737;}
+		.st42{fill-rule:evenodd;clip-rule:evenodd;fill:#990000;}
+		.st43{fill:#990000;}
+		.st44{fill:#510000;}
+		.st45{opacity:0.5;fill-rule:evenodd;clip-rule:evenodd;fill:#8E2525;}
+		.st46{fill:#2BA2B2;}
+		.st47{fill:#34AAC0;}
+		.st48{fill:#F69F00;}
+		.st49{fill:#F59E00;}
+		.st50{opacity:0.1;}
+		.st51{fill:#ED9406;}
+		.st52{fill:#C6006D;}
+		.st53{fill:#A50263;}
+		.st54{fill:#6AC700;}
+		.st55{fill:#5B9904;}
+		.st56{fill:#070707;}
+	</style>
+	<g class="layer">
+		<title>Layer 1</title>
+		<text
+			fill="#ffffff"
+			font-family="Monospace"
+			font-size="75"
+			font-weight="bold"
+			id="svg_54"
+			stroke="#007fff"
+			stroke-width="0"
+			text-anchor="middle"
+			x="163"
+			xml:space="preserve"
+			y="49"
+		>DATA VIZ</text>
+	</g>
+</svg>

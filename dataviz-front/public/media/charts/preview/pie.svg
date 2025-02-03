@@ -1,0 +1,11 @@
+<svg width="200" height="200"
+  xmlns="http://www.w3.org/2000/svg" version="1.0" preserveAspectRatio="xMidYMid meet">
+  <title>Graphique en secteurs</title>
+  <g>
+    <circle r="90" cx="100" cy="100" fill="#e5e5e5"></circle>
+    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#cccccc" stroke-width="90"
+      stroke-dasharray="calc(42 * 565.4867 / 100) 565.4867" transform="rotate(-90) translate(-200)"></circle>
+    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#999999" stroke-width="90"
+      stroke-dasharray="calc(30 * 565.4867 / 100) 565.4867" transform="rotate(-90) translate(-200)"></circle>
+  </g>
+</svg>

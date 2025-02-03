@@ -1,0 +1,97 @@
+services:
+  dataviz-db:
+    container_name: dataviz-db
+    image: postgres:17-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB_API}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - TZ=Europe/Paris
+      - PGTZ=GMT+2
+      - LC_ALL=fr_FR.UTF8
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+
+  dataviz-front:
+    container_name: dataviz-front
+    entrypoint: /bin/sh
+    ports:
+      - 4040:8000
+    tty: true
+    restart: always
+
+  dataviz-api:
+    container_name: dataviz-api
+    environment:
+      SERVER_NAME: ${SERVER_NAME}, dataviz-api:80
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS}
+      POSTGRES_VERSION: 17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      MERCURE_URL: ${API_CADDY_MERCURE_URL}
+      MERCURE_PUBLIC_URL: ${API_CADDY_MERCURE_PUBLIC_URL}
+      MERCURE_JWT_SECRET: ${API_CADDY_MERCURE_JWT_SECRET}
+      MERCURE_PUBLISHER_JWT_KEY: ${API_CADDY_MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${API_CADDY_MERCURE_JWT_SECRET}
+    ports:
+      # HTTP
+      - target: 80
+        published: ${API_HTTP_PORT}
+        protocol: tcp
+      # HTTPS
+      - target: 443
+        published: ${API_HTTPS_PORT}
+        protocol: tcp
+      # HTTP/3
+      - target: 443
+        published: ${API_HTTP3_PORT}
+        protocol: udp
+    restart: always
+    volumes:
+      - dataviz_caddy_data:/data
+      - dataviz_caddy_config:/config
+    depends_on:
+      - dataviz-db
+
+  dataviz-bo-api:
+    container_name: dataviz-bo-api
+    environment:
+      SERVER_NAME: ${SERVER_NAME}, dataviz-bo-api:81
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS}
+      POSTGRES_VERSION: 17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      MERCURE_URL: ${BO_CADDY_MERCURE_URL}
+      MERCURE_PUBLIC_URL: ${BO_CADDY_MERCURE_PUBLIC_URL}
+      MERCURE_JWT_SECRET: ${BO_CADDY_MERCURE_JWT_SECRET}
+      MERCURE_PUBLISHER_JWT_KEY: ${BO_CADDY_MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${BO_CADDY_MERCURE_JWT_SECRET}
+    ports:
+      # HTTP
+      - target: 80
+        published: ${BO_API_HTTP_PORT}
+        protocol: tcp
+      # HTTPS
+      - target: 443
+        published: ${BO_API_HTTPS_PORT}
+        protocol: tcp
+      # HTTP/3
+      - target: 443
+        published: ${BO_API_HTTP3_PORT}
+        protocol: udp
+    restart: always
+    volumes:
+      - dataviz_bo_caddy_data:/data
+      - dataviz_bo_caddy_config:/config
+    depends_on:
+      - dataviz-db
+
+volumes:
+  dataviz_caddy_data:
+  dataviz_caddy_config:
+  dataviz_bo_caddy_data:
+  dataviz_bo_caddy_config:
+  db_data:

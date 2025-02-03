@@ -1,0 +1,36 @@
+export default {
+  'theme.economie': 'Économie',
+  'theme.education': 'Éducation',
+  'theme.emploi': 'Emploi',
+  'theme.foncier': 'Foncier',
+  'theme.habitat': 'Habitat',
+  'theme.mobilite': 'Mobilité',
+  'theme.population': 'Population',
+
+  'chart.drawer.visualizations': 'Visualisations',
+  'chart.drawer.filters': 'Filtres',
+
+  'chart.icon.pie': 'Graphique en secteurs',
+  'chart.icon.histogram': 'Histograme',
+  'chart.icon.stacked_histogram': 'Histogramme empilé',
+  'chart.icon.bar': 'Graphique à barres',
+  'chart.icon.stacked_bar': 'Graphique à barres empilées',
+  'chart.icon.line': 'Graphique en courbes',
+
+  'chart.form.data_entry': 'Jeu de données',
+  'chart.form.operation': 'Opération',
+  'chart.form.filter.add_filter': 'Ajouter un filtre',
+  'chart.form.filter.column': 'Colonne',
+  'chart.form.filter.values': 'Valeurs',
+  'chart.form.filter.delete': 'Supprimer',
+  'chart.form.filter.clear': 'Réinitialiser',
+  'chart.form.polar.values': 'Valeurs',
+  'chart.form.polar.series': 'Séries',
+  'chart.form.cartesian.distribution': 'Axe X',
+  'chart.form.cartesian.operation': 'Axe Y',
+  'chart.form.cartesian.series': 'Séries',
+
+  'chart.form.operation.sum': 'Somme',
+  'chart.form.operation.count': 'Nombre',
+  'chart.form.operation.count_distinct': 'Nombre (éléments distincts)',
+};

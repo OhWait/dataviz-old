@@ -1,0 +1,32 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+/**/coverage/
+/**/tools/
+
+###> symfony/phpunit-bridge ###
+.php-cs-fixer.cache
+.phpunit.cache
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> qossmic/deptrac-shim ###
+/.deptrac_bc.cache
+/.deptrac_hexa.cache
+###< qossmic/deptrac-shim ###
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

@@ -1,0 +1,61 @@
+# Development environment override
+services:
+  dataviz-db:
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+
+  dataviz-front:
+    build:
+      context: ./dataviz-front
+      dockerfile: docker/Dockerfile
+      target: dev
+    environment:
+      VUE_APP_ENV: dev
+      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
+      BASE_URL: ${BASE_URL}
+    volumes:
+      - ./dataviz-front:/app
+  
+  dataviz-api:
+    build:
+      context: ./dataviz-api
+      dockerfile: docker/Dockerfile
+      target: frankenphp_dev
+    environment:
+      APP_ENV: dev
+      MERCURE_EXTRA_DIRECTIVES: demo
+      XDEBUG_MODE: "${XDEBUG_MODE}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    tty: true
+    volumes:
+      - ./dataviz-api:/app
+      - ./dataviz-api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./dataviz-api/docker/conf.d/app.dev.ini:/usr/local/etc/php/conf.d/app.dev.ini:ro
+      - /app/var
+      - shared_data:/var/shared_data
+
+  dataviz-bo-api:
+    build:
+      context: ./dataviz-bo-api
+      dockerfile: docker/Dockerfile
+      target: frankenphp_dev
+    environment:
+      APP_ENV: dev
+      MERCURE_EXTRA_DIRECTIVES: demo
+      XDEBUG_MODE: "${XDEBUG_MODE}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    tty: true
+    volumes:
+      - ./dataviz-bo-api:/app
+      - ./dataviz-bo-api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./dataviz-bo-api/docker/conf.d/app.dev.ini:/usr/local/etc/php/conf.d/app.dev.ini:ro
+      - /app/var
+      - shared_data:/var/shared_data
+
+volumes:
+  shared_data:
+    driver: local

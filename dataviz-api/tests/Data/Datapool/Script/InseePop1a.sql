@@ -1,0 +1,91 @@
+CREATE SCHEMA IF NOT EXISTS insee;
+
+DROP TABLE IF EXISTS insee.pop1a;
+CREATE TABLE insee.pop1a (
+  millesime integer NOT NULL,
+  nivgeo character varying(3) NOT NULL,
+  codgeo character varying(5) NOT NULL,
+  sexe character varying(1) NOT NULL,
+  agepyr10 character varying(2) NOT NULL,
+  nb numeric NOT NULL
+) PARTITION BY RANGE (millesime);
+
+CREATE TABLE insee.pop1a_2006 PARTITION OF insee.pop1a FOR VALUES FROM (2006) TO (2007);
+CREATE TABLE insee.pop1a_2007 PARTITION OF insee.pop1a FOR VALUES FROM (2007) TO (2008);
+CREATE TABLE insee.pop1a_2008 PARTITION OF insee.pop1a FOR VALUES FROM (2008) TO (2009);
+CREATE TABLE insee.pop1a_2009 PARTITION OF insee.pop1a FOR VALUES FROM (2009) TO (2010);
+CREATE TABLE insee.pop1a_2010 PARTITION OF insee.pop1a FOR VALUES FROM (2010) TO (2011);
+CREATE TABLE insee.pop1a_2011 PARTITION OF insee.pop1a FOR VALUES FROM (2011) TO (2012);
+CREATE TABLE insee.pop1a_2012 PARTITION OF insee.pop1a FOR VALUES FROM (2012) TO (2013);
+CREATE TABLE insee.pop1a_2013 PARTITION OF insee.pop1a FOR VALUES FROM (2013) TO (2014);
+CREATE TABLE insee.pop1a_2014 PARTITION OF insee.pop1a FOR VALUES FROM (2014) TO (2015);
+CREATE TABLE insee.pop1a_2015 PARTITION OF insee.pop1a FOR VALUES FROM (2015) TO (2016);
+CREATE TABLE insee.pop1a_2016 PARTITION OF insee.pop1a FOR VALUES FROM (2016) TO (2017);
+CREATE TABLE insee.pop1a_2017 PARTITION OF insee.pop1a FOR VALUES FROM (2017) TO (2018);
+CREATE TABLE insee.pop1a_2018 PARTITION OF insee.pop1a FOR VALUES FROM (2018) TO (2019);
+CREATE TABLE insee.pop1a_2019 PARTITION OF insee.pop1a FOR VALUES FROM (2019) TO (2020);
+CREATE TABLE insee.pop1a_2020 PARTITION OF insee.pop1a FOR VALUES FROM (2020) TO (2021);
+
+INSERT INTO insee.pop1a (millesime, nivgeo, codgeo, sexe, agepyr10, nb)
+VALUES 
+(2006, 'COM', '64100', '1', '00', 35.941735),
+(2007, 'COM', '64100', '1', '00', 47.410655),
+(2008, 'COM', '64100', '1', '00', 47.710709),
+(2006, 'COM', '64100', '2', '00', 29.780295),
+(2007, 'COM', '64100', '2', '00', 25.680771),
+(2008, 'COM', '64100', '2', '00', 25.843301),
+(2006, 'COM', '64100', '1', '03', 46.210802),
+(2007, 'COM', '64100', '1', '03', 37.533435),
+(2008, 'COM', '64100', '1', '03', 37.770978),
+(2006, 'COM', '64100', '2', '03', 61.614403),
+(2007, 'COM', '64100', '2', '03', 44.447489),
+(2008, 'COM', '64100', '2', '03', 44.728789),
+(2006, 'COM', '64100', '1', '06', 86.260164),
+(2007, 'COM', '64100', '1', '06', 80.993202),
+(2008, 'COM', '64100', '1', '06', 81.505794),
+(2006, 'COM', '64100', '2', '06', 110.905925),
+(2007, 'COM', '64100', '2', '06', 84.94409),
+(2008, 'COM', '64100', '2', '06', 85.481687),
+(2006, 'COM', '64100', '1', '11', 129.390246),
+(2007, 'COM', '64100', '1', '11', 124.452969),
+(2008, 'COM', '64100', '1', '11', 125.240611),
+(2006, 'COM', '64100', '2', '11', 136.578593),
+(2007, 'COM', '64100', '2', '11', 141.244243),
+(2008, 'COM', '64100', '2', '11', 142.138153),
+(2006, 'COM', '64100', '1', '18', 53.399149),
+(2007, 'COM', '64100', '1', '18', 65.18965),
+(2008, 'COM', '64100', '1', '18', 65.602225),
+(2006, 'COM', '64100', '2', '18', 57.506776),
+(2007, 'COM', '64100', '2', '18', 61.238762),
+(2008, 'COM', '64100', '2', '18', 61.626332),
+(2006, 'COM', '64100', '1', '25', 197.166089),
+(2007, 'COM', '64100', '1', '25', 151.121462),
+(2008, 'COM', '64100', '1', '25', 152.077884),
+(2006, 'COM', '64100', '2', '25', 240.296171),
+(2007, 'COM', '64100', '2', '25', 192.605785),
+(2008, 'COM', '64100', '2', '25', 193.824754),
+(2006, 'COM', '64100', '1', '40', 324.502522),
+(2007, 'COM', '64100', '1', '40', 318.046476),
+(2008, 'COM', '64100', '1', '40', 320.059338),
+(2006, 'COM', '64100', '2', '40', 322.448709),
+(2007, 'COM', '64100', '2', '40', 332.862306),
+(2008, 'COM', '64100', '2', '40', 334.968935),
+(2006, 'COM', '64100', '1', '55', 139.659313),
+(2007, 'COM', '64100', '1', '55', 167.912736),
+(2008, 'COM', '64100', '1', '55', 168.975427),
+(2006, 'COM', '64100', '2', '55', 126.282619),
+(2007, 'COM', '64100', '2', '55', 160.01096),
+(2008, 'COM', '64100', '2', '55', 161.023642),
+(2006, 'COM', '64100', '1', '65', 103.690672),
+(2007, 'COM', '64100', '1', '65', 132.411821),
+(2008, 'COM', '64100', '1', '65', 133.220937),
+(2006, 'COM', '64100', '2', '65', 116.825205),
+(2007, 'COM', '64100', '2', '65', 128.460933),
+(2008, 'COM', '64100', '2', '65', 129.245044),
+(2006, 'COM', '64100', '1', '80', 14.269067),
+(2007, 'COM', '64100', '1', '80', 29.859965),
+(2008, 'COM', '64100', '1', '80', 29.933359),
+(2006, 'COM', '64100', '2', '80', 44.457414),
+(2007, 'COM', '64100', '2', '80', 65.029536),
+(2008, 'COM', '64100', '2', '80', 65.022102)
+;
