@@ -38,7 +38,7 @@ final readonly class MakeChartCommandHandler
 
     private function findDatasetWithMeta(MakeChartCommand $command): self
     {
-        if (null === $this->dataset = $this->datasetRepository->findWithMeta($command->slug->value)) {
+        if (null === $this->dataset = $this->datasetRepository->findWithMeta($command->slug)) {
             throw new \InvalidArgumentException();
         }
 

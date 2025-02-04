@@ -15,8 +15,13 @@ services:
       VUE_APP_ENV: dev
       VITE_BACKEND_URL: ${VITE_BACKEND_URL}
       BASE_URL: ${BASE_URL}
+    ports:
+      - target: 5173
+        published: 4040
+        protocol: tcp
     volumes:
       - ./dataviz-front:/app
+      - /app/node_modules
   
   dataviz-api:
     build:

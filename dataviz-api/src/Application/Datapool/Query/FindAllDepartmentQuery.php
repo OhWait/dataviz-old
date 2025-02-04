@@ -6,6 +6,6 @@ namespace App\Application\Datapool\Query;
 
 use App\Shared\Application\Query\AbstractPaginatedQuery;
 
-final class FindAllDepartmentQuery extends AbstractPaginatedQuery
+final readonly class FindAllDepartmentQuery extends AbstractPaginatedQuery
 {
 }

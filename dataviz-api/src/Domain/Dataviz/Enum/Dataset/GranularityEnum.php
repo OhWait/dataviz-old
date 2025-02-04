@@ -14,7 +14,7 @@ enum GranularityEnum: string
     case MUNICIPALITY = 'MUNICIPALITY';
 
     /**
-     * Public institution for inter-municipal cooperation.
+     * @var string public institution for inter-municipal cooperation
      */
     case PIIC = 'PIIC';
 

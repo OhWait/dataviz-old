@@ -25,6 +25,35 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 'groups' => [DatasetGroupEnum::GET_COLLECTION],
             ],
             provider: DatasetCollectionProvider::class,
+            openapiContext: [
+                'parameters' => [
+                    [
+                        'in' => 'query',
+                        'name' => 'dataProvider',
+                        'schema' => ['type' => 'boolean'],
+                        'required' => false,
+                    ],
+                    [
+                        'in' => 'query',
+                        'name' => 'themes',
+                        'schema' => [
+                            'type' => 'array',
+                            'items' => ['type' => 'string'],
+                        ],
+                        'explode' => true,
+                        'required' => false,
+                    ],
+                    [
+                        'in' => 'query',
+                        'name' => 'orderBy',
+                        'schema' => [
+                            'type' => 'string',
+                            'enum' => self::ORDER_BY,
+                        ],
+                        'required' => false,
+                    ],
+                ],
+            ],
         ),
 
         new API\Get(

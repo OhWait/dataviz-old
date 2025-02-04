@@ -1,150 +1,130 @@
 FILE=compose.yaml
 OVERRIDE=compose.override.yaml
-EXEC = $(DOCKER_COMPOSE) exec -it dataviz-api
-EXEC_PHP = $(DOCKER_COMPOSE) exec dataviz-api
-SYMFONY = $(EXEC_PHP) bin/console
-MAKEFILE_LIST = Makefile
-ARG ?=
-
 DOCKER_COMPOSE = docker-compose -f $(FILE) -f $(OVERRIDE)
 
-##
-## Project
-## -------
-##
-build:
+EXEC_API = $(DOCKER_COMPOSE) exec dataviz-api
+EXEC_BO = $(DOCKER_COMPOSE) exec dataviz-bo-api
+SYMFONY = $(EXEC_API) bin/console
+
+ARG ?=
+
+## ----------------
+## 🛠 Project Commands
+## ----------------
+build: ## 🔧 Build Docker images
 	@$(DOCKER_COMPOSE) pull --ignore-pull-failures 2> /dev/null
 	$(DOCKER_COMPOSE) build --pull --no-cache
 
-kill: ## KILL THEM ALL !!
+kill: ## 💀 Stop and remove all containers, then clean up the system
 	docker compose down -v
 	docker system prune -a --volumes
 	$(DOCKER_COMPOSE) kill
 	$(DOCKER_COMPOSE) down --volumes --remove-orphans
 
-up: ## chill reup
+up: ## 🚀 Start containers and open related URLs
 	$(DOCKER_COMPOSE) up -d
 	wslview https://localhost:4430
 	wslview https://localhost:443
-	wslview http://localhost:8000
+	wslview http://localhost:4040
 
-start: ## Start project containers
+start: ## ▶️  Start containers without recreating them
 	$(DOCKER_COMPOSE) up -d --remove-orphans --no-recreate
 
-stop: ## Stop project containers
+stop: ## ⏹ Stop running containers
 	$(DOCKER_COMPOSE) stop
 
-ps: ## Check current containers
+ps: ## 📌 Show currently running containers
 	$(DOCKER_COMPOSE) ps
 
-install: ## Initialisation project - you may want db-create + db-migrate + db-fixtures later
+install: ## 🏗 Initialize the project (build + start)
 install: build start
 
-reset: ## Stop and start a fresh install of the project
+reset: ## ♻️ Fully reset the project (kill + install)
 reset: kill install
 
-chown: ## Fix user access denied
+chown: ## 🛠 Fix user access permissions
 	sudo chown -R $$USER:$$USER .
 
-##
-## PHP
-## -------
-##
-logs: ## Logs app container
+## ----------------
+## 🖥 PHP Commands
+## ----------------
+logs: ## 📜 Show application logs
 	$(DOCKER_COMPOSE) logs -f -t --tail 250 php
 
-bash: ## Attach shell
-	$(EXEC) /bin/sh
-
 vendor-require:
-	$(EXEC_PHP) composer require
+	$(EXEC_API) composer require
 
 vendor-install:
-	$(EXEC_PHP) composer install
+	$(EXEC_API) composer install
 
 vendor-update:
-	$(EXEC_PHP) composer update
+	$(EXEC_API) composer update
 
-.PHONY= build start stop vendor
-
-##
-## App cmd
-## -------
-##
-entity: ## UPDATE an entity (create doesnt work)
-	$(SYMFONY) app:entity
-
-migration: ## Generate new migration file
-	$(SYMFONY) make:migration
-
-pool-migration: ## Generate new migration file
-	$(SYMFONY) make:migration --configuration=migrations/Datapool/doctrine_migrations.yaml
-
-## 
-## Database
-## -------
-##
-db-create-full: ## Create ALL DB (dev + test)
+## ----------------
+## 🏛 Database Commands
+## ----------------
+db-create-full: ## 🗄 Create all databases (dev + test)
 	$(SYMFONY) doctrine:database:create --if-not-exists
 	$(SYMFONY) doctrine:database:create --if-not-exists --connection=pool 
-#	$(SYMFONY) doctrine:database:create --if-not-exists -e test
-#	$(SYMFONY) doctrine:database:create --if-not-exists -e test --connection=pool
 
-db-migrate: ## Execute ALL migrations (dev + test)
+db-migrate: ## 🔄 Execute all migrations
 	$(SYMFONY) doctrine:migrations:migrate -n
 	$(SYMFONY) doctrine:migrations:migrate -n --em=pool --configuration=migrations/Datapool/doctrine_migrations.yaml
-#	$(SYMFONY) doctrine:migrations:migrate -n -e test
-#	$(SYMFONY) doctrine:migrations:migrate -n -e test --em=pool --configuration=migrations/Datapool/doctrine_migrations.yaml
 
-db-fixtures: ## Play fixtures
+db-fixtures: ## 🧪 Load database fixtures
 	$(SYMFONY) doctrine:fixtures:load -n
-#	$(SYMFONY) doctrine:fixtures:load -n --env=test
 
-db-full: ## create migrate and implements fixtures
+db-full: ## 🏗 Create DB, run migrations, and load fixtures
 db-full: db-create-full db-migrate db-fixtures
 
+## ----------------
+## ✅ Tests
+## ----------------
+define run_phpunit
+	$(1) vendor/bin/phpunit $(ARG)
+endef
 
-##
-## Tests
-## -------
-##
-test-unit: ## Unit tests
-	$(EXEC_PHP) vendor/bin/phpunit --testsuite unit $(ARG)
+tu-api: ## 🧪 Run unit tests for API
+	$(call run_phpunit,$(EXEC_API) --testsuite unit)
 
-test-unit-coverage: ## Test coverage
-	$(EXEC_PHP) vendor/bin/phpunit --testsuite unit --coverage-html tests/coverage-unit
-	wslview ./api/tests/coverage-unit/index.html
+tf-api: ## 🛠 Run functional tests for API
+	$(call run_phpunit,$(EXEC_API) --testsuite api)
 
-test-api: ## Fonctionnal tests - you can pass arguments with `ARG="--filter TestClassName"
-	$(EXEC_PHP) vendor/bin/phpunit --testsuite api $(ARG)
+tall-api: ## 🚀 Run all API tests
+	$(call run_phpunit,$(EXEC_API))
 
-test: ## Launch all tests
-	$(EXEC_PHP) vendor/bin/phpunit $(ARG)
+tu-bo: ## 🧪 Run unit tests for BO
+	$(call run_phpunit,$(EXEC_BO) --testsuite unit)
 
-test-coverage: ## Test coverage
-	$(EXEC_PHP) vendor/bin/phpunit --coverage-html tests/coverage
-	wslview ./api/tests/coverage/index.html
+tf-bo: ## 🛠 Run functional tests for BO
+	$(call run_phpunit,$(EXEC_BO) --testsuite api)
 
-.PHONY= test
+tall-bo: ## 🚀 Run all BO tests
+	$(call run_phpunit,$(EXEC_BO))
 
-##
-## Quality assurance
-## -------
-##
-install-xdebug: ## install xdebug
-	$(EXEC_PHP) pecl install xdebug
-	$(EXEC_PHP) docker-php-ext-enable xdebug
+test: ## 🚀 Run all tests
+	$(call run_phpunit,$(EXEC_API))
 
-apply-php-cs-fixer: ## clean php syntax
-	$(EXEC_PHP) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
-	$(EXEC_PHP) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
+## ----------------
+## 🔍 Code Quality
+## ----------------
+install-xdebug: ## 🐞 Install Xdebug extension
+	$(EXEC_API) pecl install xdebug
+	$(EXEC_API) docker-php-ext-enable xdebug
 
-phpstan: ## check typage logic
-	$(EXEC_PHP) vendor/bin/phpstan analyse src
+apply-php-cs-fixer: ## 🎨 Fix PHP code style
+	$(EXEC_API) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
+	$(EXEC_API) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
 
-.PHONY= php-cs-fixer apply-php-cs-fixer
+phpstan: ## 🔍 Run static analysis on PHP code
+	$(EXEC_API) vendor/bin/phpstan analyse src
+
+## ----------------
+## 📜 Help
+## ----------------
+.PHONY: build start stop vendor test php-cs-fixer apply-php-cs-fixer help
 
 .DEFAULT_GOAL := help
 help:
-	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/' 
-.PHONY: help
+	@echo "\n\033[1;36mAvailable commands:\033[0m"
+	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-20s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'

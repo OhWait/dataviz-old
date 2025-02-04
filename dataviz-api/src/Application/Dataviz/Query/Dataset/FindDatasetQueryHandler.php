@@ -18,6 +18,6 @@ final readonly class FindDatasetQueryHandler
 
     public function __invoke(FindDatasetQuery $query): ?Dataset
     {
-        return $this->repository->find($query->slug->value);
+        return $this->repository->findWithMeta($query->slug);
     }
 }

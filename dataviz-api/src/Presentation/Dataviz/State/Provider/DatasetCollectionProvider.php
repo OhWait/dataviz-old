@@ -28,9 +28,13 @@ final class DatasetCollectionProvider extends AbstractProvider
         array $uriVariables = [],
         array $context = [],
     ): PartialPaginatorInterface {
+        $query = $context['filters'] ?? [];
+        $themes = isset($query['themes']) ? $query['themes'] : [];
+
         $message = new FindAllDatasetQuery(
             page: $this->pagination->getPage($context),
             itemsPerPage: $this->pagination->getLimit($operation, $context),
+            themes: \is_array($themes) ? $themes : [$themes],
         );
 
         $collection = $this->dispatch($message);

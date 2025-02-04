@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Shared\Application\Query;
 
-abstract class AbstractPaginatedQuery implements PaginatedQueryInterface
+abstract readonly class AbstractPaginatedQuery implements PaginatedQueryInterface
 {
     public function __construct(
-        protected int $page,
-        protected int $itemsPerPage,
+        public int $page,
+        public int $itemsPerPage,
     ) {
     }
 

@@ -1,7 +1,8 @@
-FROM node:20 as builder
+# Build Stage
+FROM node:20 AS builder
 
 WORKDIR /app
-ENV PATH /node_modules/.bin:$PATH
+ENV PATH=/node_modules/.bin:$PATH
 
 ARG VITE_BACKEND_URL
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
@@ -14,20 +15,22 @@ COPY . .
 
 RUN yarn build
 
-FROM node:latest as dev
+# Development Stage (with hot reload)
+FROM node:20 AS dev
 
 WORKDIR /app
 ENV PATH /node_modules/.bin:$PATH
 
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
+COPY --from=builder /app/node_modules node_modules
+COPY --from=builder /app/package.json package.json
+COPY --from=builder /app/yarn.lock yarn.lock
 COPY . .
 
 EXPOSE 5173
 CMD ["yarn", "dev"]
 
-FROM nginx:latest as prod
+# Production Stage
+FROM nginx:latest AS prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 

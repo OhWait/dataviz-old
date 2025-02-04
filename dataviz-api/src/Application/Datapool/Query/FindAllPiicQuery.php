@@ -6,6 +6,6 @@ namespace App\Application\Datapool\Query;
 
 use App\Shared\Application\Query\AbstractPaginatedQuery;
 
-final class FindAllPiicQuery extends AbstractPaginatedQuery
+final readonly class FindAllPiicQuery extends AbstractPaginatedQuery
 {
 }

@@ -43,7 +43,10 @@ abstract class DoctrineRepository extends ServiceEntityRepository implements Rep
         Assert::positiveInteger($query->itemsPerPage());
 
         $qbTotal = $this->createQueryBuilder('t')->select('count(t)');
-        $totalItems = $this->totalItems($qbTotal, $query);
+        $totalItems = $this
+            ->withFilters($qbTotal, 't', $query)
+            ->getQuery()
+            ->getSingleScalarResult();
 
         return new Paginator(
             new \ArrayObject($this->items($query)),
@@ -61,14 +64,6 @@ abstract class DoctrineRepository extends ServiceEntityRepository implements Rep
     protected function withOrderBy(QueryBuilder $qb, string $alias, PaginatedQueryInterface $query): QueryBuilder
     {
         return $qb;
-    }
-
-    private function totalItems(QueryBuilder $qb, PaginatedQueryInterface $query): int
-    {
-        return $this
-            ->withFilters($qb, 't', $query)
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 
     /**

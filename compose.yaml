@@ -16,8 +16,6 @@ services:
   dataviz-front:
     container_name: dataviz-front
     entrypoint: /bin/sh
-    ports:
-      - 4040:8000
     tty: true
     restart: always
 

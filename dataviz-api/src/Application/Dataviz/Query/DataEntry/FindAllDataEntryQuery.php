@@ -6,6 +6,6 @@ namespace App\Application\Dataviz\Query\DataEntry;
 
 use App\Shared\Application\Query\AbstractPaginatedQuery;
 
-final class FindAllDataEntryQuery extends AbstractPaginatedQuery
+final readonly class FindAllDataEntryQuery extends AbstractPaginatedQuery
 {
 }

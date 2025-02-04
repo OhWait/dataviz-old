@@ -6,6 +6,6 @@ namespace App\Application\Datapool\Query;
 
 use App\Shared\Application\Query\AbstractPaginatedQuery;
 
-final class FindAllMunicipalityQuery extends AbstractPaginatedQuery
+final readonly class FindAllMunicipalityQuery extends AbstractPaginatedQuery
 {
 }
