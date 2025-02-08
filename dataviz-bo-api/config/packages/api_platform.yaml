@@ -13,7 +13,7 @@ api_platform:
         include_type: true
     mapping:
         paths:
-            - "%kernel.project_dir%/src/Presentation/Resource/"
+            - "%kernel.project_dir%/src/Entity/"
     patch_formats:
         json: ["application/merge-patch+json"]
 
@@ -93,4 +93,4 @@ api_platform:
         # The maximum number of items per page.
         pagination_maximum_items_per_page: 200
 
-    path_segment_name_generator: 'App\Shared\Infrastructure\Operation\SingularPathSegmentNameGenerator'
+    path_segment_name_generator: 'App\Helper\SingularPathSegmentNameGenerator'

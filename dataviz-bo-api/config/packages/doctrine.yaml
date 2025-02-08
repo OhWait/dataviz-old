@@ -32,8 +32,8 @@ doctrine:
                     Dataviz:
                         is_bundle: false
                         type: attribute
-                        dir: '%kernel.project_dir%/src/Domain'
-                        prefix: 'App\Domain'
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
                         alias: Dataviz
 
             pool:
