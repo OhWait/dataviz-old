@@ -46,21 +46,6 @@ chown: ## 🛠 Fix user access permissions
 	sudo chown -R $$USER:$$USER .
 
 ## ----------------
-## 🖥 PHP Commands
-## ----------------
-logs: ## 📜 Show application logs
-	$(DOCKER_COMPOSE) logs -f -t --tail 250 php
-
-vendor-require:
-	$(EXEC_API) composer require
-
-vendor-install:
-	$(EXEC_API) composer install
-
-vendor-update:
-	$(EXEC_API) composer update
-
-## ----------------
 ## 🏛 Database Commands
 ## ----------------
 db-create-full: ## 🗄 Create all databases (dev + test)
@@ -113,8 +98,8 @@ install-xdebug: ## 🐞 Install Xdebug extension
 	$(EXEC_API) docker-php-ext-enable xdebug
 
 apply-php-cs-fixer: ## 🎨 Fix PHP code style
-	$(EXEC_API) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
-	$(EXEC_API) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
+	$(EXEC_BO) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
+	$(EXEC_BO) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
 
 phpstan: ## 🔍 Run static analysis on PHP code
 	$(EXEC_API) vendor/bin/phpstan analyse src

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Helper;
+namespace App\ApiResource;
 
-use ApiPlatform\Operation\PathSegmentNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation\PathSegmentNameGeneratorInterface;
 
 class SingularPathSegmentNameGenerator implements PathSegmentNameGeneratorInterface
 {

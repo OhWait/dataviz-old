@@ -5,11 +5,13 @@ namespace App\Entity;
 use ApiPlatform\Metadata as API;
 use App\Enum\Group\DataEntryGroupEnum;
 use App\Enum\Group\DatasetGroupEnum;
+use App\Enum\MetaColumn\DataTypeEnum;
 use App\Repository\MetaColumnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MetaColumnRepository::class)]
 #[API\ApiResource(
@@ -17,77 +19,50 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class MetaColumn
 {
-    #[
-        ORM\Id,
-        ORM\GeneratedValue,
-        ORM\Column,
-    ]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\SequenceGenerator(sequenceName: "meta_column_id_id_seq", allocationSize: 1)]
+    #[ORM\Column]
+    #[Groups([DataEntryGroupEnum::GET])]
     private ?int $id = null;
 
-    #[
-        ORM\Column(length: 255),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?string $columnName = null;
 
-    #[
-        ORM\Column,
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column]
+    #[Assert\NotNull]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?bool $nullable = null;
 
-    #[
-        ORM\Column(length: 255),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\Choice(callback: [DataTypeEnum::class, 'getValues'])]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?string $dataType = null;
 
-    #[
-        ORM\Column(nullable: true),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(nullable: true)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?int $characterMaximumLength = null;
 
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Assert\Length(max: 255)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?string $label = null;
 
-    #[
-        ORM\JoinColumn(
-            nullable: false,
-            referencedColumnName: 'slug',
-        ),
-        ORM\ManyToOne(inversedBy: 'metaColumns'),
-    ]
+    #[ORM\ManyToOne(inversedBy: 'metaColumns')]
+    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
     private ?DataEntry $dataEntry = null;
 
     /**
      * @var Collection<int, MetaRow>
      */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'metaColumn',
-            targetEntity: MetaRow::class,
-            orphanRemoval: true
-        ),
-    ]
+    #[ORM\OneToMany(mappedBy: 'metaColumn', targetEntity: MetaRow::class, orphanRemoval: true, cascade: ['persist'])]
+    #[Assert\Valid]
+    #[Groups([DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private Collection $metaRows;
 
     public function __construct()

@@ -31,6 +31,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
 
         new API\Post(
+            denormalizationContext: [
+                'groups' => [
+                    DataEntryGroupEnum::POST,
+                    DataEntryGroupEnum::PATCH,
+                ],
+                'disable_type_enforcement' => true,
+            ],
             normalizationContext: [
                 'groups' => [
                     DataEntryGroupEnum::GET_COLLECTION,
@@ -39,161 +46,74 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         ),
 
-        new API\Post(
-            validationContext: [
-                'groups' => [DataEntryGroupEnum::POST],
-            ],
-            denormalizationContext: [
-                'groups' => [DataEntryGroupEnum::POST],
-            ],
-            normalizationContext: [
-                'groups' => [DataEntryGroupEnum::POST],
-            ],
-        ),
-
         new API\Patch(
-            validationContext: [
-                'groups' => [DataEntryGroupEnum::PATCH],
-            ],
             denormalizationContext: [
                 'groups' => [DataEntryGroupEnum::PATCH],
+                'disable_type_enforcement' => true,
             ],
             normalizationContext: [
-                'groups' => [DataEntryGroupEnum::PATCH],
+                'groups' => [
+                    DataEntryGroupEnum::GET_COLLECTION,
+                    DataEntryGroupEnum::GET,
+                ],
             ],
         ),
 
         new API\Delete(),
-    ]
+    ],
 )]
 class DataEntry
 {
-    #[
-        ORM\Id, 
-        ORM\Column(
-            length: 255,
-            unique: true,
-        ),
-        API\ApiProperty(
-            identifier: true,
-            readable: true,
-            writable: true,
-            openapiContext: ['type' => 'string', 'maxLength' => 255],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DataEntryGroupEnum::POST]),
-        Assert\Length(max: 255, groups: [DataEntryGroupEnum::POST]),
-        Assert\Type('string', groups: [DataEntryGroupEnum::POST]),
-        Groups([
-            DataEntryGroupEnum::GET_COLLECTION,
-            DataEntryGroupEnum::POST,
-            DataEntryGroupEnum::PATCH,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Id]
+    #[ORM\Column(length: 255, unique: true)]
+    #[API\ApiProperty(identifier: true, readable: true, writable: true, required: true)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::POST])]
     private ?string $slug = null;
 
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(openapiContext: [
-            'type' => 'string',
-            'maxLength' => 255,
-        ]),
-        Assert\NotBlank(groups: [
-            DataEntryGroupEnum::POST, 
-            DataEntryGroupEnum::PATCH,
-        ]),
-        Groups([
-            DataEntryGroupEnum::GET_COLLECTION,
-            DataEntryGroupEnum::POST,
-            DataEntryGroupEnum::PATCH,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
     private ?string $title = null;
 
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(openapiContext: [
-            'type' => 'string',
-            'maxLength' => 255,
-        ]),
-        Assert\NotBlank(groups: [
-            DataEntryGroupEnum::POST, 
-            DataEntryGroupEnum::PATCH,
-        ]),
-        Groups([
-            DataEntryGroupEnum::GET_COLLECTION,
-            DataEntryGroupEnum::POST,
-            DataEntryGroupEnum::PATCH,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
     private ?string $schemaName = null;
 
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(openapiContext: [
-            'type' => 'string',
-            'maxLength' => 255,
-        ]),
-        Assert\NotBlank(groups: [
-            DataEntryGroupEnum::POST,
-            DataEntryGroupEnum::PATCH,
-        ]),
-        Groups([
-            DataEntryGroupEnum::GET_COLLECTION,
-            DataEntryGroupEnum::POST,
-            DataEntryGroupEnum::PATCH,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
     private ?string $tableName = null;
 
     /**
      * @var Collection<int, MetaColumn>
      */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'dataEntry',
-            targetEntity: MetaColumn::class,
-            orphanRemoval: true
-        ),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])
-    ]
+    #[ORM\OneToMany(mappedBy: 'dataEntry', targetEntity: MetaColumn::class, orphanRemoval: true, cascade: ['persist'])]
+    #[Assert\Valid]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private Collection $metaColumns;
 
-    #[
-        ORM\JoinColumn(nullable: false, referencedColumnName: 'slug'),
-        ORM\ManyToOne(inversedBy: 'dataEntries'),
-        Assert\NotBlank(groups: [DataEntryGroupEnum::POST]),
-        Groups([DataEntryGroupEnum::POST]),
-    ]
+    #[ORM\ManyToOne(inversedBy: 'dataEntries')]
+    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
+    #[Assert\NotBlank()]
+    #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
     private ?Dataset $dataset = null;
 
-    #[
-        ORM\Column,
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-        ),
-        Groups([DataEntryGroupEnum::GET]),
-    ]
+    #[ORM\Column]
+    #[Groups([DataEntryGroupEnum::GET])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[
-        ORM\Column,
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-        ),
-        Groups([DataEntryGroupEnum::GET]),
-    ]
+    #[ORM\Column]
+    #[Groups([DataEntryGroupEnum::GET])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
@@ -220,7 +140,7 @@ class DataEntry
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 

@@ -8,17 +8,17 @@ doctrine:
         connections:
             default:
                 driver: 'pdo_pgsql'
-                url: "%env(resolve:DATABASE_URL_API)%"
-                profiling_collect_backtrace: "%kernel.debug%"
+                url: '%env(resolve:DATABASE_URL_API)%'
+                profiling_collect_backtrace: '%kernel.debug%'
                 use_savepoints: true
-                server_version: "%env(resolve:POSTGRES_VERSION)%"
+                server_version: '%env(resolve:POSTGRES_VERSION)%'
 
             pool:
                 driver: 'pdo_pgsql'
-                url: "%env(resolve:DATABASE_URL_POOL)%"
-                profiling_collect_backtrace: "%kernel.debug%"
+                url: '%env(resolve:DATABASE_URL_POOL)%'
+                profiling_collect_backtrace: '%kernel.debug%'
                 use_savepoints: true
-                server_version: "%env(resolve:POSTGRES_VERSION)%"
+                server_version: '%env(resolve:POSTGRES_VERSION)%'
     orm:
         default_entity_manager: default
         enable_lazy_ghost_objects: true
@@ -32,7 +32,7 @@ doctrine:
                     Dataviz:
                         is_bundle: false
                         type: attribute
-                        dir: "%kernel.project_dir%/src/Domain/Dataviz"
+                        dir: '%kernel.project_dir%/src/Domain/Dataviz'
                         prefix: 'App\Domain\Dataviz'
                         alias: Dataviz
 
@@ -43,7 +43,7 @@ doctrine:
                     Datapool:
                         is_bundle: false
                         type: attribute
-                        dir: "%kernel.project_dir%/src/Domain/Datapool"
+                        dir: '%kernel.project_dir%/src/Domain/Datapool'
                         prefix: 'App\Domain\Datapool'
                         alias: Datapool
 
@@ -57,20 +57,20 @@ when@test:
 
             connections:
                 default:
-                    dbname_suffix: "_test%env(default::TEST_TOKEN)%"
-                    url: "%env(resolve:DATABASE_URL_API)%"
-                    profiling_collect_backtrace: "%kernel.debug%"
+                    dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+                    url: '%env(resolve:DATABASE_URL_API)%'
+                    profiling_collect_backtrace: '%kernel.debug%'
 
                 pool:
-                    dbname_suffix: "_test%env(default::TEST_TOKEN)%"
-                    url: "%env(resolve:DATABASE_URL_POOL)%"
-                    profiling_collect_backtrace: "%kernel.debug%"
+                    dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+                    url: '%env(resolve:DATABASE_URL_POOL)%'
+                    profiling_collect_backtrace: '%kernel.debug%'
 
 when@prod:
     doctrine:
         orm:
             auto_generate_proxy_classes: false
-            proxy_dir: "%kernel.build_dir%/doctrine/orm/Proxies"
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool

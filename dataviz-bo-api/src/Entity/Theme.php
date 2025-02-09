@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[API\ApiResource(
     shortName: 'Theme',
     operations: [
+        new API\GetCollection(),
+
         new API\Get(),
 
         new API\Post(
@@ -50,47 +52,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Theme
 {
-    #[
-        ORM\Id,
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            identifier: true,
-            writable: true,
-            readable: true,
-            required: true,
-        ),
-        Assert\NotBlank(),
-        Groups([
-            ThemeGroupEnum::GET_COLLECTION,
-            ThemeGroupEnum::POST,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
+    #[ORM\Id]
+    #[ORM\Column(length: 255)]
+    #[API\ApiProperty(identifier: true, writable: true, readable: true, required: true)]
+    #[Assert\NotBlank()]
+    #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::POST, DatasetGroupEnum::GET_COLLECTION])]
     private ?string $slug = null;
 
-    #[
-        ORM\Column(length: 255),
-        Assert\NotBlank(),
-        Groups([
-            ThemeGroupEnum::GET_COLLECTION,
-            ThemeGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
     private ?string $title = null;
 
     /**
      * @var Collection<int, Dataset>
      */
-    #[
-        ORM\JoinTable(name: 'theme_dataset'),
-        ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug'),
-        ORM\InverseJoinColumn(name: 'dataset', referencedColumnName: 'slug'),
-        ORM\ManyToMany(
-            targetEntity: Dataset::class,
-            mappedBy: 'themes',
-        ),
-    ]
+    #[ORM\ManyToMany(targetEntity: Dataset::class, mappedBy: 'themes')]
     private Collection $datasets;
 
     public function __construct()

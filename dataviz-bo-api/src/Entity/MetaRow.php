@@ -8,6 +8,7 @@ use App\Enum\Group\DatasetGroupEnum;
 use App\Repository\MetaRowRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MetaRowRepository::class)]
 #[API\ApiResource(
@@ -15,40 +16,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class MetaRow
 {
-    #[
-        ORM\Id,
-        ORM\GeneratedValue,
-        ORM\Column,
-    ]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\SequenceGenerator(sequenceName: "meta_row_id_id_seq", allocationSize: 1)]
+    #[ORM\Column]
+    #[Groups([DataEntryGroupEnum::GET])]
     private ?int $id = null;
 
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            identifier: true,
-            readable: true,
-            openapiContext: [
-                'type' => 'string',
-                'maxLength' => 255,
-            ],
-            required: true,
-        ),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Length(max: 255)]
+    #[Groups([DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?string $value = null;
 
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(allowNull: true)]
+    #[Assert\Length(max: 255)]
+    #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private ?string $label = null;
 
-    #[
-        ORM\ManyToOne(inversedBy: 'metaRows'),
-        ORM\JoinColumn(nullable: false),
-    ]
+    #[ORM\ManyToOne(inversedBy: 'metaRows')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?MetaColumn $metaColumn = null;
 
     public function getId(): ?int

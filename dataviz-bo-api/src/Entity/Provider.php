@@ -20,6 +20,12 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[API\ApiResource(
     shortName: 'Provider',
     operations: [
+        new API\GetCollection(
+            normalizationContext: [
+                'groups' => [ProviderGroupEnum::GET_COLLECTION],
+            ],
+        ),
+
         new API\Get(
             normalizationContext: [
                 'groups' => [
@@ -90,88 +96,45 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 )]
 class Provider
 {
-    #[
-        ORM\Id,
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            identifier: true,
-            writable: true,
-            readable: true,
-            required: true,
-        ),
-        Assert\NotBlank(),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::POST,
-            ProviderGroupEnum::POST_IMAGE,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
+    #[ORM\Id]
+    #[ORM\Column(length: 255)]
+    #[API\ApiProperty(identifier: true, writable: true, readable: true, required: true)]
+    #[Assert\NotBlank()]
+    #[Assert\Length(max: 255)]
+    #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::POST, ProviderGroupEnum::POST_IMAGE, DatasetGroupEnum::GET_COLLECTION])]
     private ?string $slug = null;
 
-    #[
-        ORM\Column(length: 255),
-        Assert\NotBlank(),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Length(max: 255)]
+    #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
     private ?string $name = null;
 
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Assert\NotBlank(options: ['allowNull' => true]),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(options: ['allowNull' => true])]
+    #[Assert\Length(max: 255)]
+    #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
     private ?string $acronym = null;
 
-    #[
-        ORM\Column(type: Types::TEXT, nullable: true),
-        Assert\NotBlank(options: ['allowNull' => true]),
-        Groups([
-            ProviderGroupEnum::GET,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\NotBlank(options: ['allowNull' => true])]
+    #[Groups([ProviderGroupEnum::GET, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET])]
     private ?string $description = null;
 
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(writable: false),
-        Groups([ProviderGroupEnum::GET_COLLECTION]),
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[API\ApiProperty(writable: false)]
+    #[Groups([ProviderGroupEnum::GET_COLLECTION])]
     private ?string $image = null;
 
     
-    #[
-        Vich\UploadableField(
-            mapping: 'provider_image',
-            fileNameProperty: 'image'
-        ),
-        Groups([ProviderGroupEnum::POST_IMAGE]),
-    ]
+    #[Vich\UploadableField(mapping: 'provider_image', fileNameProperty: 'image')]
+    #[Groups([ProviderGroupEnum::POST_IMAGE])]
     public ?File $file = null;
 
     /**
      * @var Collection<int, Dataset>
      */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'provider',
-            targetEntity: Dataset::class,
-            orphanRemoval: true,
-        ),
-    ]
+    #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Dataset::class, orphanRemoval: true)]
     private Collection $datasets;
 
     #[ORM\Column]
