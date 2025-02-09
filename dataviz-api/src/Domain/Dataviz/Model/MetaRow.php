@@ -14,8 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class MetaRow
 {
     #[ORM\Embedded(columnPrefix: false)]
-    /** @phpstan-ignore-next-line */
-    private MetaRowId $id;
+    public MetaRowId $id;
 
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
@@ -28,6 +27,7 @@ class MetaRow
         #[ORM\JoinColumn(nullable: false)]
         private ?MetaColumn $metaColumn = null,
     ) {
+        $this->id = new MetaRowId();
     }
 
     public function id(): MetaRowId

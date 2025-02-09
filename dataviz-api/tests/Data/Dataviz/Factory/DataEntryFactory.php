@@ -11,8 +11,6 @@ use App\Domain\Dataviz\ValueObject\DataEntry\DataEntryTableName;
 use App\Domain\Dataviz\ValueObject\DataEntry\DataEntryTitle;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-use function Zenstruck\Foundry\lazy;
-
 /**
  * @extends PersistentProxyObjectFactory<DataEntry>
  */
@@ -44,7 +42,7 @@ final class DataEntryFactory extends PersistentProxyObjectFactory
             'title' => new DataEntryTitle(self::faker()->title()),
             'schemaName' => new DataEntrySchemaName(self::faker()->text(255)),
             'tableName' => new DataEntryTableName(self::faker()->text(255)),
-            'dataset' => lazy(fn () => DatasetFactory::randomOrCreate()),
+            'dataset' => DatasetFactory::new(),
         ];
     }
 

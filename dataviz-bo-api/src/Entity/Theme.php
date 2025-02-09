@@ -13,10 +13,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ThemeRepository::class)]
+#[ORM\Table('theme')]
 #[API\ApiResource(
     shortName: 'Theme',
     operations: [
-        new API\Get(),
+        new API\GetCollection(
+            normalizationContext: [
+                'groups' => [ThemeGroupEnum::GET_COLLECTION],
+            ],
+        ),
+
+        new API\Get(
+            normalizationContext: [
+                'groups' => [
+                    ThemeGroupEnum::GET_COLLECTION, 
+                    ThemeGroupEnum::GET,
+                ],
+            ],
+        ),
 
         new API\Post(
             denormalizationContext: [
@@ -50,52 +64,28 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Theme
 {
-    #[
-        ORM\Id,
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            identifier: true,
-            writable: true,
-            readable: true,
-            required: true,
-        ),
-        Assert\NotBlank(),
-        Groups([
-            ThemeGroupEnum::GET_COLLECTION,
-            ThemeGroupEnum::POST,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
-    private ?string $slug = null;
-
-    #[
-        ORM\Column(length: 255),
-        Assert\NotBlank(),
-        Groups([
-            ThemeGroupEnum::GET_COLLECTION,
-            ThemeGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
-    private ?string $title = null;
-
-    /**
-     * @var Collection<int, Dataset>
-     */
-    #[
-        ORM\JoinTable(name: 'theme_dataset'),
-        ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug'),
-        ORM\InverseJoinColumn(name: 'dataset', referencedColumnName: 'slug'),
-        ORM\ManyToMany(
-            targetEntity: Dataset::class,
-            mappedBy: 'themes',
-        ),
-    ]
+    /** @var Collection<int, Dataset> */
+    #[ORM\ManyToMany(targetEntity: Dataset::class, mappedBy: 'themes')]
+    #[Groups([ThemeGroupEnum::GET])]
     private Collection $datasets;
 
-    public function __construct()
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(length: 255)]
+        #[API\ApiProperty(identifier: true, writable: true, readable: true, required: true)]
+        #[Assert\NotBlank()]
+        #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::POST, DatasetGroupEnum::GET_COLLECTION])]
+        private ?string $slug = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank()]
+        #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
+        private ?string $title = null,
+
+        array $datasets = [],
+    )
     {
-        $this->datasets = new ArrayCollection();
+        $this->datasets = new ArrayCollection($datasets);
     }
 
     public function getSlug(): ?string

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Api\Dataviz;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
+use App\Domain\Dataviz\Model\DataEntry;
 use App\Domain\Dataviz\Repository\DataEntryRepositoryInterface;
 use App\Presentation\Dataviz\Resource\DataEntryResource;
 use App\Tests\Data\Datapool\Story\InseePopStory;
@@ -34,10 +35,10 @@ final class DataEntryCrudTest extends ApiTestCase
         $this->assertJsonContains([
             '@context' => '/contexts/DataEntry',
             '@id' => '/data-entry',
-            '@type' => 'hydra:Collection',
-            'hydra:totalItems' => 100,
+            '@type' => 'Collection',
+            'totalItems' => 100,
         ]);
-        $this->assertCount(50, $response->toArray()['hydra:member']);
+        $this->assertCount(50, $response->toArray()['member']);
     }
 
     public function testGetItem(): void
@@ -64,23 +65,23 @@ final class DataEntryCrudTest extends ApiTestCase
 
         $dataEntry = static::getContainer()->get(DataEntryRepositoryInterface::class)->find($dataset->slug());
 
-        static::createClient()->request(Request::METHOD_GET, "/data-entry/{$dataEntry->slug()}/table");
+        $url = "/data-entry/{$dataEntry->slug()}/table";
+
+        static::createClient()->request(Request::METHOD_GET, $url);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
         $this->assertJsonContains([
             '@context' => '/contexts/DataEntry',
-            '@id' => "/data-entry/{$dataEntry->slug()}/table",
-            '@type' => 'hydra:Collection',
+            '@id' => $url,
+            '@type' => 'Collection',
         ]);
     }
 
     // POST
     public function testPostItem(): void
     {
-        DataEntryFactory::createMany(100);
-
-        static::createClient()->request(Request::METHOD_POST, '/dataset');
+        static::createClient()->request(Request::METHOD_POST, '/data-entry');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }
@@ -89,7 +90,16 @@ final class DataEntryCrudTest extends ApiTestCase
     {
         $data = DataEntryFactory::createOne();
 
-        static::createClient()->request(Request::METHOD_PATCH, "/dataset/{$data->slug()}");
+        static::createClient()->request(Request::METHOD_PATCH, "/data-entry/{$data->slug()}");
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    public function testPutItem(): void
+    {
+        $data = DataEntryFactory::createOne();
+
+        static::createClient()->request(Request::METHOD_PUT, "/data-entry/{$data->slug()}");
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }
@@ -98,7 +108,7 @@ final class DataEntryCrudTest extends ApiTestCase
     {
         $data = DataEntryFactory::createOne();
 
-        static::createClient()->request(Request::METHOD_DELETE, "/dataset/{$data->slug()}");
+        static::createClient()->request(Request::METHOD_DELETE, "/data-entry/{$data->slug()}");
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }

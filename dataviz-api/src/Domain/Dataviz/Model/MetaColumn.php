@@ -19,11 +19,10 @@ use Doctrine\ORM\Mapping as ORM;
 class MetaColumn
 {
     #[ORM\Embedded(columnPrefix: false)]
-    /** @phpstan-ignore-next-line */
     private MetaColumnId $id;
 
     /** @var Collection<int, MetaRow> */
-    #[ORM\OneToMany(mappedBy: 'metaColumn', targetEntity: MetaRow::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'metaColumn', targetEntity: MetaRow::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $metaRows;
 
     public function __construct(
@@ -46,28 +45,8 @@ class MetaColumn
         #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
         private ?DataEntry $dataEntry = null,
     ) {
+        $this->id = new MetaColumnId();
         $this->metaRows = new ArrayCollection();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function update(
-        ?MetaColumnColumnName $columnName = null,
-        ?MetaColumnNullable $nullable = null,
-        ?MetaColumnDataType $dataType = null,
-        ?MetaColumnCharacterMaximumLength $characterMaximumLength = null,
-        ?MetaColumnLabel $label = null,
-        ?DataEntry $dataEntry = null,
-        ?array $metaRows = null,
-    ): void {
-        $this->columnName = $columnName ?? $this->columnName;
-        $this->nullable = $nullable ?? $this->nullable;
-        $this->dataType = $dataType ?? $this->dataType;
-        $this->characterMaximumLength = $characterMaximumLength ?? $this->characterMaximumLength;
-        $this->label = $label ?? $this->label;
-        $this->dataEntry = $dataEntry ?? $this->dataEntry;
-        $this->metaRows = null !== $metaRows ? new ArrayCollection($metaRows) : $this->metaRows;
     }
 
     public function id(): MetaColumnId

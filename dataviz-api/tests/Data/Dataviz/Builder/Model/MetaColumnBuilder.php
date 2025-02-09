@@ -24,7 +24,7 @@ class MetaColumnBuilder
         return $this;
     }
 
-    public function withColumnDataType(?DataTypeEnum $dataType): self
+    public function withDataType(?DataTypeEnum $dataType): self
     {
         if ($dataType) {
             $this->dataType = new MetaColumnDataType($dataType->value);
@@ -35,9 +35,18 @@ class MetaColumnBuilder
 
     public function build(): MetaColumn
     {
-        return MetaColumnFactory::createOne(\array_filter([
+        $column = MetaColumnFactory::createOne(\array_filter([
             'columnName' => $this->columnName,
             'dataType' => $this->dataType,
         ]));
+
+        return new MetaColumn(
+            columnName: $column->columnName(),
+            nullable: $column->nullable(),
+            dataType: $column->dataType(),
+            characterMaximumLength: $column->characterMaximumLength(),
+            label: $column->label(),
+            dataEntry: $column->dataEntry(),
+        );
     }
 }

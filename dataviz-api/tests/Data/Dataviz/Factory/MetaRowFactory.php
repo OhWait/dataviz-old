@@ -38,7 +38,7 @@ final class MetaRowFactory extends PersistentProxyObjectFactory
         return [
             'label' => new MetaRowLabel(self::faker()->unique()->slug(2)),
             'value' => new MetaRowValue(self::faker()->unique()->slug(1)),
-            'metaColumn' => lazy(fn () => MetaColumnFactory::randomOrCreate()),
+            'metaColumn' => MetaColumnFactory::new(),
         ];
     }
 

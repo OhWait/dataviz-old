@@ -114,7 +114,7 @@ class RequestBuilder
         return $this;
     }
 
-    public function setDataEntryInfoFilter(DataEntry $dataEntry, int $index = null): self
+    public function setDataEntryInfoFilter(DataEntry $dataEntry, ?int $index = null): self
     {
         if (null === $index) {
             $index = \count($this->filters) - 1;

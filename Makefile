@@ -5,6 +5,7 @@ DOCKER_COMPOSE = docker-compose -f $(FILE) -f $(OVERRIDE)
 EXEC_API = $(DOCKER_COMPOSE) exec dataviz-api
 EXEC_BO = $(DOCKER_COMPOSE) exec dataviz-bo-api
 SYMFONY = $(EXEC_API) bin/console
+SYMFONY_BO = $(EXEC_BO) bin/console
 
 ARG ?=
 
@@ -46,33 +47,21 @@ chown: ## 🛠 Fix user access permissions
 	sudo chown -R $$USER:$$USER .
 
 ## ----------------
-## 🖥 PHP Commands
-## ----------------
-logs: ## 📜 Show application logs
-	$(DOCKER_COMPOSE) logs -f -t --tail 250 php
-
-vendor-require:
-	$(EXEC_API) composer require
-
-vendor-install:
-	$(EXEC_API) composer install
-
-vendor-update:
-	$(EXEC_API) composer update
-
-## ----------------
 ## 🏛 Database Commands
 ## ----------------
 db-create-full: ## 🗄 Create all databases (dev + test)
-	$(SYMFONY) doctrine:database:create --if-not-exists
-	$(SYMFONY) doctrine:database:create --if-not-exists --connection=pool 
+	$(SYMFONY_BO) doctrine:database:create --if-not-exists
+	$(SYMFONY_BO) doctrine:database:create --if-not-exists --connection=pool 
+
+db-make-migration: ## 📜 Generate a new migration
+	$(SYMFONY_BO) doctrine:migrations:diff
 
 db-migrate: ## 🔄 Execute all migrations
-	$(SYMFONY) doctrine:migrations:migrate -n
-	$(SYMFONY) doctrine:migrations:migrate -n --em=pool --configuration=migrations/Datapool/doctrine_migrations.yaml
+	$(SYMFONY_BO) doctrine:migrations:migrate -n
+	$(SYMFONY_BO) doctrine:migrations:migrate -n --em=pool --configuration=migrations/Datapool/doctrine_migrations.yaml
 
 db-fixtures: ## 🧪 Load database fixtures
-	$(SYMFONY) doctrine:fixtures:load -n
+	$(SYMFONY_BO) doctrine:fixtures:load -n
 
 db-full: ## 🏗 Create DB, run migrations, and load fixtures
 db-full: db-create-full db-migrate db-fixtures
@@ -84,26 +73,32 @@ define run_phpunit
 	$(1) vendor/bin/phpunit $(ARG)
 endef
 
-tu-api: ## 🧪 Run unit tests for API
+test-u-api: ## 🧪 Run unit tests for API
 	$(call run_phpunit,$(EXEC_API) --testsuite unit)
 
-tf-api: ## 🛠 Run functional tests for API
+test-i-api: ## 🛠 Run integration tests for API
 	$(call run_phpunit,$(EXEC_API) --testsuite api)
 
-tall-api: ## 🚀 Run all API tests
+test-api: ## 🚀 Run all API tests
 	$(call run_phpunit,$(EXEC_API))
 
-tu-bo: ## 🧪 Run unit tests for BO
-	$(call run_phpunit,$(EXEC_BO) --testsuite unit)
+test-c-api: ## 📊 Test coverage - you may need to "apt install wslu" package
+	$(EXEC_API) vendor/bin/phpunit --coverage-html tests/coverage
+	wslview ./dataviz-bo-api/tests/coverage/index.html
 
-tf-bo: ## 🛠 Run functional tests for BO
+test-i-bo: ## 🛠 Run integration tests for BO
 	$(call run_phpunit,$(EXEC_BO) --testsuite api)
 
-tall-bo: ## 🚀 Run all BO tests
+test-bo: ## 🚀 Run all BO tests
 	$(call run_phpunit,$(EXEC_BO))
+
+test-c-bo: ## 📊 Test coverage - you may need to "apt install wslu" package
+	$(EXEC_BO) vendor/bin/phpunit --coverage-html tests/coverage
+	wslview ./dataviz-bo-api/tests/coverage/index.html
 
 test: ## 🚀 Run all tests
 	$(call run_phpunit,$(EXEC_API))
+	$(call run_phpunit,$(EXEC_BO))
 
 ## ----------------
 ## 🔍 Code Quality
@@ -118,6 +113,13 @@ apply-php-cs-fixer: ## 🎨 Fix PHP code style
 
 phpstan: ## 🔍 Run static analysis on PHP code
 	$(EXEC_API) vendor/bin/phpstan analyse src
+
+apply-bo-csfixer: ## 🎨 Fix PHP code style
+	$(EXEC_BO) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
+	$(EXEC_BO) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
+
+phpstan-bo: ## 🔍 Run static analysis on PHP code
+	$(EXEC_BO) vendor/bin/phpstan analyse src
 
 ## ----------------
 ## 📜 Help

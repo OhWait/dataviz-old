@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Dataviz\ValueObject\MetaColumn;
 
+use App\Shared\Domain\ValueObject\AggreagateUuid;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Embeddable]
 final class MetaColumnId
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'id')]
-    public int $value;
+    use AggreagateUuid;
 }

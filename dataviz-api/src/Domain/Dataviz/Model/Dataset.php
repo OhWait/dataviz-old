@@ -32,10 +32,12 @@ class Dataset
     private Collection $dataEntries;
 
     /** @var Collection<int, Theme> */
-    #[ORM\JoinTable(name: 'theme_dataset')]
-    #[ORM\JoinColumn(name: 'dataset', referencedColumnName: 'slug')]
-    #[ORM\InverseJoinColumn(name: 'theme', referencedColumnName: 'slug')]
     #[ORM\ManyToMany(targetEntity: Theme::class, inversedBy: 'datasets', cascade: ['persist'])]
+    #[ORM\JoinTable(
+        name: 'theme_dataset',
+        joinColumns: [new ORM\JoinColumn(name: 'dataset', referencedColumnName: 'slug', onDelete: 'CASCADE')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug', onDelete: 'CASCADE')],
+    )]
     private Collection $themes;
 
     #[ORM\Embedded(columnPrefix: false)]
@@ -100,49 +102,6 @@ class Dataset
         $this->themes = new ArrayCollection($themes);
         $this->createdAt = new DatasetCreatedAt();
         $this->updatedAt = new DatasetUpdatedAt();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     *
-     * @param ?Theme[]     $themes
-     * @param ?DataEntry[] $dataEntries
-     */
-    public function update(
-        ?DatasetSlug $slug = null,
-        ?DatasetTitle $title = null,
-        ?DatasetShortTitle $shortTitle = null,
-        ?DatasetDescription $description = null,
-        ?DatasetPerimeter $perimeter = null,
-        ?DatasetGranularity $granularity = null,
-        ?DatasetUpdateFrequency $updateFrequency = null,
-        ?DatasetUpdatePeriod $updatePeriod = null,
-        ?DatasetSecurity $security = null,
-        ?DatasetLanguage $language = null,
-        ?DatasetDataCreatedAt $dataCreatedAt = null,
-        ?DatasetDataUpdatedAt $dataUpdatedAt = null,
-        ?DatasetDataProvider $dataProvider = null,
-        ?Provider $provider = null,
-        ?array $themes = null,
-        ?array $dataEntries = null,
-    ): void {
-        $this->slug = $slug ?? $this->slug;
-        $this->title = $title ?? $this->title;
-        $this->shortTitle = $shortTitle ?? $this->shortTitle;
-        $this->description = $description ?? $this->description;
-        $this->perimeter = $perimeter ?? $this->perimeter;
-        $this->granularity = $granularity ?? $this->granularity;
-        $this->updateFrequency = $updateFrequency ?? $this->updateFrequency;
-        $this->updatePeriod = $updatePeriod ?? $this->updatePeriod;
-        $this->security = $security ?? $this->security;
-        $this->language = $language ?? $this->language;
-        $this->dataCreatedAt = $dataCreatedAt ?? $this->dataCreatedAt;
-        $this->dataUpdatedAt = $dataUpdatedAt ?? $this->dataUpdatedAt;
-        $this->dataProvider = $dataProvider ?? $this->dataProvider;
-        $this->provider = $provider ?? $this->provider;
-        $this->themes = null !== $themes ? new ArrayCollection($themes) : $this->themes;
-        $this->dataEntries = null !== $dataEntries ? new ArrayCollection($dataEntries) :
-            $this->updatedAt = new DatasetUpdatedAt();
     }
 
     public function slug(): DatasetSlug

@@ -21,8 +21,6 @@ use App\Domain\Dataviz\ValueObject\Dataset\DatasetUpdatePeriod;
 use App\Presentation\Dataviz\Resource\DatasetResource;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-use function Zenstruck\Foundry\lazy;
-
 /**
  * @extends PersistentProxyObjectFactory<Dataset>
  */
@@ -63,8 +61,8 @@ final class DatasetFactory extends PersistentProxyObjectFactory
             'dataCreatedAt' => new DatasetDataCreatedAt(self::faker()->boolean() ? self::faker()->dateTime() : null),
             'dataUpdatedAt' => new DatasetDataUpdatedAt(self::faker()->boolean() ? self::faker()->dateTime() : null),
             'dataProvider' => new DatasetDataProvider(self::faker()->boolean() ? self::faker()->randomElement(DatasetResource::DATA_PROVIDER) : null),
-            'provider' => lazy(fn () => ProviderFactory::randomOrCreate()),
-            'themes' => lazy(fn () => [ThemeFactory::createOne()]),
+            'provider' => ProviderFactory::new(),
+            'themes' => ThemeFactory::createMany(self::faker()->numberBetween(0, 3)),
         ];
     }
 

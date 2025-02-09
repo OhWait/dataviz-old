@@ -5,97 +5,81 @@ namespace App\Entity;
 use ApiPlatform\Metadata as API;
 use App\Enum\Group\DataEntryGroupEnum;
 use App\Enum\Group\DatasetGroupEnum;
+use App\Enum\MetaColumn\DataTypeEnum;
 use App\Repository\MetaColumnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MetaColumnRepository::class)]
+#[ORM\Table('meta_column')]
 #[API\ApiResource(
     operations: [],
 )]
 class MetaColumn
 {
-    #[
-        ORM\Id,
-        ORM\GeneratedValue,
-        ORM\Column,
-    ]
-    private ?int $id = null;
+    #[ORM\Id]
+    #[ORM\Column(type: UuidType::NAME)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups([DataEntryGroupEnum::GET])]
+    private ?Uuid $id = null;
 
-    #[
-        ORM\Column(length: 255),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?string $columnName = null;
-
-    #[
-        ORM\Column,
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?bool $nullable = null;
-
-    #[
-        ORM\Column(length: 255),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?string $dataType = null;
-
-    #[
-        ORM\Column(nullable: true),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?int $characterMaximumLength = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?string $label = null;
-
-    #[
-        ORM\JoinColumn(
-            nullable: false,
-            referencedColumnName: 'slug',
-        ),
-        ORM\ManyToOne(inversedBy: 'metaColumns'),
-    ]
-    private ?DataEntry $dataEntry = null;
-
-    /**
-     * @var Collection<int, MetaRow>
-     */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'metaColumn',
-            targetEntity: MetaRow::class,
-            orphanRemoval: true
-        ),
-    ]
+    /** @var Collection<int, MetaRow> */
+    #[ORM\OneToMany(mappedBy: 'metaColumn', targetEntity: MetaRow::class, orphanRemoval: true, cascade: ['persist'])]
+    #[Assert\Valid]
+    #[Groups([DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
     private Collection $metaRows;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        #[Assert\NotNull]
+        #[Assert\Length(max: 255)]
+        #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
+        private ?string $columnName = null,
+
+        #[ORM\Column]
+        #[Assert\NotNull]
+        #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
+        private ?bool $nullable = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotNull]
+        #[Assert\Choice(callback: [DataTypeEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
+        private ?string $dataType = null,
+
+        #[ORM\Column(nullable: true)]
+        #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
+        private ?int $characterMaximumLength = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\NotBlank(allowNull: true)]
+        #[Assert\Length(max: 255)]
+        #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
+        private ?string $label = null,
+
+        #[ORM\ManyToOne(inversedBy: 'metaColumns')]
+        #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
+        private ?DataEntry $dataEntry = null,
+
+        array $metaRows = [],
+    ) {
+        $this->id = Uuid::v4();
         $this->metaRows = new ArrayCollection();
+
+        // TODO: why doesnt it work without this ?
+        foreach ($metaRows as $metaRow) {
+            $this->addMetaRow($metaRow);
+        }
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

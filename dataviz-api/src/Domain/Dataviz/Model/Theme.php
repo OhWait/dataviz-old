@@ -15,9 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Theme
 {
     /** @var Collection<int, Dataset> */
-    #[ORM\JoinTable(name: 'theme_dataset')]
-    #[ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug')]
-    #[ORM\InverseJoinColumn(name: 'dataset', referencedColumnName: 'slug')]
     #[ORM\ManyToMany(targetEntity: Dataset::class, mappedBy: 'themes')]
     private Collection $datasets;
 
@@ -29,15 +26,6 @@ class Theme
         private ThemeTitle $title,
     ) {
         $this->datasets = new ArrayCollection();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function update(
-        ?ThemeTitle $title,
-    ): void {
-        $this->title = $title ?? $this->title;
     }
 
     public function slug(): ThemeSlug

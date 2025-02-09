@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Dataviz\Query\Dataset;
 
-use App\Domain\Enum\Dataset\OrderByEnum;
+use App\Domain\Dataviz\Enum\Dataset\OrderByEnum;
 use App\Shared\Application\Query\AbstractPaginatedQuery;
 
 final readonly class FindAllDatasetQuery extends AbstractPaginatedQuery

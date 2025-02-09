@@ -33,9 +33,9 @@ final class DepartmentTest extends ApiTestCase
         $this->assertJsonContains([
             '@context' => '/contexts/AdministrativeDivision',
             '@id' => '/administrative-division/department',
-            '@type' => 'hydra:Collection',
-            'hydra:totalItems' => 100,
+            '@type' => 'Collection',
+            'totalItems' => 100,
         ]);
-        $this->assertCount(50, $response->toArray()['hydra:member']);
+        $this->assertCount(50, $response->toArray()['member']);
     }
 }

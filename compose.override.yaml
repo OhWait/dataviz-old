@@ -40,7 +40,7 @@ services:
       - ./dataviz-api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./dataviz-api/docker/conf.d/app.dev.ini:/usr/local/etc/php/conf.d/app.dev.ini:ro
       - /app/var
-      - shared_data:/var/shared_data
+      - ~/shared_data:/var/shared_data
 
   dataviz-bo-api:
     build:
@@ -59,7 +59,7 @@ services:
       - ./dataviz-bo-api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./dataviz-bo-api/docker/conf.d/app.dev.ini:/usr/local/etc/php/conf.d/app.dev.ini:ro
       - /app/var
-      - shared_data:/var/shared_data
+      - ~/shared_data:/var/shared_data
 
 volumes:
   shared_data:

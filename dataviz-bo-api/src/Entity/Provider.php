@@ -17,9 +17,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProviderRepository::class)]
+#[ORM\Table('provider')]
+#[Vich\Uploadable]
 #[API\ApiResource(
     shortName: 'Provider',
     operations: [
+        new API\GetCollection(
+            normalizationContext: [
+                'groups' => [ProviderGroupEnum::GET_COLLECTION],
+            ],
+        ),
+
         new API\Get(
             normalizationContext: [
                 'groups' => [
@@ -45,10 +53,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         ),
 
         new API\Post(
-            uriTemplate: '/provider/{slug}/upload-image',
+            uriTemplate: '/provider/{slug}/upload-logo',
             inputFormats: ['multipart' => ['multipart/form-data']],
-            deserialize: false,
             openapi: new Model\Operation(
+                summary: 'Add or replace the provider logo',
+                description: 'Add or replace the provider logo',
                 requestBody: new Model\RequestBody(
                     content: new \ArrayObject([
                         'multipart/form-data' => [
@@ -69,10 +78,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                 'groups' => [ProviderGroupEnum::POST_IMAGE],
             ],
             normalizationContext: [
-                'groups' => [
-                    ProviderGroupEnum::GET_COLLECTION,
-                    ProviderGroupEnum::GET,
-                ],
+                'groups' => [ProviderGroupEnum::GET_COLLECTION],
             ],
         ),
 
@@ -90,88 +96,21 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 )]
 class Provider
 {
-    #[
-        ORM\Id,
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            identifier: true,
-            writable: true,
-            readable: true,
-            required: true,
-        ),
-        Assert\NotBlank(),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::POST,
-            ProviderGroupEnum::POST_IMAGE,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
-    private ?string $slug = null;
-
-    #[
-        ORM\Column(length: 255),
-        Assert\NotBlank(),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
-    private ?string $name = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Assert\NotBlank(options: ['allowNull' => true]),
-        Assert\Length(max: 255),
-        Groups([
-            ProviderGroupEnum::GET_COLLECTION,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET_COLLECTION,
-        ]),
-    ]
-    private ?string $acronym = null;
-
-    #[
-        ORM\Column(type: Types::TEXT, nullable: true),
-        Assert\NotBlank(options: ['allowNull' => true]),
-        Groups([
-            ProviderGroupEnum::GET,
-            ProviderGroupEnum::PATCH,
-            DatasetGroupEnum::GET,
-        ]),
-    ]
-    private ?string $description = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(writable: false),
-        Groups([ProviderGroupEnum::GET_COLLECTION]),
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[API\ApiProperty(writable: false)]
     private ?string $image = null;
 
-    
-    #[
-        Vich\UploadableField(
-            mapping: 'provider_image',
-            fileNameProperty: 'image'
-        ),
-        Groups([ProviderGroupEnum::POST_IMAGE]),
-    ]
-    public ?File $file = null;
+    #[Vich\UploadableField(mapping: 'provider_image', fileNameProperty: 'image')]
+    #[Groups([ProviderGroupEnum::POST_IMAGE])]
+    private ?File $file = null;
 
-    /**
-     * @var Collection<int, Dataset>
-     */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'provider',
-            targetEntity: Dataset::class,
-            orphanRemoval: true,
-        ),
-    ]
+    #[API\ApiProperty(types: ['https://schema.org/contentUrl'], writable: false)]
+    #[Groups([ProviderGroupEnum::GET_COLLECTION])]
+    private ?string $contentUrl = null;
+
+    /** @var Collection<int, Dataset> */
+    #[ORM\OneToMany(mappedBy: 'provider', targetEntity: Dataset::class, orphanRemoval: true)]
+    #[Groups([ProviderGroupEnum::GET])]
     private Collection $datasets;
 
     #[ORM\Column]
@@ -180,9 +119,38 @@ class Provider
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    public function __construct()
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(length: 255)]
+        #[API\ApiProperty(identifier: true, writable: true, readable: true, required: true)]
+        #[Assert\NotBlank()]
+        #[Assert\NotNull()]
+        #[Assert\Length(max: 255)]
+        #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::POST, ProviderGroupEnum::POST_IMAGE, DatasetGroupEnum::GET_COLLECTION])]
+        private ?string $slug = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank()]
+        #[Assert\NotNull()]
+        #[Assert\Length(max: 255)]
+        #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
+        private ?string $name = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\NotBlank(options: ['allowNull' => true])]
+        #[Assert\Length(max: 255)]
+        #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
+        private ?string $acronym = null,
+
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        #[Assert\NotBlank(options: ['allowNull' => true])]
+        #[Groups([ProviderGroupEnum::GET, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET])]
+        private ?string $description = null,
+
+        array $datasets = [],
+    )
     {
-        $this->datasets = new ArrayCollection();
+        $this->datasets = new ArrayCollection($datasets);
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -247,15 +215,29 @@ class Provider
         return $this;
     }
 
-    public function setFile(File $file): void
-    {
-        $this->file = $file;
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
     public function getFile(): ?File
     {
         return $this->file;
+    }
+
+    public function setFile(File $file): static
+    {
+        $this->file = $file;
+        $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getContentUrl(): ?string
+    {
+        return $this->contentUrl;
+    }
+
+    public function setContentUrl(?string $contentUrl): static
+    {
+        $this->contentUrl = $contentUrl;
+
+        return $this;
     }
 
     /**

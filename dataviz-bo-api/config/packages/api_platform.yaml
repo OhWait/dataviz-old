@@ -8,68 +8,69 @@ api_platform:
             name: Maxime PREUILH
             email: maxime.preuilh@gmail.com
 
+    path_segment_name_generator: 'App\ApiResource\SingularPathSegmentNameGenerator'
+
     # Mercure integration, remove if unwanted
     mercure:
         include_type: true
     mapping:
         paths:
-            - "%kernel.project_dir%/src/Entity/"
+            - '%kernel.project_dir%/src/Entity/'
     patch_formats:
-        json: ["application/merge-patch+json"]
+        json: ['application/merge-patch+json']
 
     # The list of enabled formats. The first one will be the default.
     formats:
         jsonld:
-            mime_types: ["application/ld+json"]
+            mime_types: ['application/ld+json']
         json:
-            mime_types: ["application/json"]
+            mime_types: ['application/json']
         multipart:
-            mime_types: ["multipart/form-data"]
+            mime_types: ['multipart/form-data']
         html:
-            mime_types: ["text/html"]
+            mime_types: ['text/html']
 
     error_formats:
-        jsonproblem: ["application/problem+json"]
-        jsonld: ["application/ld+json"]
-        jsonapi: ["application/vnd.api+json"]
+        jsonproblem: ['application/problem+json']
+        jsonld: ['application/ld+json']
+        jsonapi: ['application/vnd.api+json']
 
     docs_formats:
-        jsonld: ["application/ld+json"]
-        jsonopenapi: ["application/vnd.openapi+json"]
-        html: ["text/html"]
+        jsonld: ['application/ld+json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
 
     # change this to true if you use controllers
     use_symfony_listeners: false
-    keep_legacy_inflector: false
 
     collection:
         # The name of the query parameter to filter nullable results (with the ExistsFilter).
-        exists_parameter_name: "exists"
+        exists_parameter_name: 'exists'
 
         # The default order of results.
-        order: "ASC"
+        order: 'ASC'
 
         # The name of the query parameter to order results (with the OrderFilter).
-        order_parameter_name: "order"
+        order_parameter_name: 'order'
 
         pagination:
             # The default name of the parameter handling the page number.
-            page_parameter_name: "page"
+            page_parameter_name: 'page'
 
             # The name of the query parameter to enable or disable pagination.
-            enabled_parameter_name: "pagination"
+            enabled_parameter_name: 'pagination'
 
             # The name of the query parameter to set the number of items per page.
-            items_per_page_parameter_name: "itemsPerPage"
+            items_per_page_parameter_name: 'itemsPerPage'
 
             # The name of the query parameter to enable or disable the partial pagination.
-            partial_parameter_name: "partial"
+            partial_parameter_name: 'partial'
 
     defaults:
         stateless: true
 
         cache_headers:
-            vary: ["Content-Type", "Authorization", "Origin"]
+            vary: ['Content-Type', 'Authorization', 'Origin']
 
         extra_properties:
             standard_put: true
@@ -92,5 +93,3 @@ api_platform:
 
         # The maximum number of items per page.
         pagination_maximum_items_per_page: 200
-
-    path_segment_name_generator: 'App\Helper\SingularPathSegmentNameGenerator'

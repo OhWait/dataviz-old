@@ -13,7 +13,6 @@ use App\Domain\Dataviz\ValueObject\DataEntry\DataEntryUpdatedAt;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use PHPUnit\Framework\Attributes\CodeCoverageIgnore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'data_entry')]
@@ -30,7 +29,7 @@ class DataEntry
     private DataEntryUpdatedAt $updatedAt;
 
     /** @var Collection<int, MetaColumn> */
-    #[ORM\OneToMany(mappedBy: 'dataEntry', targetEntity: MetaColumn::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'dataEntry', targetEntity: MetaColumn::class, orphanRemoval: true, cascade: ['persist'])]
     private Collection $metaColumns;
 
     /**
@@ -58,22 +57,6 @@ class DataEntry
         $this->createdAt = new DataEntryCreatedAt();
         $this->updatedAt = new DataEntryUpdatedAt();
         $this->metaColumns = new ArrayCollection($metaColumns);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function update(
-        ?DataEntryTitle $title = null,
-        ?DataEntrySchemaName $schemaName = null,
-        ?DataEntryTableName $tableName = null,
-        ?array $metaColumns = null,
-    ): void {
-        $this->title = $title ?? $this->title;
-        $this->schemaName = $schemaName ?? $this->schemaName;
-        $this->tableName = $tableName ?? $this->tableName;
-        $this->metaColumns = null !== $metaColumns ? new ArrayCollection($metaColumns) : $this->metaColumns;
-        $this->updatedAt = new DataEntryUpdatedAt();
     }
 
     public function slug(): DataEntrySlug

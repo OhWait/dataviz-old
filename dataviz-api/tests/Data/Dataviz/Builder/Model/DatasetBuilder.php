@@ -12,9 +12,9 @@ use App\Tests\Data\Dataviz\Factory\DatasetFactory;
 class DatasetBuilder
 {
     /**
-     * @var ?DataEntry[]
+     * @var DataEntry[]
      */
-    private ?array $dataEntries = null;
+    private array $dataEntries = [];
     private readonly DataEntryBuilder $dataEntryBuilder;
 
     public function __construct()
@@ -47,8 +47,22 @@ class DatasetBuilder
     {
         $dataset = DatasetFactory::createOne();
 
-        $dataset->update(dataEntries: $this->dataEntries);
-
-        return $dataset;
+        return new Dataset(
+            slug: $dataset->slug(),
+            title: $dataset->title(),
+            shortTitle: $dataset->shortTitle(),
+            description: $dataset->description(),
+            perimeter: $dataset->perimeter(),
+            granularity: $dataset->granularity(),
+            updateFrequency: $dataset->updateFrequency(),
+            updatePeriod: $dataset->updatePeriod(),
+            security: $dataset->security(),
+            language: $dataset->language(),
+            dataCreatedAt: $dataset->dataCreatedAt(),
+            dataUpdatedAt: $dataset->dataUpdatedAt(),
+            dataProvider: $dataset->dataProvider(),
+            provider: $dataset->provider(),
+            dataEntries: $this->dataEntries,
+        );
     }
 }

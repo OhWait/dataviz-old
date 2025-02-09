@@ -13,8 +13,6 @@ use App\Domain\Dataviz\ValueObject\MetaColumn\MetaColumnLabel;
 use App\Domain\Dataviz\ValueObject\MetaColumn\MetaColumnNullable;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-use function Zenstruck\Foundry\lazy;
-
 /**
  * @extends PersistentProxyObjectFactory<MetaColumn>
  */
@@ -45,7 +43,7 @@ final class MetaColumnFactory extends PersistentProxyObjectFactory
             'dataType' => new MetaColumnDataType(self::faker()->randomElement(DataTypeEnum::class)->value),
             'characterMaximumLength' => new MetaColumnCharacterMaximumLength(self::faker()->numberBetween(1, 255)),
             'label' => new MetaColumnLabel(self::faker()->text(255)),
-            'dataEntry' => lazy(fn () => DataEntryFactory::randomOrCreate()),
+            'dataEntry' => DataEntryFactory::new(),
         ];
     }
 

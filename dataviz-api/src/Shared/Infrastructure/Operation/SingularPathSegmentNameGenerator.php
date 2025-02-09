@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Operation;
 
-use ApiPlatform\Operation\PathSegmentNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation\PathSegmentNameGeneratorInterface;
 
 class SingularPathSegmentNameGenerator implements PathSegmentNameGeneratorInterface
 {

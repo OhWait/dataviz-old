@@ -45,8 +45,6 @@ final class ProviderCrudTest extends ApiTestCase
 
     public function testPostItem(): void
     {
-        ProviderFactory::createMany(100);
-
         static::createClient()->request(Request::METHOD_POST, '/provider');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -57,6 +55,15 @@ final class ProviderCrudTest extends ApiTestCase
         $data = ProviderFactory::createOne();
 
         static::createClient()->request(Request::METHOD_PATCH, "/provider/{$data->slug()}");
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    public function testPutItem(): void
+    {
+        $data = ProviderFactory::createOne();
+
+        static::createClient()->request(Request::METHOD_PUT, "/provider/{$data->slug()}");
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }

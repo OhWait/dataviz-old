@@ -45,8 +45,6 @@ final class ThemeCrudTest extends ApiTestCase
 
     public function testPostItem(): void
     {
-        ThemeFactory::createMany(100);
-
         static::createClient()->request(Request::METHOD_POST, '/theme');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -57,6 +55,15 @@ final class ThemeCrudTest extends ApiTestCase
         $data = ThemeFactory::createOne();
 
         static::createClient()->request(Request::METHOD_PATCH, "/theme/{$data->slug()}");
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
+    }
+
+    public function testPutItem(): void
+    {
+        $data = ThemeFactory::createOne();
+
+        static::createClient()->request(Request::METHOD_PUT, "/theme/{$data->slug()}");
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);
     }

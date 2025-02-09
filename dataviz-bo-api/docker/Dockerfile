@@ -1,10 +1,10 @@
-#syntax=docker/dockerfile:1.4
+#syntax=docker/dockerfile:1
 
 # Adapted from https://github.com/dunglas/symfony-docker
 
 
 # Versions
-FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
+FROM dunglas/frankenphp:1-php8.4 AS frankenphp_upstream
 
 
 # The different stages of this Dockerfile are meant to be built into separate images
@@ -31,12 +31,16 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN set -eux; \
 	install-php-extensions \
-	@composer \
-	apcu \
-	intl \
-	opcache \
-	zip \
+		@composer \
+		apcu \
+		intl \
+		opcache \
+		zip \
 	;
+
+RUN mkdir -p /var/shared_data && \
+    chown -R www-data:www-data /var/shared_data && \
+    chmod -R 775 /var/shared_data
 
 ###> recipes ###
 ###> doctrine/doctrine-bundle ###
@@ -64,7 +68,7 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 RUN set -eux; \
 	install-php-extensions \
-	xdebug \
+		xdebug \
 	;
 
 COPY --link docker/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/

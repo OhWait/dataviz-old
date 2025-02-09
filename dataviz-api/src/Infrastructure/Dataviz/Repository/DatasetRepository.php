@@ -6,8 +6,8 @@ namespace App\Infrastructure\Dataviz\Repository;
 
 use App\Application\Dataviz\Query\Dataset\FindAllDatasetQuery;
 use App\Domain\Dataviz\Model\Dataset;
-use App\Domain\Dataviz\ValueObject\Dataset\DatasetSlug;
 use App\Domain\Dataviz\Repository\DatasetRepositoryInterface;
+use App\Domain\Dataviz\ValueObject\Dataset\DatasetSlug;
 use App\Shared\Infrastructure\Doctrine\DoctrineRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;

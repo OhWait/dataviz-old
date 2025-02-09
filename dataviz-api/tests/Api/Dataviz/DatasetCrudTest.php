@@ -30,10 +30,10 @@ final class DatasetCrudTest extends ApiTestCase
         $this->assertJsonContains([
             '@context' => '/contexts/Dataset',
             '@id' => '/dataset',
-            '@type' => 'hydra:Collection',
-            'hydra:totalItems' => 100,
+            '@type' => 'Collection',
+            'totalItems' => 100,
         ]);
-        $this->assertCount(50, $response->toArray()['hydra:member']);
+        $this->assertCount(50, $response->toArray()['member']);
     }
 
     public function testGetItem(): void
@@ -54,8 +54,6 @@ final class DatasetCrudTest extends ApiTestCase
 
     public function testPostItem(): void
     {
-        DatasetFactory::createMany(100);
-
         static::createClient()->request(Request::METHOD_POST, '/dataset');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_METHOD_NOT_ALLOWED);

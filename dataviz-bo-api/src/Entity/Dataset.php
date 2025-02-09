@@ -7,50 +7,35 @@ use App\Enum\Dataset\DataProviderEnum;
 use App\Enum\Dataset\FrequencyEnum;
 use App\Enum\Dataset\GranularityEnum;
 use App\Enum\Dataset\LanguageEnum;
-use App\Enum\Dataset\OrderByEnum;
 use App\Enum\Dataset\SecurityEnum;
+use App\Enum\Group\DataEntryGroupEnum;
 use App\Enum\Group\DatasetGroupEnum;
+use App\Enum\Group\ProviderGroupEnum;
+use App\Enum\Group\ThemeGroupEnum;
 use App\Repository\DatasetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DatasetRepository::class)]
+#[ORM\Table('dataset')]
 #[API\ApiResource(
     operations: [
         new API\GetCollection(
             normalizationContext: ['groups' => [DatasetGroupEnum::GET_COLLECTION]],
-            openapiContext: [
-                'parameters' => [
-                    [
-                        'in' => 'query',
-                        'name' => 'dataProvider',
-                        'schema' => ['type' => 'boolean'],
-                        'required' => false,
+            parameters: [
+                new API\QueryParameter(
+                    key: 'themes',
+                    schema: [
+                        'type' => 'array',
+                        'items' => ['type' => 'string'],
                     ],
-                    [
-                        'in' => 'query',
-                        'name' => 'themes',
-                        'schema' => [
-                            'type' => 'array',
-                            'items' => ['type' => 'string'],
-                        ],
-                        'explode' => true,
-                        'required' => false,
-                    ],
-                    [
-                        'in' => 'query',
-                        'name' => 'orderBy',
-                        'schema' => [
-                            'type' => 'string',
-                            'enum' => self::ORDER_BY,
-                        ],
-                        'required' => false,
-                    ],
-                ],
+                ),
             ],
         ),
 
@@ -64,17 +49,12 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
 
         new API\Post(
-            validationContext: [
-                'groups' => [
-                    DatasetGroupEnum::POST,
-                    DatasetGroupEnum::PATCH,
-                ],
-            ],
             denormalizationContext: [
                 'groups' => [
                     DatasetGroupEnum::POST, 
                     DatasetGroupEnum::PATCH,
                 ],
+                'disable_type_enforcement' => true,
             ],
             normalizationContext: [
                 'groups' => [
@@ -85,8 +65,10 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
 
         new API\Patch(
-            validationContext: ['groups' => [DatasetGroupEnum::PATCH]],
-            denormalizationContext: ['groups' => [DatasetGroupEnum::PATCH]],
+            denormalizationContext: [
+                'groups' => [DatasetGroupEnum::PATCH],
+                'disable_type_enforcement' => true,
+            ],
             normalizationContext: [
                 'groups' => [
                     DatasetGroupEnum::GET_COLLECTION,
@@ -100,344 +82,147 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Dataset
 {
-    /**
-     * @var string[] ORDER_BY
-     */
-    public const ORDER_BY = [
-        OrderByEnum::DATA_UPDATED_AT->value,
-        OrderByEnum::CATEGORY->value,
-    ];
-
-    /**
-     * @var string[] GRANULARITY
-     */
-    public const GRANULARITY = [
-        GranularityEnum::POI->value,
-        GranularityEnum::MUNICIPALITIE->value,
-        GranularityEnum::PIIC->value,
-        GranularityEnum::DEPARTMENT->value,
-        GranularityEnum::COUNTRY->value,
-        GranularityEnum::OTHER->value,
-    ];
-
-    /**
-     * @var string[] FREQUENCY
-     */
-    public const FREQUENCY = [
-        FrequencyEnum::DAILY->value,
-        FrequencyEnum::WEEKLY->value,
-        FrequencyEnum::MONTHLY->value,
-        FrequencyEnum::QUARTERLY->value,
-        FrequencyEnum::HALF_YEARLY->value,
-        FrequencyEnum::YEARLY->value,
-    ];
-
-    /**
-     * @var string[] LANGUAGE
-     */
-    public const LANGUAGE = [
-        LanguageEnum::FR->value,
-        LanguageEnum::EN->value,
-    ];
-
-    /**
-     * @var string[] SECURITY
-     */
-    public const SECURITY = [
-        SecurityEnum::PUBLIC->value,
-        SecurityEnum::PRENIUM->value,
-    ];
-
-    /**
-     * @var string[] DATA_PROVIDER
-     */
-    public const DATA_PROVIDER = [
-        DataProviderEnum::ACCIDENTOLOGY->value,
-        DataProviderEnum::INSEE_TD->value,
-    ];
-
-    #[
-        ORM\Id,
-        ORM\Column(
-            length: 255,
-            unique: true,
-        ),
-        API\ApiProperty(
-            identifier: true,
-            readable: true,
-            writable: true,
-            openapiContext: ['type' => 'string', 'maxLength' => 255],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::POST]),
-        Assert\Length(max: 255, groups: [DatasetGroupEnum::POST]),
-        Assert\Type('string', groups: [DatasetGroupEnum::POST]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::POST,
-        ]),
-    ]
-    private ?string $slug = null;
-
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            openapiContext: ['type' => 'string', 'maxLength' => 255],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::PATCH]),
-        Assert\Length(max: 255, groups: [DatasetGroupEnum::PATCH]),
-        Assert\Type('string', groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $title = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(openapiContext: ['type' => 'string', 'maxLength' => 255]),
-        Assert\Length(max: 255, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::POST,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $shortTitle = null;
-
-    #[
-        ORM\Column(type: Types::TEXT, nullable: true),
-        API\ApiProperty(openapiContext: ['type' => 'string', 'nullable' => true]),
-        Assert\NotBlank(allowNull: true, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $description = null;
-
-    #[
-        ORM\Column(type: Types::TEXT),
-        API\ApiProperty(
-            openapiContext: ['type' => 'string', 'maxLength' => 255],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::PATCH]),
-        Assert\Length(max: 255, groups: [DatasetGroupEnum::PATCH]),
-        Assert\Type('string', groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $perimeter = null;
-
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'enum' => self::GRANULARITY,
-            ],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::PATCH]),
-        Assert\Choice(choices: self::GRANULARITY, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $granularity = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'nullable' => true,
-                'enum' => self::FREQUENCY,
-            ],
-        ),
-        Assert\Choice(choices: self::FREQUENCY, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $updateFrequency = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'maxLength' => 255,
-                'nullable' => true,
-            ],
-        ),
-        Assert\NotBlank(allowNull: true, groups: [DatasetGroupEnum::PATCH]),
-        Assert\Length(max: 255, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $updatePeriod = null;
-
-    #[
-        ORM\Column(length: 255),
-        API\ApiProperty(
-            openapiContext: ['type' => 'string', 'enum' => self::SECURITY],
-            required: true,
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::PATCH]),
-        Assert\Choice(choices: self::SECURITY, groups: [DatasetGroupEnum::PATCH]),
-        Groups([DatasetGroupEnum::PATCH]),
-    ]
-    private ?string $security = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'nullable' => true,
-                'enum' => self::LANGUAGE,
-            ],
-        ),
-        Assert\Choice(choices: self::LANGUAGE, groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?string $language = null;
-
-    #[
-        ORM\Column(nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-                'nullable' => true,
-            ],
-        ),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?\DateTimeImmutable $dataCreatedAt = null;
-
-    #[
-        ORM\Column(nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-                'nullable' => true,
-            ],
-        ),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?\DateTimeImmutable $dataUpdatedAt = null;
-
-    #[
-        ORM\Column(length: 255, nullable: true),
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'nullable' => true,
-            ],
-        ),
-        Assert\Choice(choices: self::DATA_PROVIDER, groups: [DatasetGroupEnum::PATCH]),
-        Groups([DatasetGroupEnum::PATCH]),
-    ]
-    private ?string $dataProvider = null;
-
-
-    #[
-        ORM\JoinColumn(nullable: false, referencedColumnName: 'slug'),
-        ORM\ManyToOne(inversedBy: 'datasets'),
-        Assert\NotBlank(groups: [DatasetGroupEnum::POST]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private ?Provider $provider = null;
-
-    /**
-     * @var Collection<int, Theme>
-     */
-    #[
-        ORM\JoinTable(name: 'theme_dataset'),
-        ORM\JoinColumn(name: 'dataset', referencedColumnName: 'slug'),
-        ORM\InverseJoinColumn(name: 'theme', referencedColumnName: 'slug'),
-        ORM\ManyToMany(
-            targetEntity: Theme::class,
-            inversedBy: 'datasets',
-            cascade: ['persist'],
-        ),
-        Assert\NotBlank(groups: [DatasetGroupEnum::POST]),
-        Assert\Count(min: 1, groups: [DatasetGroupEnum::POST]),
-        Assert\Type('array', groups: [DatasetGroupEnum::PATCH]),
-        Groups([
-            DatasetGroupEnum::GET_COLLECTION,
-            DatasetGroupEnum::PATCH,
-        ]),
-    ]
-    private Collection $themes;
-
-    /**
-     * @var Collection<int, DataEntry>
-     */
-    #[
-        ORM\OneToMany(
-            mappedBy: 'dataset', 
-            targetEntity: DataEntry::class, 
-            orphanRemoval: true
-        ),
-        Groups([DatasetGroupEnum::GET]),
-    ]
+    /** @var Collection<int, DataEntry> */
+    #[ORM\OneToMany(mappedBy: 'dataset', targetEntity: DataEntry::class, orphanRemoval: true)]
+    #[Groups([DatasetGroupEnum::GET])]
     private Collection $dataEntries;
 
-    #[
-        ORM\Column,
-        API\ApiProperty(
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-            ],
-        ),
-        Groups([DatasetGroupEnum::GET]),
-    ]
+    /**  @var Collection<int, Theme> */
+    #[ORM\ManyToMany(targetEntity: Theme::class, inversedBy: 'datasets')]
+    #[ORM\JoinTable(
+        name: 'theme_dataset',
+        joinColumns: [new ORM\JoinColumn(name: 'dataset', referencedColumnName: 'slug', onDelete: 'CASCADE')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug', onDelete: 'CASCADE')],
+    )]
+    #[Groups([DatasetGroupEnum::GET, DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+    private Collection $themes;
+
+    #[ORM\Column]
+    #[Groups([DatasetGroupEnum::GET])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[
-        ORM\Column,
-        API\ApiProperty(
+    #[ORM\Column]
+    #[Groups([DatasetGroupEnum::GET])]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    public function __construct(
+        #[ORM\Id]
+        #[ORM\Column(length: 255, unique: true)]
+        #[API\ApiProperty(identifier: true, readable: true, writable: true, required: true)]
+        #[Assert\NotBlank]
+        #[Assert\NotNull]
+        #[Assert\Length(max: 255)]
+        #[Groups([
+            DatasetGroupEnum::GET_COLLECTION,
+            DatasetGroupEnum::POST,
+            ThemeGroupEnum::GET,
+            ProviderGroupEnum::GET,
+        ])]
+        private ?string $slug = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        #[Assert\NotNull]
+        #[Assert\Length(max: 255)]
+        #[Groups([
+            DatasetGroupEnum::GET_COLLECTION,
+            DatasetGroupEnum::PATCH,
+            DataEntryGroupEnum::GET_COLLECTION,
+            ThemeGroupEnum::GET,
+            ProviderGroupEnum::GET,
+        ])]
+        private ?string $title = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\NotBlank(allowNull: true)]
+        #[Assert\Length(max: 255)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH, DataEntryGroupEnum::GET_COLLECTION])]
+        private ?string $shortTitle = null,
+
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        #[Assert\NotBlank(allowNull: true)]
+        #[Groups([DatasetGroupEnum::GET, DatasetGroupEnum::PATCH])]
+        private ?string $description = null,
+
+        #[ORM\Column(type: Types::TEXT)]
+        #[Assert\NotBlank()]
+        #[Assert\Length(max: 255)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $perimeter = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        #[Assert\Choice(callback: [GranularityEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $granularity = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\Choice(callback: [FrequencyEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $updateFrequency = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\NotBlank(allowNull: true)]
+        #[Assert\Length(max: 255)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $updatePeriod = null,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        #[Assert\Choice(callback: [SecurityEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $security = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\Choice(callback: [LanguageEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $language = null,
+
+        #[ORM\Column(nullable: true, type: Types::DATE_MUTABLE)]
+        #[API\ApiProperty(
+            types: ['https://schema.org/Date'],
             openapiContext: [
                 'type' => 'string',
                 'format' => 'date',
-            ],
-        ),
-        Groups([DatasetGroupEnum::GET]),
-    ]
-    private ?\DateTimeImmutable $updatedAt = null;
+                'example' => '2025-02-11'
+            ]
+        )]
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?\DateTimeInterface $dataCreatedAt = null,
 
-    public function __construct()
-    {
+        #[ORM\Column(nullable: true, type: Types::DATE_MUTABLE)]
+        #[API\ApiProperty(
+            types: ['https://schema.org/Date'],
+            openapiContext: [
+                'type' => 'string',
+                'format' => 'date',
+                'example' => '2025-02-11'
+            ]
+        )]
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?\DateTimeInterface $dataUpdatedAt = null,
+
+        #[ORM\Column(length: 255, nullable: true)]
+        #[Assert\Choice(callback: [DataProviderEnum::class, 'getValues'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?string $dataProvider = null,
+
+        #[ORM\ManyToOne(inversedBy: 'datasets')]
+        #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
+        #[Assert\NotBlank]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        private ?Provider $provider = null,
+
+        array $dataEntries = [],
+
+        array $themes = [],
+    ) {
+        $this->dataEntries = new ArrayCollection($dataEntries);
+        $this->themes = new ArrayCollection($themes);
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
-        $this->dataEntries = new ArrayCollection();
-        $this->themes = new ArrayCollection();
     }
 
     public function getSlug(): ?string
@@ -560,24 +345,24 @@ class Dataset
         return $this;
     }
 
-    public function getDataCreatedAt(): ?\DateTimeImmutable
+    public function getDataCreatedAt(): ?\DateTimeInterface
     {
         return $this->dataCreatedAt;
     }
 
-    public function setDataCreatedAt(?\DateTimeImmutable $dataCreatedAt): static
+    public function setDataCreatedAt(?\DateTimeInterface $dataCreatedAt): static
     {
         $this->dataCreatedAt = $dataCreatedAt;
 
         return $this;
     }
 
-    public function getDataUpdatedAt(): ?\DateTimeImmutable
+    public function getDataUpdatedAt(): ?\DateTimeInterface
     {
         return $this->dataUpdatedAt;
     }
 
-    public function setDataUpdatedAt(?\DateTimeImmutable $dataUpdatedAt): static
+    public function setDataUpdatedAt(?\DateTimeInterface $dataUpdatedAt): static
     {
         $this->dataUpdatedAt = $dataUpdatedAt;
 
