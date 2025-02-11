@@ -10,6 +10,8 @@ use App\Enum\Dataset\LanguageEnum;
 use App\Enum\Dataset\SecurityEnum;
 use App\Enum\Group\DataEntryGroupEnum;
 use App\Enum\Group\DatasetGroupEnum;
+use App\Enum\Group\ProviderGroupEnum;
+use App\Enum\Group\ThemeGroupEnum;
 use App\Repository\DatasetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -83,14 +85,25 @@ class Dataset
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(max: 255)]
-    #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::POST])]
+    #[Groups([
+        DatasetGroupEnum::GET_COLLECTION,
+        DatasetGroupEnum::POST,
+        ThemeGroupEnum::GET,
+        ProviderGroupEnum::GET,
+    ])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(max: 255)]
-    #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH, DataEntryGroupEnum::GET_COLLECTION])]
+    #[Groups([
+        DatasetGroupEnum::GET_COLLECTION,
+        DatasetGroupEnum::PATCH,
+        DataEntryGroupEnum::GET_COLLECTION,
+        ThemeGroupEnum::GET,
+        ProviderGroupEnum::GET,
+    ])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255, nullable: true)]

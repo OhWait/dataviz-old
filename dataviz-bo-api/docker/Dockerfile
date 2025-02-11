@@ -38,6 +38,10 @@ RUN set -eux; \
 		zip \
 	;
 
+RUN mkdir -p /var/shared_data && \
+    chown -R www-data:www-data /var/shared_data && \
+    chmod -R 775 /var/shared_data
+
 ###> recipes ###
 ###> doctrine/doctrine-bundle ###
 RUN set -eux; \

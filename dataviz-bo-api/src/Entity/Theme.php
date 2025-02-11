@@ -16,9 +16,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[API\ApiResource(
     shortName: 'Theme',
     operations: [
-        new API\GetCollection(),
+        new API\GetCollection(
+            normalizationContext: [
+                'groups' => [ThemeGroupEnum::GET_COLLECTION],
+            ],
+        ),
 
-        new API\Get(),
+        new API\Get(
+            normalizationContext: [
+                'groups' => [
+                    ThemeGroupEnum::GET_COLLECTION, 
+                    ThemeGroupEnum::GET,
+                ],
+            ],
+        ),
 
         new API\Post(
             denormalizationContext: [
@@ -68,6 +79,7 @@ class Theme
      * @var Collection<int, Dataset>
      */
     #[ORM\ManyToMany(targetEntity: Dataset::class, mappedBy: 'themes')]
+    #[Groups([ThemeGroupEnum::GET])]
     private Collection $datasets;
 
     public function __construct()

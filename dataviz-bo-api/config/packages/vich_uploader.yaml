@@ -1,11 +1,13 @@
 vich_uploader:
     db_driver: orm
-    storage: file_system
+
+    metadata:
+        type: attribute
+
     mappings:
         provider_image:
-            uri_prefix: /media
-            upload_destination: "/var/shared_data"
+            uri_prefix: /media/provider
+            upload_destination: '/var/shared_data/provider'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
-            inject_on_load: false
             delete_on_update: true
             delete_on_remove: true
