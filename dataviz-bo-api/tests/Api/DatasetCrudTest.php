@@ -6,13 +6,10 @@ namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Dataset;
-use App\Enum\Dataset\GranularityEnum;
 use App\Tests\Data\Factory\DatasetFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
-
-use function Zenstruck\Foundry\faker;
 
 final class DatasetCrudTest extends ApiTestCase
 {
