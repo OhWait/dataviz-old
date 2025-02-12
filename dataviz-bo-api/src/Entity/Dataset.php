@@ -17,7 +17,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DatasetRepository::class)]
@@ -118,7 +120,7 @@ class Dataset
     private ?string $description = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(allowNull: true)]
+    #[Assert\NotBlank()]
     #[Assert\Length(max: 255)]
     #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
     private ?string $perimeter = null;
@@ -143,7 +145,7 @@ class Dataset
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Choice(callback: [SecurityEnum::class, 'getValues'])]
-    #[Groups([DatasetGroupEnum::PATCH])]
+    #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
     private ?string $security = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -152,18 +154,34 @@ class Dataset
     private ?string $language = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\DateTime(format: 'Y-m-d')]
+    #[API\ApiProperty(
+        types: ['https://schema.org/Date'],
+        openapiContext: [
+            'type' => 'string',
+            'format' => 'date',
+            'example' => '2025-02-11'
+        ]
+    )]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
     private ?\DateTimeImmutable $dataCreatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\DateTime(format: 'Y-m-d')]
+    #[API\ApiProperty(
+        types: ['https://schema.org/Date'],
+        openapiContext: [
+            'type' => 'string',
+            'format' => 'date',
+            'example' => '2025-02-11'
+        ]
+    )]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
     private ?\DateTimeImmutable $dataUpdatedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Choice(callback: [DataProviderEnum::class, 'getValues'])]
-    #[Groups([DatasetGroupEnum::PATCH])]
+    #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
     private ?string $dataProvider = null;
 
     #[ORM\ManyToOne(inversedBy: 'datasets')]

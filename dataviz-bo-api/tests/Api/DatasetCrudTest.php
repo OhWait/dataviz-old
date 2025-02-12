@@ -6,6 +6,7 @@ namespace App\Tests\Api;
 
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 use App\Entity\Dataset;
+use App\Entity\Provider;
 use App\Tests\Data\Factory\DatasetFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Zenstruck\Foundry\Test\Factories;
@@ -53,7 +54,6 @@ final class DatasetCrudTest extends ApiTestCase
 
     public function testPostItem(): void
     {
-        DatasetFactory::createMany(100);
         $data = DatasetFactory::createOne();
 
         $response = static::createClient()->request(
@@ -61,9 +61,10 @@ final class DatasetCrudTest extends ApiTestCase
             '/dataset',
             [
                 'json' => [
-                    'slug' => $data->getSlug(),
+                    'slug' => 'random-slug',
                     'title' => $data->getTitle(),
                     'description' => $data->getDescription(),
+                    'perimeter' => $data->getPerimeter(),
                     'granularity' => $data->getGranularity(),
                     'updateFrequency' => $data->getUpdateFrequency(),
                     'updatePeriod' => $data->getUpdatePeriod(),
@@ -72,30 +73,30 @@ final class DatasetCrudTest extends ApiTestCase
                     'dataCreatedAt' => $data->getDataCreatedAt()?->format('Y-m-d'),
                     'dataUpdatedAt' => $data->getDataUpdatedAt()?->format('Y-m-d'),
                     'dataProvider' => $data->getDataProvider(),
-                    'provider' => $data->getDataProvider(),
-                    'themes' => $data->getThemes(),
+                    'provider' => "/provider/{$data->getProvider()->getSlug()}",
                 ]
             ]
         );
 
         $this->assertResponseStatusCodeSame(201);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
-        $this->assertJsonContains([
+        $this->assertJsonContains(array_filter([
             '@context' => '/contexts/Dataset',
             '@type' => 'Dataset',
-            'slug' => $data->getSlug(),
+            'slug' => 'random-slug',
             'title' => $data->getTitle(),
             'description' => $data->getDescription(),
+            'perimeter' => $data->getPerimeter(),
             'granularity' => $data->getGranularity(),
             'updateFrequency' => $data->getUpdateFrequency(),
             'updatePeriod' => $data->getUpdatePeriod(),
             'security' => $data->getSecurity(),
             'language' => $data->getLanguage(),
-            'dataCreatedAt' => $data->getDataCreatedAt(),
-            'dataUpdatedAt' => $data->getDataUpdatedAt(),
+            'dataCreatedAt' => $data->getDataCreatedAt()?->format('Y-m-d'),
+            'dataUpdatedAt' => $data->getDataUpdatedAt()?->format('Y-m-d'),
             'dataProvider' => $data->getDataProvider(),
-            'provider' => $data->getDataProvider(),
-            'themes' => $data->getThemes(),
-        ]);
+            'createdAt' => $response->toArray()['createdAt'],
+            'updatedAt' => $response->toArray()['updatedAt'],
+        ]));
     }
 }

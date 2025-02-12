@@ -87,6 +87,10 @@ tf-bo: ## 🛠 Run functional tests for BO
 tall-bo: ## 🚀 Run all BO tests
 	$(call run_phpunit,$(EXEC_BO))
 
+test-coverage: ## 📊 Test coverage - you may need to "apt install wslu" package
+	$(EXEC_BO) vendor/bin/phpunit --coverage-html tests/coverage
+	wslview ./dataviz-bo-api/tests/coverage/index.html
+
 test: ## 🚀 Run all tests
 	$(call run_phpunit,$(EXEC_API))
 

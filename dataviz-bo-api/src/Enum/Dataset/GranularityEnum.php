@@ -15,7 +15,7 @@ enum GranularityEnum: string
     // Point of interest
     case POI = 'POI';
 
-    case MUNICIPALITIE = 'MUNICIPALITIE';
+    case MUNICIPALITY = 'MUNICIPALITY';
 
     // Public institution for inter-municipal cooperation
     case PIIC = 'PIIC';
