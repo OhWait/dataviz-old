@@ -95,7 +95,7 @@ class Dataset
         inverseJoinColumns: [new ORM\JoinColumn(name: 'theme', referencedColumnName: 'slug', onDelete: 'CASCADE')],
     )]
     #[Groups([DatasetGroupEnum::GET, DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-    private Collection $themes;
+    private $themes;
 
     #[ORM\Column]
     #[Groups([DatasetGroupEnum::GET])]
@@ -110,7 +110,6 @@ class Dataset
         #[ORM\Column(length: 255, unique: true)]
         #[API\ApiProperty(identifier: true, readable: true, writable: true, required: true)]
         #[Assert\NotBlank]
-        #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([
             DatasetGroupEnum::GET_COLLECTION,
@@ -118,11 +117,10 @@ class Dataset
             ThemeGroupEnum::GET,
             ProviderGroupEnum::GET,
         ])]
-        private ?string $slug = null,
+        private $slug = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
-        #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([
             DatasetGroupEnum::GET_COLLECTION,
@@ -131,96 +129,81 @@ class Dataset
             ThemeGroupEnum::GET,
             ProviderGroupEnum::GET,
         ])]
-        private ?string $title = null,
+        private $title = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\NotBlank(allowNull: true)]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH, DataEntryGroupEnum::GET_COLLECTION])]
-        private ?string $shortTitle = null,
+        private $shortTitle = null,
 
         #[ORM\Column(type: Types::TEXT, nullable: true)]
         #[Assert\NotBlank(allowNull: true)]
         #[Groups([DatasetGroupEnum::GET, DatasetGroupEnum::PATCH])]
-        private ?string $description = null,
+        private $description = null,
 
         #[ORM\Column(type: Types::TEXT)]
         #[Assert\NotBlank()]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $perimeter = null,
+        private $perimeter = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
         #[Assert\Choice(callback: [GranularityEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $granularity = null,
+        private $granularity = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\Choice(callback: [FrequencyEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $updateFrequency = null,
+        private $updateFrequency = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\NotBlank(allowNull: true)]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $updatePeriod = null,
+        private $updatePeriod = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
         #[Assert\Choice(callback: [SecurityEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $security = null,
+        private $security = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\Choice(callback: [LanguageEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $language = null,
+        private $language = null,
 
         #[ORM\Column(nullable: true, type: Types::DATE_MUTABLE)]
-        #[API\ApiProperty(
-            types: ['https://schema.org/Date'],
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-                'example' => '2025-02-11'
-            ]
-        )]
+        #[API\ApiProperty(openapiContext: ['type' => 'string', 'format' => 'date'])]
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?\DateTimeInterface $dataCreatedAt = null,
+        private $dataCreatedAt = null,
 
         #[ORM\Column(nullable: true, type: Types::DATE_MUTABLE)]
-        #[API\ApiProperty(
-            types: ['https://schema.org/Date'],
-            openapiContext: [
-                'type' => 'string',
-                'format' => 'date',
-                'example' => '2025-02-11'
-            ]
-        )]
+        #[API\ApiProperty(openapiContext: ['type' => 'string', 'format' => 'date'])]
         #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?\DateTimeInterface $dataUpdatedAt = null,
+        private $dataUpdatedAt = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\Choice(callback: [DataProviderEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?string $dataProvider = null,
+        private $dataProvider = null,
 
-        #[ORM\ManyToOne(inversedBy: 'datasets')]
+        #[ORM\ManyToOne(targetEntity: Provider::class, inversedBy: 'datasets')]
         #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
-        #[Assert\NotBlank]
+        #[Assert\NotNull]
         #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
-        private ?Provider $provider = null,
+        private $provider = null,
 
-        array $dataEntries = [],
-
-        array $themes = [],
+        #[Groups([DatasetGroupEnum::GET_COLLECTION, DatasetGroupEnum::PATCH])]
+        $themes = [],
     ) {
-        $this->dataEntries = new ArrayCollection($dataEntries);
         $this->themes = new ArrayCollection($themes);
+        $this->dataEntries = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }

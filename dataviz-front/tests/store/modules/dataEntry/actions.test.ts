@@ -9,6 +9,7 @@ import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse';
 import { RootState } from '@/@types/store';
 import { Mock, Mocked } from 'vitest';
 import { dataEntryRepository } from '@/api/dataviz/dataEntryRepository';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 vi.mock('@/api/dataviz/dataEntryRepository', () => ({
   dataEntryRepository: {
@@ -31,8 +32,8 @@ describe('dataEntry actions', () => {
     it('commits SET_TABLE and SET_TABLE_SUCCESS on successful fetch', async () => {
       const payload = { slug: 'test-slug', page: 1, itemsPerPage: 10 };
       const collectionResponse: HydraAnonymousCollection = {
-        'hydra:member': [],
-        'hydra:totalItems': 0,
+        [HYDRA_KEYS.MEMBER]: [],
+        [HYDRA_KEYS.TOTAL_ITEMS]: 0,
       };
       mockDataEntryRepository.getTable.mockResolvedValue(collectionResponse);
 

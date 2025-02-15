@@ -9,6 +9,7 @@ use App\Enum\MetaColumn\DataTypeEnum;
 use App\Repository\MetaColumnRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -41,34 +42,34 @@ class MetaColumn
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?string $columnName = null,
+        private $columnName = null,
 
-        #[ORM\Column]
+        #[ORM\Column(type: Types::BOOLEAN)]
         #[Assert\NotNull]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?bool $nullable = null,
+        private $nullable = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotNull]
         #[Assert\Choice(callback: [DataTypeEnum::class, 'getValues'])]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?string $dataType = null,
+        private $dataType = null,
 
-        #[ORM\Column(nullable: true)]
+        #[ORM\Column(type: Types::INTEGER, nullable: true)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?int $characterMaximumLength = null,
+        private $characterMaximumLength = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\NotBlank(allowNull: true)]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?string $label = null,
+        private $label = null,
 
-        #[ORM\ManyToOne(inversedBy: 'metaColumns')]
+        #[ORM\ManyToOne(targetEntity: DataEntry::class, inversedBy: 'metaColumns')]
         #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
-        private ?DataEntry $dataEntry = null,
+        private $dataEntry = null,
 
-        array $metaRows = [],
+        $metaRows = [],
     ) {
         $this->id = Uuid::v4();
         $this->metaRows = new ArrayCollection();

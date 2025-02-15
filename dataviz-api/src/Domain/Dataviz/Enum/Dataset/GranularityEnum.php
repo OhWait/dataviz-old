@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace App\Domain\Dataviz\Enum\Dataset;
 
+use App\Shared\Domain\Enum\EnumTrait;
+
 enum GranularityEnum: string
 {
+    use EnumTrait;
+
     case OTHER = 'OTHER';
 
-    // Point of interest
+    /** @var string Point Of Interest */
     case POI = 'POI';
 
     case MUNICIPALITY = 'MUNICIPALITY';
 
     /**
-     * @var string public institution for inter-municipal cooperation
+     * @var string Public Institution for Inter-municipal Cooperation
      */
     case PIIC = 'PIIC';
 

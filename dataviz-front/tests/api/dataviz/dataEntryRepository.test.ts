@@ -1,6 +1,7 @@
 import { dataEntryRepository } from '@/api/dataviz/dataEntryRepository';
 import { api } from '@/api/dataviz/datavizClient';
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 vi.mock('@/api/dataviz/datavizClient', () => ({
   api: {
@@ -11,8 +12,8 @@ vi.mock('@/api/dataviz/datavizClient', () => ({
 describe('DataEntryRepository', () => {
   it('should fetch data entry table successfully', async () => {
     const mockResponse: HydraAnonymousCollection = {
-      'hydra:member': [],
-      'hydra:totalItems': 0,
+      [HYDRA_KEYS.MEMBER]: [],
+      [HYDRA_KEYS.TOTAL_ITEMS]: 0,
     };
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);

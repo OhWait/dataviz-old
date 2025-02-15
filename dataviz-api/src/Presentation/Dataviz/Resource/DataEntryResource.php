@@ -43,53 +43,32 @@ class DataEntryResource
      * @param MetaColumnResource[] $columns
      */
     public function __construct(
-        #[
-            API\ApiProperty(
-                identifier: true,
-                readable: true,
-                openapiContext: [
-                    'type' => 'string',
-                    'maxLength' => 255,
-                ],
-                required: true,
-            ),
-            Groups([
-                DataEntryGroupEnum::GET_COLLECTION,
-                DatasetGroupEnum::GET,
-            ]),
-        ]
-        public ?string $slug = null,
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([DataEntryGroupEnum::GET_COLLECTION, DatasetGroupEnum::GET])]
+        public string $slug,
 
-        #[
-            Groups([
-                DataEntryGroupEnum::GET_COLLECTION,
-                DatasetGroupEnum::GET,
-            ]),
-        ]
-        public ?string $title = null,
+        #[API\ApiProperty(required: true)]
+        #[Groups([DataEntryGroupEnum::GET_COLLECTION, DatasetGroupEnum::GET])]
+        public string $title,
 
+        #[API\ApiProperty(required: true)]
         #[Groups([DataEntryGroupEnum::GET_COLLECTION])]
-        public ?string $schemaName = null,
+        public string $schemaName,
 
+        #[API\ApiProperty(required: true)]
         #[Groups([DataEntryGroupEnum::GET_COLLECTION])]
-        public ?string $tableName = null,
+        public string $tableName,
 
-        #[
-            Groups([
-                DataEntryGroupEnum::GET,
-                DatasetGroupEnum::GET,
-            ])
-        ]
-        public array $columns = [],
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
+        public array $columns,
 
-        #[Groups([DataEntryGroupEnum::GET_COLLECTION])]
-        public ?DatasetResource $dataset = null,
-
+        #[API\ApiProperty(required: true)]
         #[Groups([DataEntryGroupEnum::GET])]
-        public ?\DateTimeInterface $updatedAt = null,
+        public \DateTimeInterface $updatedAt,
 
+        #[API\ApiProperty(required: true)]
         #[Groups([DataEntryGroupEnum::GET])]
-        public ?\DateTimeInterface $createdAt = null,
+        public \DateTimeInterface $createdAt,
     ) {
     }
 
@@ -100,9 +79,9 @@ class DataEntryResource
             title: $dataEntry->title()->value,
             schemaName: $dataEntry->schemaName()->value,
             tableName: $dataEntry->tableName()->value,
+            columns: MetaColumnResource::fromArrayDomain($dataEntry->metaColumns()->toArray()),
             createdAt: $dataEntry->createdAt()->value,
             updatedAt: $dataEntry->updatedAt()->value,
-            columns: MetaColumnResource::fromArrayDomain($dataEntry->metaColumns()->toArray()),
         );
     }
 

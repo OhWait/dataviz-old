@@ -44,7 +44,6 @@
         </include>
 
         <exclude>
-            <directory suffix=".php">src/Infrastructure/Dataviz/Fixtures</directory>
             <directory suffix=".php">src/Infrastructure/Symfony/Maker</directory>
         </exclude>
     </source>

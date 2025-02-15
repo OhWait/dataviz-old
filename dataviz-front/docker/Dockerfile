@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:20 AS builder
+FROM node:22.14-alpine AS builder
 
 WORKDIR /app
 ENV PATH=/node_modules/.bin:$PATH
@@ -16,7 +16,7 @@ COPY . .
 RUN yarn build
 
 # Development Stage (with hot reload)
-FROM node:20 AS dev
+FROM node:22.14-alpine AS dev
 
 WORKDIR /app
 ENV PATH /node_modules/.bin:$PATH

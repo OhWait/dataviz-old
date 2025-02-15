@@ -89,37 +89,37 @@ class DataEntry
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::POST])]
-        private ?string $slug = null,
+        private $slug = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
-        private ?string $title = null,
+        private $title = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
-        private ?string $schemaName = null,
+        private $schemaName = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank]
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
-        private ?string $tableName = null,
+        private $tableName = null,
 
-        #[ORM\ManyToOne(inversedBy: 'dataEntries')]
+        #[ORM\ManyToOne(targetEntity: Dataset::class, inversedBy: 'dataEntries')]
         #[ORM\JoinColumn(nullable: false, referencedColumnName: 'slug')]
         #[Assert\NotBlank()]
         #[Assert\NotNull]
         #[Groups([DataEntryGroupEnum::GET_COLLECTION, DataEntryGroupEnum::PATCH])]
-        private ?Dataset $dataset = null,
+        private $dataset = null,
 
-        array $metaColumns = [],
+        $metaColumns = [],
     )
     {
         $this->metaColumns = new ArrayCollection();

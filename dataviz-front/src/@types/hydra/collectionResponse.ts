@@ -1,6 +1,8 @@
+import { HYDRA_KEYS } from "./HydraConstants";
+
 export interface HydraCollection<T> {
-  'hydra:member': T[];
-  'hydra:totalItems': number;
+  [HYDRA_KEYS.MEMBER]: T[];
+  [HYDRA_KEYS.TOTAL_ITEMS]: number;
 }
 
 export interface AnonymousMember {
@@ -8,8 +10,8 @@ export interface AnonymousMember {
 }
 
 export interface HydraAnonymousCollection {
-  'hydra:member': AnonymousMember[];
-  'hydra:totalItems': number;
+  [HYDRA_KEYS.MEMBER]: AnonymousMember[];
+  [HYDRA_KEYS.TOTAL_ITEMS]: number;
 }
 
 export default HydraCollection;

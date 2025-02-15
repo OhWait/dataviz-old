@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Dataviz\Enum\Dataset;
 
+use App\Shared\Domain\Enum\EnumTrait;
+
 enum FrequencyEnum: string
 {
+    use EnumTrait;
+
     case DAILY = 'DAILY';
     case WEEKLY = 'WEEKLY';
     case MONTHLY = 'MONTHLY';

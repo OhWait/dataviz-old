@@ -11,6 +11,7 @@ import { RootState } from '@/@types/store';
 import { Mock, Mocked } from 'vitest';
 import { datasetFactory } from '@test/data/datasetFactory';
 import { datasetRepository } from '@/api/dataviz/datasetRepository';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 vi.mock('@/api/dataviz/datasetRepository', () => ({
   datasetRepository: {
@@ -33,8 +34,8 @@ describe('dataset actions', () => {
   describe(DatasetActionType.FETCH_COLLECTION, () => {
     it('commits SET_COLLECTION and SET_COLLECTION_SUCCESS on successful fetch', async () => {
       const collectionResponse: HydraCollection<IDatasetCollection> = {
-        'hydra:member': [],
-        'hydra:totalItems': 0,
+        [HYDRA_KEYS.MEMBER]: [],
+        [HYDRA_KEYS.TOTAL_ITEMS]: 0,
       };
       mockDatasetRepository.getCollection.mockResolvedValue(collectionResponse);
 

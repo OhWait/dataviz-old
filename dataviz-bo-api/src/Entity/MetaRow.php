@@ -32,17 +32,17 @@ class MetaRow
         #[Assert\NotNull]
         #[Assert\Length(max: 255)]
         #[Groups([DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?string $value = null,
+        private $value = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\NotBlank(allowNull: true)]
         #[Assert\Length(max: 255)]
         #[Groups([DatasetGroupEnum::GET, DataEntryGroupEnum::GET, DataEntryGroupEnum::PATCH])]
-        private ?string $label = null,
+        private $label = null,
 
-        #[ORM\ManyToOne(inversedBy: 'metaRows')]
+        #[ORM\ManyToOne(targetEntity: MetaColumn::class, inversedBy: 'metaRows')]
         #[ORM\JoinColumn(nullable: false)]
-        private ?MetaColumn $metaColumn = null,
+        private $metaColumn = null,
     ) {
         $this->id = Uuid::v4();
     }

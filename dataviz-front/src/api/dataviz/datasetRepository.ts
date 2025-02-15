@@ -12,7 +12,7 @@ class DatasetRepository {
     const params = new URLSearchParams();
 
     if (themes && themes.length > 0) {
-      params.append('themes', themes.join(','));
+      params.append('themes[]', themes.join(','));
     }
     if (dataProvider !== undefined) {
       params.append('dataProvider', dataProvider.toString());

@@ -2,9 +2,10 @@ FILE=compose.yaml
 OVERRIDE=compose.override.yaml
 DOCKER_COMPOSE = docker-compose -f $(FILE) -f $(OVERRIDE)
 
-EXEC_API = $(DOCKER_COMPOSE) exec dataviz-api
-EXEC_BO = $(DOCKER_COMPOSE) exec dataviz-bo-api
-SYMFONY = $(EXEC_API) bin/console
+EXEC_API = docker exec dataviz-api
+EXEC_BO = docker exec dataviz-bo-api
+EXEC_FRONT = docker exec -it dataviz-front
+EXEC_D_FRONT = docker exec -d dataviz-front
 SYMFONY_BO = $(EXEC_BO) bin/console
 
 ARG ?=
@@ -17,13 +18,12 @@ build: ## 🔧 Build Docker images
 	$(DOCKER_COMPOSE) build --pull --no-cache
 
 kill: ## 💀 Stop and remove all containers, then clean up the system
-	docker compose down -v
+	$(DOCKER_COMPOSE) down -v --remove-orphans
 	docker system prune -a --volumes
-	$(DOCKER_COMPOSE) kill
-	$(DOCKER_COMPOSE) down --volumes --remove-orphans
 
 up: ## 🚀 Start containers and open related URLs
 	$(DOCKER_COMPOSE) up -d
+	$(EXEC_D_FRONT) yarn dev
 	wslview https://localhost:4430
 	wslview https://localhost:443
 	wslview http://localhost:4040
@@ -37,11 +37,9 @@ stop: ## ⏹ Stop running containers
 ps: ## 📌 Show currently running containers
 	$(DOCKER_COMPOSE) ps
 
-install: ## 🏗 Initialize the project (build + start)
-install: build start
+install: build up ## 🏗 Initialize the project (build + start)
 
-reset: ## ♻️ Fully reset the project (kill + install)
-reset: kill install
+reset: kill install ## ♻️ Fully reset the project (kill + install)
 
 chown: ## 🛠 Fix user access permissions
 	sudo chown -R $$USER:$$USER .
@@ -49,9 +47,9 @@ chown: ## 🛠 Fix user access permissions
 ## ----------------
 ## 🏛 Database Commands
 ## ----------------
-db-create-full: ## 🗄 Create all databases (dev + test)
+db-create: ## 🗄 Create databases (dev + test)
 	$(SYMFONY_BO) doctrine:database:create --if-not-exists
-	$(SYMFONY_BO) doctrine:database:create --if-not-exists --connection=pool 
+	$(SYMFONY_BO) doctrine:database:create --if-not-exists --connection=pool
 
 db-make-migration: ## 📜 Generate a new migration
 	$(SYMFONY_BO) doctrine:migrations:diff
@@ -64,7 +62,7 @@ db-fixtures: ## 🧪 Load database fixtures
 	$(SYMFONY_BO) doctrine:fixtures:load -n
 
 db-full: ## 🏗 Create DB, run migrations, and load fixtures
-db-full: db-create-full db-migrate db-fixtures
+	db-create db-migrate db-fixtures
 
 ## ----------------
 ## ✅ Tests
@@ -73,33 +71,37 @@ define run_phpunit
 	$(1) vendor/bin/phpunit $(ARG)
 endef
 
-test-u-api: ## 🧪 Run unit tests for API
+api-test-unit: ## 🧪 Run unit tests for API
 	$(call run_phpunit,$(EXEC_API) --testsuite unit)
 
-test-i-api: ## 🛠 Run integration tests for API
+api-test-integration: ## 🛠 Run integration tests for API
 	$(call run_phpunit,$(EXEC_API) --testsuite api)
 
-test-api: ## 🚀 Run all API tests
+api-test-all: ## 🚀 Run all API tests
 	$(call run_phpunit,$(EXEC_API))
 
-test-c-api: ## 📊 Test coverage - you may need to "apt install wslu" package
+api-test-coverage: ## 📊 Test coverage for API - you may need "apt install wslu"
 	$(EXEC_API) vendor/bin/phpunit --coverage-html tests/coverage
-	wslview ./dataviz-bo-api/tests/coverage/index.html
+	wslview ./dataviz-api/tests/coverage/index.html
 
-test-i-bo: ## 🛠 Run integration tests for BO
+bo-test-integration: ## 🛠 Run integration tests for BO
 	$(call run_phpunit,$(EXEC_BO) --testsuite api)
 
-test-bo: ## 🚀 Run all BO tests
+bo-test-all: ## 🚀 Run all BO tests
 	$(call run_phpunit,$(EXEC_BO))
 
-test-c-bo: ## 📊 Test coverage - you may need to "apt install wslu" package
+bo-test-coverage: ## 📊 Test coverage for BO - you may need "apt install wslu"
 	$(EXEC_BO) vendor/bin/phpunit --coverage-html tests/coverage
 	wslview ./dataviz-bo-api/tests/coverage/index.html
 
-test: ## 🚀 Run all tests
-	$(call run_phpunit,$(EXEC_API))
-	$(call run_phpunit,$(EXEC_BO))
+front-test-all: ## 🚀 Run all frontend tests
+	$(EXEC_FRONT) yarn test
 
+front-test-coverage: ## 📊 Test coverage for frontend
+	$(EXEC_FRONT) yarn test-coverage
+
+test: bo-test-all api-test-all front-test-all ## 🚀 Run all tests (API + BO + FRONT)
+	
 ## ----------------
 ## 🔍 Code Quality
 ## ----------------
@@ -114,12 +116,18 @@ apply-php-cs-fixer: ## 🎨 Fix PHP code style
 phpstan: ## 🔍 Run static analysis on PHP code
 	$(EXEC_API) vendor/bin/phpstan analyse src
 
-apply-bo-csfixer: ## 🎨 Fix PHP code style
+apply-bo-csfixer: ## 🎨 Fix PHP code style for BO
 	$(EXEC_BO) vendor/bin/php-cs-fixer fix --using-cache=no --verbose --diff
 	$(EXEC_BO) vendor/bin/php-cs-fixer fix ./tests --using-cache=no --verbose --diff
 
-phpstan-bo: ## 🔍 Run static analysis on PHP code
+phpstan-bo: ## 🔍 Run static analysis on PHP code for BO
 	$(EXEC_BO) vendor/bin/phpstan analyse src
+	
+front-lint:
+	$(EXEC_FRONT) yarn lint:fix
+
+front-format:
+	$(EXEC_FRONT) yarn run format
 
 ## ----------------
 ## 📜 Help

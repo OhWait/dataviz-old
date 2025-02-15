@@ -10,6 +10,7 @@ import {
 import HydraCollection from '@/@types/hydra/collectionResponse.js';
 import { dataEntryFactory } from '@test/data/dataEntryFactory.js';
 import { providerFactory } from '@test/data/providerFactory.js';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 const datasetFactory = makeFactory<IDataset>({
   '@id': faker.string.uuid(),
@@ -33,8 +34,8 @@ const datasetFactory = makeFactory<IDataset>({
 const datasetCollectionFactory = makeFactory<
   HydraCollection<IDatasetCollection>
 >({
-  'hydra:member': datasetFactory.buildList(10),
-  'hydra:totalItems': 10,
+  [HYDRA_KEYS.MEMBER]: datasetFactory.buildList(10),
+  [HYDRA_KEYS.TOTAL_ITEMS]: 10,
 });
 
 export { datasetFactory, datasetCollectionFactory };

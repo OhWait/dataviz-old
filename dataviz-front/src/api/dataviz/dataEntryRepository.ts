@@ -1,4 +1,5 @@
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse.js';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 import { api } from '@/api/dataviz/datavizClient';
 
 class DataEntryRepository {
@@ -10,8 +11,8 @@ class DataEntryRepository {
     itemsPerPage: number
   ): Promise<HydraAnonymousCollection> {
     const params = new URLSearchParams({
-      page: String(page),
-      itemsPerPage: String(itemsPerPage),
+      [HYDRA_KEYS.PAGE]: String(page),
+      [HYDRA_KEYS.ITEMS_PER_PAGE]: String(itemsPerPage),
     });
 
     const url = `${

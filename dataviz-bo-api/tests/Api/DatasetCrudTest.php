@@ -118,16 +118,8 @@ final class DatasetCrudTest extends ApiTestCase
                     'message' => 'This value should not be blank.',
                 ],
                 [
-                    'propertyPath' => 'slug',
-                    'message' => 'This value should not be null.',
-                ],
-                [
                     'propertyPath' => 'title',
                     'message' => 'This value should not be blank.',
-                ],
-                [
-                    'propertyPath' => 'title',
-                    'message' => 'This value should not be null.',
                 ],
                 [
                     'propertyPath' => 'perimeter',
@@ -143,7 +135,7 @@ final class DatasetCrudTest extends ApiTestCase
                 ],
                 [
                     'propertyPath' => 'provider',
-                    'message' => 'This value should not be blank.',
+                    'message' => 'This value should not be null.',
                 ]
             ],
         ]);

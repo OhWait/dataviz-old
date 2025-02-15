@@ -12,33 +12,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[API\ApiResource(
     shortName: 'MetaValue',
-    // security: "is_granted('ROLE_ADMIN')",
     operations: [],
 )]
 class MetaRowResource
 {
     public function __construct(
-        #[
-            API\ApiProperty(
-                identifier: true,
-                readable: true,
-                openapiContext: [
-                    'type' => 'string',
-                    'maxLength' => 255,
-                ],
-                required: true,
-            ),
-            Groups([
-                DataEntryGroupEnum::GET,
-                DatasetGroupEnum::GET,
-            ])
-        ]
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public string $value,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[API\ApiProperty(required: true)]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public string $label,
     ) {
     }

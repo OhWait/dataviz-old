@@ -127,27 +127,27 @@ class Provider
         #[Assert\NotNull()]
         #[Assert\Length(max: 255)]
         #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::POST, ProviderGroupEnum::POST_IMAGE, DatasetGroupEnum::GET_COLLECTION])]
-        private ?string $slug = null,
+        private $slug = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank()]
         #[Assert\NotNull()]
         #[Assert\Length(max: 255)]
         #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
-        private ?string $name = null,
+        private $name = null,
 
         #[ORM\Column(length: 255, nullable: true)]
         #[Assert\NotBlank(options: ['allowNull' => true])]
         #[Assert\Length(max: 255)]
         #[Groups([ProviderGroupEnum::GET_COLLECTION, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
-        private ?string $acronym = null,
+        private $acronym = null,
 
         #[ORM\Column(type: Types::TEXT, nullable: true)]
         #[Assert\NotBlank(options: ['allowNull' => true])]
         #[Groups([ProviderGroupEnum::GET, ProviderGroupEnum::PATCH, DatasetGroupEnum::GET])]
-        private ?string $description = null,
+        private $description = null,
 
-        array $datasets = [],
+        $datasets = [],
     )
     {
         $this->datasets = new ArrayCollection($datasets);

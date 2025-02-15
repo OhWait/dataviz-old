@@ -8,6 +8,7 @@ import { datasetCollectionFactory } from '@test/data/datasetFactory';
 import { key } from '@/store';
 import { Store } from 'vuex';
 import { RootState } from '@/@types/store.js';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 describe('DatasetCollectionView.vue', () => {
   let store: Store<RootState>;
@@ -46,7 +47,7 @@ describe('DatasetCollectionView.vue', () => {
 
     expect(wrapper.findComponent(SkeletonCard).exists()).toBe(false);
     expect(wrapper.findAllComponents(DatasetCard).length).toBe(
-      mockCollection['hydra:member'].length
+      mockCollection[HYDRA_KEYS.MEMBER].length
     );
   });
 

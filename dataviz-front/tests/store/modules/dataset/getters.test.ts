@@ -5,6 +5,7 @@ import {
   datasetCollectionFactory,
   datasetFactory,
 } from '@test/data/datasetFactory.js';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 describe('Dataset Getters', () => {
   const collection = datasetCollectionFactory.build();
@@ -21,7 +22,7 @@ describe('Dataset Getters', () => {
 
   it('should get collection members', () => {
     const result = getters[DatasetGetterType.GET_COLLECTION_MEMBERS](state);
-    expect(result).toEqual(collection['hydra:member']);
+    expect(result).toEqual(collection[HYDRA_KEYS.MEMBER]);
   });
 
   it('should return empty array for collection members if collection is null', () => {
@@ -47,7 +48,7 @@ describe('Dataset Getters', () => {
 
   it('should get collection total items', () => {
     const result = getters[DatasetGetterType.GET_COLLECTION_TOTAL_ITEMS](state);
-    expect(result).toBe(collection['hydra:totalItems']);
+    expect(result).toBe(collection[HYDRA_KEYS.TOTAL_ITEMS]);
   });
 
   it('should return 0 for total items if collection is null', () => {

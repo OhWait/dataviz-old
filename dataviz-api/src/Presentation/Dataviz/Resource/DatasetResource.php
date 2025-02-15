@@ -15,7 +15,9 @@ use App\Domain\Dataviz\Model\Dataset;
 use App\Presentation\Dataviz\Enum\DatasetGroupEnum;
 use App\Presentation\Dataviz\State\Provider\DatasetCollectionProvider;
 use App\Presentation\Dataviz\State\Provider\DatasetItemProvider;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[API\ApiResource(
     shortName: 'Dataset',
@@ -38,7 +40,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     ],
                 ),
                 new API\QueryParameter(
-                    key: 'themes',
+                    key: 'orderBy',
                     schema: [
                         'type' => 'string',
                         'enum' => self::ORDER_BY,
@@ -118,17 +120,11 @@ class DatasetResource
      * @param ThemeResource[]     $themes
      */
     public function __construct(
-        #[
-            API\ApiProperty(
-                identifier: true,
-                readable: true,
-                writable: true,
-                required: true,
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public string $slug,
 
+        #[API\ApiProperty(required: true)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public string $title,
 
@@ -138,131 +134,54 @@ class DatasetResource
         #[Groups([DatasetGroupEnum::GET])]
         public ?string $description,
 
+        #[API\ApiProperty(required: true)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public string $perimeter,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'enum' => self::GRANULARITY,
-                ],
-                required: true,
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(openapiContext: ['enum' => self::GRANULARITY], required: true)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public string $granularity,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'nullable' => true,
-                    'enum' => self::FREQUENCY,
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(openapiContext: ['enum' => self::FREQUENCY])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public ?string $updateFrequency,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'maxLength' => 255,
-                    'nullable' => true,
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public ?string $updatePeriod,
 
-        #[
-            API\ApiProperty(
-                openapiContext: ['type' => 'string', 'enum' => self::SECURITY],
-                required: true,
-            ),
-        ]
-        public string $security,
-
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'nullable' => true,
-                    'enum' => self::LANGUAGE,
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(openapiContext: ['enum' => self::LANGUAGE])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public ?string $language,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'format' => 'date',
-                    'nullable' => true,
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(openapiContext: ['type' => 'string', 'format' => 'date'])]
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public ?\DateTimeInterface $dataCreatedAt,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'format' => 'date',
-                    'nullable' => true,
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
+        #[API\ApiProperty(openapiContext: ['type' => 'string', 'format' => 'date'])]
+        #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
         public ?\DateTimeInterface $dataUpdatedAt,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'nullable' => true,
-                ],
-            ),
-        ]
-        public ?string $dataProvider,
-
-        #[
-            Groups([DatasetGroupEnum::GET_COLLECTION]),
-        ]
-        public ?ProviderResource $provider,
-
+        #[API\ApiProperty(required: true)]
         #[Groups([DatasetGroupEnum::GET_COLLECTION])]
-        public ?array $themes,
+        public ProviderResource $provider,
 
+        #[API\ApiProperty(required: true)]
+        #[Groups([DatasetGroupEnum::GET_COLLECTION])]
+        public array $themes,
+
+        #[API\ApiProperty(required: true)]
         #[Groups([DatasetGroupEnum::GET])]
-        public ?array $dataEntries,
+        public array $dataEntries,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'format' => 'date',
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET])
-        ]
-        public ?\DateTimeInterface $createdAt,
+        #[API\ApiProperty(required: true)]
+        #[Groups([DatasetGroupEnum::GET])]
+        public \DateTimeInterface $createdAt,
 
-        #[
-            API\ApiProperty(
-                openapiContext: [
-                    'type' => 'string',
-                    'format' => 'date',
-                ],
-            ),
-            Groups([DatasetGroupEnum::GET])
-        ]
-        public ?\DateTimeInterface $updatedAt,
+        #[API\ApiProperty(required: true)]
+        #[Groups([DatasetGroupEnum::GET])]
+        public \DateTimeInterface $updatedAt,
     ) {
     }
 
@@ -277,11 +196,9 @@ class DatasetResource
             granularity: $dataset->granularity()->value(),
             updateFrequency: $dataset->updateFrequency()->value(),
             updatePeriod: $dataset->updatePeriod()->value,
-            security: $dataset->security()->value(),
             language: $dataset->language()->value(),
             dataCreatedAt: $dataset->dataCreatedAt()->value,
             dataUpdatedAt: $dataset->dataUpdatedAt()->value,
-            dataProvider: $dataset->dataProvider()->value(),
             provider: ProviderResource::fromDomain($dataset->provider()),
             dataEntries: DataEntryResource::fromArrayDomain($dataset->dataEntries()->toArray()),
             themes: ThemeResource::fromArrayDomain($dataset->themes()->toArray()),

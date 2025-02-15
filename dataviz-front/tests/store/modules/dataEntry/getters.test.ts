@@ -3,6 +3,7 @@ import { getters } from '@/store/modules/dataEntry/getters';
 import { IState, DataEntryGetterType } from '@/@types/dataEntry';
 import { dataFactory } from '@test/data/anonymousHydraCollectionFactory.js';
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse.js';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 describe('DataEntry Getters', () => {
   const collection = dataFactory.build() as unknown as HydraAnonymousCollection;
@@ -15,7 +16,7 @@ describe('DataEntry Getters', () => {
 
   it('should get table members', () => {
     const result = getters[DataEntryGetterType.GET_TABLE_MEMBERS](state);
-    expect(result).toEqual(collection['hydra:member']);
+    expect(result).toEqual(collection[HYDRA_KEYS.MEMBER]);
   });
 
   it('should return empty array for table members if collection is null', () => {
@@ -31,7 +32,7 @@ describe('DataEntry Getters', () => {
 
   it('should get table total items', () => {
     const result = getters[DataEntryGetterType.GET_TABLE_TOTAL_ITEMS](state);
-    expect(result).toBe(collection['hydra:totalItems']);
+    expect(result).toBe(collection[HYDRA_KEYS.TOTAL_ITEMS]);
   });
 
   it('should return 0 for total items if collection is null', () => {

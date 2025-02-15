@@ -79,7 +79,7 @@
 	php_server
 
 	# Serve static files from /var/shared_data when accessing /media/provider
-	handle_path /media/provider/* {
+	handle_path /media/* {
 		root * /var/shared_data
 		file_server browse
 	}

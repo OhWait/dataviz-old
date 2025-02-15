@@ -59,7 +59,7 @@ CREATE TABLE insee.pop2 (
   codgeo character varying(5) NOT NULL,
   ageq100 character varying(3) NOT NULL,
   catpr character varying(2) NOT NULL,
-  sexe character varying(1),
+  sexe character varying(1) NOT NULL,
   nb numeric NOT NULL
 ) PARTITION BY RANGE (millesime);
 

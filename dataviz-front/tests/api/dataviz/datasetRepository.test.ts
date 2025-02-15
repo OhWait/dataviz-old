@@ -1,8 +1,9 @@
 import { datasetRepository } from '@/api/dataviz/datasetRepository';
 import { api } from '@/api/dataviz/datavizClient';
 import { HydraCollection } from '@/@types/hydra/collectionResponse';
-import { IDataset, IDatasetCollection } from '@/@types/dataset';
+import { IDatasetCollection } from '@/@types/dataset';
 import { datasetFactory } from '@test/data/datasetFactory';
+import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
 
 vi.mock('@/api/dataviz/datavizClient', () => ({
   api: {
@@ -17,8 +18,8 @@ describe('DatasetRepository', () => {
 
   it('should fetch dataset collection successfully without parameters', async () => {
     const mockResponse: HydraCollection<IDatasetCollection> = {
-      'hydra:member': [],
-      'hydra:totalItems': 0,
+      [HYDRA_KEYS.MEMBER]: [],
+      [HYDRA_KEYS.TOTAL_ITEMS]: 0,
     };
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
@@ -31,8 +32,8 @@ describe('DatasetRepository', () => {
 
   it('should fetch dataset collection successfully with themes parameter', async () => {
     const mockResponse: HydraCollection<IDatasetCollection> = {
-      'hydra:member': [],
-      'hydra:totalItems': 0,
+      [HYDRA_KEYS.MEMBER]: [],
+      [HYDRA_KEYS.TOTAL_ITEMS]: 0,
     };
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
@@ -41,13 +42,13 @@ describe('DatasetRepository', () => {
     const response = await datasetRepository.getCollection(themes);
 
     expect(response).toEqual(mockResponse);
-    expect(api.get).toHaveBeenCalledWith('dataset?themes=theme1%2Ctheme2');
+    expect(api.get).toHaveBeenCalledWith('dataset?themes%5B%5D=theme1%2Ctheme2');
   });
 
   it('should fetch dataset collection successfully with dataProvider parameter', async () => {
     const mockResponse: HydraCollection<IDatasetCollection> = {
-      'hydra:member': [],
-      'hydra:totalItems': 0,
+      [HYDRA_KEYS.MEMBER]: [],
+      [HYDRA_KEYS.TOTAL_ITEMS]: 0,
     };
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
@@ -64,8 +65,8 @@ describe('DatasetRepository', () => {
 
   it('should fetch dataset collection successfully with both parameters', async () => {
     const mockResponse: HydraCollection<IDatasetCollection> = {
-      'hydra:member': [],
-      'hydra:totalItems': 0,
+      [HYDRA_KEYS.MEMBER]: [],
+      [HYDRA_KEYS.TOTAL_ITEMS]: 0,
     };
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
@@ -79,7 +80,7 @@ describe('DatasetRepository', () => {
 
     expect(response).toEqual(mockResponse);
     expect(api.get).toHaveBeenCalledWith(
-      'dataset?themes=theme1%2Ctheme2&dataProvider=false'
+      'dataset?themes%5B%5D=theme1%2Ctheme2&dataProvider=false'
     );
   });
 

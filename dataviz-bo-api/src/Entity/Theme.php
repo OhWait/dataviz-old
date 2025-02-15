@@ -75,12 +75,12 @@ class Theme
         #[API\ApiProperty(identifier: true, writable: true, readable: true, required: true)]
         #[Assert\NotBlank()]
         #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::POST, DatasetGroupEnum::GET_COLLECTION])]
-        private ?string $slug = null,
+        private $slug = null,
 
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank()]
         #[Groups([ThemeGroupEnum::GET_COLLECTION, ThemeGroupEnum::PATCH, DatasetGroupEnum::GET_COLLECTION])]
-        private ?string $title = null,
+        private $title = null,
 
         array $datasets = [],
     )

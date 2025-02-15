@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[API\ApiResource(
     shortName: 'MetaColumn',
-    // security: "is_granted('ROLE_ADMIN')",
     operations: [],
 )]
 class MetaColumnResource
@@ -21,47 +20,25 @@ class MetaColumnResource
      * @param MetaRowResource[] $values
      */
     public function __construct(
-        #[
-            API\ApiProperty(
-                identifier: true,
-                readable: true,
-                required: true,
-            ),
-            Groups([
-                DataEntryGroupEnum::GET,
-                DatasetGroupEnum::GET,
-            ])
-        ]
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public string $columnName,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[API\ApiProperty(required: true)]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public bool $isNullable,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[API\ApiProperty(required: true)]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public string $dataType,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public ?int $characterMaximumLength,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public ?string $label,
 
-        #[Groups([
-            DataEntryGroupEnum::GET,
-            DatasetGroupEnum::GET,
-        ])]
+        #[Groups([DataEntryGroupEnum::GET, DatasetGroupEnum::GET])]
         public array $values,
     ) {
     }
