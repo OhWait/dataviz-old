@@ -1,0 +1,72 @@
+import { defineStore } from 'pinia';
+import { getCollection, getItem } from '@/api/dataviz/datasetRepository';
+import { IDataset, IDatasetCollection } from '@/@types/dataset';
+import HydraCollection from '@/@types/hydra/collectionResponse';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
+
+interface DatasetState {
+  collection: HydraCollection<IDatasetCollection> | null;
+  collectionLoading: boolean;
+  collectionError: Error | null;
+  item: IDataset | null;
+  itemLoading: boolean;
+  itemError: Error | null;
+}
+
+interface FetchCollectionPayload {
+  themes?: string[];
+  dataProvider?: boolean;
+}
+
+export const useDatasetStore = defineStore('dataset', {
+  state: (): DatasetState => ({
+    collection: null,
+    collectionLoading: false,
+    collectionError: null,
+    item: null,
+    itemLoading: false,
+    itemError: null,
+  }),
+
+  actions: {
+    async fetchCollection(payload?: FetchCollectionPayload) {
+      this.collectionLoading = true;
+      this.collectionError = null;
+      try {
+        const result = await getCollection(payload?.themes, payload?.dataProvider);
+        this.collection = result;
+        return result;
+      } catch (e) {
+        this.collectionError = e as Error;
+        throw e;
+      } finally {
+        this.collectionLoading = false;
+      }
+    },
+
+    async fetchItem(slug: string) {
+      this.itemLoading = true;
+      this.itemError = null;
+      try {
+        const result = await getItem(slug);
+        this.item = result;
+        return result;
+      } catch (e) {
+        this.itemError = e as Error;
+        throw e;
+      } finally {
+        this.itemLoading = false;
+      }
+    },
+  },
+
+  getters: {
+    getCollectionMembers: (state) => state.collection?.[HYDRA_KEYS.MEMBER] || [],
+    getCollectionLoading: (state) => state.collectionLoading,
+    getCollectionError: (state) => state.collectionError,
+    getCollectionTotalItems: (state) => state.collection?.[HYDRA_KEYS.TOTAL_ITEMS] || 0,
+    getItem: (state) => state.item,
+    getItemLoading: (state) => state.itemLoading,
+    getItemError: (state) => state.itemError,
+  },
+});

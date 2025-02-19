@@ -9,5 +9,3 @@ export const HYDRA_KEYS = {
   PREVIOUS: "previous",
   ITEMS_PER_PAGE: "itemsPerPage",
 } as const;
-
-export type HydraKey = keyof typeof HYDRA_KEYS;

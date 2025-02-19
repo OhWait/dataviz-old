@@ -10,7 +10,7 @@ import {
 import HydraCollection from '@/@types/hydra/collectionResponse.js';
 import { dataEntryFactory } from '@test/data/dataEntryFactory.js';
 import { providerFactory } from '@test/data/providerFactory.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 const datasetFactory = makeFactory<IDataset>({
   '@id': faker.string.uuid(),

@@ -2,7 +2,7 @@ import type {
   AnonymousMember,
   HydraAnonymousCollection,
 } from '@/@types/hydra/collectionResponse.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 import { faker } from '@faker-js/faker';
 import { makeFactory } from 'factory.ts/lib/async.js';
 

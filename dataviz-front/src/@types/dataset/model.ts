@@ -12,7 +12,7 @@ export interface IDatasetCollection {
   perimeter: string;
   description?: string;
   granularity: Granularity;
-  dataUpdatedAt: Date;
+  dataUpdatedAt?: Date;
   dataCreatedAt?: Date;
   language?: Language;
   updateFrequency?: Frequency;

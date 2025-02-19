@@ -1,5 +1,5 @@
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 import { api } from '@/api/dataviz/datavizClient';
 
 class DataEntryRepository {

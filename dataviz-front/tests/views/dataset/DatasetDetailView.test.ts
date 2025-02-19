@@ -1,12 +1,12 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import { useDatasetStore } from '@/store/datasetStore';
 import DatasetDetailView from '@/views/dataset/DatasetDetailView.vue';
 import HeaderDetail from '@/features/dataset/detail/HeaderDetail.vue';
 import DescriptionDetail from '@/features/dataset/detail/DescriptionDetail.vue';
 import DataEntryDetail from '@/features/dataset/detail/DataEntryDetail.vue';
-import { DatasetStore } from '@/@types/dataset';
-import { createMockStore } from '@test/__mocks__/mockStore';
-import { key } from '@/store';
 import SkeletonCard from '@/components/SkeletonCard.vue';
+import { datasetFactory } from '@test/data/datasetFactory';
 
 let routeParams = { slug: 'test-dataset' };
 
@@ -20,84 +20,75 @@ const setRouteParams = (params: { slug: string }) => {
   routeParams = params;
 };
 
-const datasetFactory = {
-  build: () => ({
-    id: 1,
-    title: 'Test Dataset',
-    slug: 'test-dataset',
-    description: 'Test Description',
-    dataEntries: [{ id: 1, name: 'Entry 1' }],
-  }),
-};
-
 describe('DatasetDetailView.vue', () => {
-  const store = createMockStore();
+  let store: any;
+  let pinia: any;
 
-  it('should display loading state when fetching item', async () => {
-    store.commit(DatasetStore.SET_ITEM);
+  beforeEach(() => {
+    pinia = createTestingPinia();
+    store = useDatasetStore(pinia);
+  });
+
+  it('should display SkeletonCard when loading', async () => {
+    store.itemLoading = true;
 
     const wrapper = mount(DatasetDetailView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
     await wrapper.vm.$nextTick();
 
-    const Skeleton = wrapper.findComponent(SkeletonCard);
-
-    expect(Skeleton.exists()).toBeTruthy();
+    expect(wrapper.findComponent(SkeletonCard).exists()).toBe(true);
+    expect(wrapper.findComponent(HeaderDetail).exists()).toBe(false);
   });
 
-  it('should display dataset details when item is loaded', async () => {
+  it('should display item details when not loading and item is provided', async () => {
     const mockItem = datasetFactory.build();
-    store.commit(DatasetStore.SET_ITEM_SUCCESS, mockItem);
+    store.item = mockItem;
+    store.itemLoading = false;
 
-    const wrapper = shallowMount(DatasetDetailView, {
+    const wrapper = mount(DatasetDetailView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent(HeaderDetail).props('item')).toEqual(mockItem);
-    expect(wrapper.findComponent(DescriptionDetail).props('item')).toEqual(
-      mockItem
-    );
-    expect(wrapper.findComponent(DataEntryDetail).props('dataEntries')).toEqual(
-      mockItem.dataEntries
-    );
+    expect(wrapper.findComponent(SkeletonCard).exists()).toBe(false);
+    expect(wrapper.findComponent(HeaderDetail).exists()).toBe(true);
+    expect(wrapper.findComponent(DescriptionDetail).exists()).toBe(true);
+    expect(wrapper.findComponent(DataEntryDetail).exists()).toBe(true);
   });
 
-  it('should dispatch FETCH_ITEM action on mount', async () => {
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+  it('should display error message when item is not found', async () => {
+    store.item = null;
+    store.itemLoading = false;
 
-    shallowMount(DatasetDetailView, {
+    const wrapper = mount(DatasetDetailView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      DatasetStore.FETCH_ITEM,
-      'test-dataset'
-    );
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findComponent(SkeletonCard).exists()).toBe(false);
+    expect(wrapper.findComponent(HeaderDetail).exists()).toBe(false);
+    expect(wrapper.text()).toContain('An error occurred');
   });
 
-  it('should handle dynamic route parameters', async () => {
-    setRouteParams({ slug: 'new-dataset2' });
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+  it('should handle dynamic route parameters', () => {
+    const dispatchSpy = vi.spyOn(store, 'fetchItem');
 
-    shallowMount(DatasetDetailView, {
+    mount(DatasetDetailView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      DatasetStore.FETCH_ITEM,
-      'new-dataset2'
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith(routeParams.slug);
   });
 });

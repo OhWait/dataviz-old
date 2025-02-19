@@ -1,28 +1,27 @@
 import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import { useDatasetStore } from '@/store/datasetStore';
 import DatasetCollectionView from '@/views/dataset/DatasetCollectionView.vue';
 import DatasetCard from '@/features/dataset/DatasetCard.vue';
 import SkeletonCard from '@/components/SkeletonCard.vue';
-import { DatasetStore } from '@/@types/dataset';
-import { createMockStore } from '@test/__mocks__/mockStore';
 import { datasetCollectionFactory } from '@test/data/datasetFactory';
-import { key } from '@/store';
-import { Store } from 'vuex';
-import { RootState } from '@/@types/store.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 describe('DatasetCollectionView.vue', () => {
-  let store: Store<RootState>;
+  let store: any;
+  let pinia: any;
 
   beforeEach(() => {
-    store = createMockStore();
+    pinia = createTestingPinia();
+    store = useDatasetStore(pinia);
   });
 
   it('should display SkeletonCard when loading', async () => {
-    store.commit(DatasetStore.SET_COLLECTION);
+    store.collectionLoading = true;
 
     const wrapper = mount(DatasetCollectionView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
@@ -34,12 +33,12 @@ describe('DatasetCollectionView.vue', () => {
 
   it('should display DatasetCard when not loading and items are provided', async () => {
     const mockCollection = datasetCollectionFactory.build();
-
-    store.commit(DatasetStore.SET_COLLECTION_SUCCESS, mockCollection);
+    store.collection = mockCollection;
+    store.collectionLoading = false;
 
     const wrapper = mount(DatasetCollectionView, {
       global: {
-        plugins: [[store, key]],
+        plugins: [pinia],
       },
     });
 
@@ -51,18 +50,15 @@ describe('DatasetCollectionView.vue', () => {
     );
   });
 
-  it('should dispatch FETCH_COLLECTION action on mount', () => {
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+  it('should fetch collection on mount', () => {
+    const dispatchSpy = vi.spyOn(store, 'fetchCollection');
 
     mount(DatasetCollectionView, {
       global: {
-        plugins: [store],
-        provide: {
-          [key as symbol]: store,
-        },
+        plugins: [pinia],
       },
     });
 
-    expect(dispatchSpy).toHaveBeenCalledWith(DatasetStore.FETCH_COLLECTION);
+    expect(dispatchSpy).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,6 @@
 import { IGetters, IState, DataEntryGetterType } from '@/@types/dataEntry';
 import { AnonymousMember } from '@/@types/hydra/collectionResponse.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 import { RootState } from '@/@types/store.js';
 import { GetterTree } from 'vuex';
 

@@ -16,10 +16,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { IDataset, DatasetRoutes } from '@/@types/dataset';
+import { DatasetRoutes, IDatasetCollection } from '@/@types/dataset';
 
 interface Props {
-  item: IDataset;
+  item: IDatasetCollection;
   link?: boolean;
 }
 

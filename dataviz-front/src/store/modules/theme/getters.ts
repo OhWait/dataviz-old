@@ -1,4 +1,4 @@
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 import { RootState } from '@/@types/store';
 import { IGetters, IState, ThemeGetterType } from '@/@types/theme/store';
 import { GetterTree } from 'vuex';

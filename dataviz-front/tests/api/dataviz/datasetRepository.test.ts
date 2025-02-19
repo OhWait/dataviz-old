@@ -1,9 +1,9 @@
-import { datasetRepository } from '@/api/dataviz/datasetRepository';
+import { getCollection, getItem } from '@/api/dataviz/datasetRepository';
 import { api } from '@/api/dataviz/datavizClient';
 import { HydraCollection } from '@/@types/hydra/collectionResponse';
 import { IDatasetCollection } from '@/@types/dataset';
 import { datasetFactory } from '@test/data/datasetFactory';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 vi.mock('@/api/dataviz/datavizClient', () => ({
   api: {
@@ -24,7 +24,7 @@ describe('DatasetRepository', () => {
 
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
 
-    const response = await datasetRepository.getCollection();
+    const response = await getCollection();
 
     expect(response).toEqual(mockResponse);
     expect(api.get).toHaveBeenCalledWith('dataset');
@@ -39,7 +39,7 @@ describe('DatasetRepository', () => {
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
 
     const themes = ['theme1', 'theme2'];
-    const response = await datasetRepository.getCollection(themes);
+    const response = await getCollection(themes);
 
     expect(response).toEqual(mockResponse);
     expect(api.get).toHaveBeenCalledWith('dataset?themes%5B%5D=theme1%2Ctheme2');
@@ -54,7 +54,7 @@ describe('DatasetRepository', () => {
     (api.get as vi.Mock).mockResolvedValue(mockResponse);
 
     const dataProvider = true;
-    const response = await datasetRepository.getCollection(
+    const response = await getCollection(
       undefined,
       dataProvider
     );
@@ -73,7 +73,7 @@ describe('DatasetRepository', () => {
 
     const themes = ['theme1', 'theme2'];
     const dataProvider = false;
-    const response = await datasetRepository.getCollection(
+    const response = await getCollection(
       themes,
       dataProvider
     );
@@ -88,7 +88,7 @@ describe('DatasetRepository', () => {
     const error = new Error('Fetch failed');
     (api.get as vi.Mock).mockRejectedValue(error);
 
-    await expect(datasetRepository.getCollection()).rejects.toThrow(error);
+    await expect(getCollection()).rejects.toThrow(error);
 
     expect(api.get).toHaveBeenCalledWith('dataset');
   });
@@ -99,7 +99,7 @@ describe('DatasetRepository', () => {
     (api.get as vi.Mock).mockResolvedValue(mockItem);
 
     const slug = 'test-slug';
-    const response = await datasetRepository.getItem(slug);
+    const response = await getItem(slug);
 
     expect(response).toEqual(mockItem);
     expect(api.get).toHaveBeenCalledWith(`dataset/${slug}`);
@@ -111,7 +111,7 @@ describe('DatasetRepository', () => {
 
     const slug = 'test-slug';
 
-    await expect(datasetRepository.getItem(slug)).rejects.toThrow(error);
+    await expect(getItem(slug)).rejects.toThrow(error);
 
     expect(api.get).toHaveBeenCalledWith(`dataset/${slug}`);
   });

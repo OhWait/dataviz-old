@@ -9,7 +9,7 @@ import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse';
 import { RootState } from '@/@types/store';
 import { Mock, Mocked } from 'vitest';
 import { dataEntryRepository } from '@/api/dataviz/dataEntryRepository';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 vi.mock('@/api/dataviz/dataEntryRepository', () => ({
   dataEntryRepository: {

@@ -1,7 +1,7 @@
 import { dataEntryRepository } from '@/api/dataviz/dataEntryRepository';
 import { api } from '@/api/dataviz/datavizClient';
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 vi.mock('@/api/dataviz/datavizClient', () => ({
   api: {

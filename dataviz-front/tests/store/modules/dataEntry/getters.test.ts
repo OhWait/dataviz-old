@@ -3,7 +3,7 @@ import { getters } from '@/store/modules/dataEntry/getters';
 import { IState, DataEntryGetterType } from '@/@types/dataEntry';
 import { dataFactory } from '@test/data/anonymousHydraCollectionFactory.js';
 import { HydraAnonymousCollection } from '@/@types/hydra/collectionResponse.js';
-import { HYDRA_KEYS } from '@/@types/hydra/HydraConstants';
+import { HYDRA_KEYS } from '@/api/hydraKeys';
 
 describe('DataEntry Getters', () => {
   const collection = dataFactory.build() as unknown as HydraAnonymousCollection;
