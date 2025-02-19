@@ -1,6 +1,6 @@
-import { HYDRA_KEYS } from '@/api/hydraKeys';
+import { HYDRA_KEYS } from '@/@types/hydra/hydraKeys';
 import { RootState } from '@/@types/store';
-import { IGetters, IState, ThemeGetterType } from '@/@types/theme/store';
+import { IGetters, IState, ThemeGetterType } from '@/@types/dataviz/theme/store';
 import { GetterTree } from 'vuex';
 
 export const getters: GetterTree<IState, RootState> & IGetters = {

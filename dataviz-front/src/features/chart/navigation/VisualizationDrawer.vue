@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore } from '@/@types/chart';
+import { ChartStore } from '@/@types/dataviz/chart';
 import VisualizationForm from '@/features/chart/forms/VisualizationForm.vue';
 import ViewPicker from '@/features/chart/forms/ViewPicker.vue';
 import { useStore } from '@/store';

@@ -1,4 +1,4 @@
-import { IMutations, IState, ITheme, ThemeMutationType } from '@/@types/theme';
+import { IMutations, IState, ITheme, ThemeMutationType } from '@/@types/dataviz/theme';
 import HydraCollection from '@/@types/hydra/collectionResponse';
 import { MutationTree } from 'vuex';
 

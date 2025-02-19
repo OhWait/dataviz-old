@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore, View, viewList as views } from '@/@types/chart';
+import { ChartStore, View, viewList as views } from '@/@types/dataviz/chart';
 import { useStore } from '@/store';
 import { computed } from 'vue';
 

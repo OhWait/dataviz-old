@@ -1,7 +1,7 @@
 import { RootState } from '@/@types/store';
-import { IActions, IState, ThemeMutationType } from '@/@types/theme/store';
+import { IActions, IState, ThemeMutationType } from '@/@types/dataviz/theme/store';
 import { ActionTree } from 'vuex';
-import { ThemeActionType } from '@/@types/theme/store';
+import { ThemeActionType } from '@/@types/dataviz/theme/store';
 import { themeRepository } from '@/api/dataviz/themeRepository';
 
 export const actions: ActionTree<IState, RootState> & IActions = {

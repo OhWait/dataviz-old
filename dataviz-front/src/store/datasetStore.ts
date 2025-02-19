@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { getCollection, getItem } from '@/api/dataviz/datasetRepository';
-import { IDataset, IDatasetCollection } from '@/@types/dataset';
+import { IDataset, IDatasetCollection } from '@/@types/dataviz/dataset';
 import HydraCollection from '@/@types/hydra/collectionResponse';
-import { HYDRA_KEYS } from '@/api/hydraKeys';
+import { HYDRA_KEYS } from '@/@types/hydra/hydraKeys';
 
 interface DatasetState {
   collection: HydraCollection<IDatasetCollection> | null;

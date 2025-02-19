@@ -4,9 +4,9 @@ import {
   IState,
   ChartGetterType,
   IPolarForm,
-} from '@/@types/chart/store';
+} from '@/@types/dataviz/chart/store';
 import { GetterTree } from 'vuex';
-import { View } from '@/@types/chart/index.js';
+import { View } from '@/@types/dataviz/chart/index.js';
 
 export const getters: GetterTree<IState, RootState> & IGetters = {
   // Drawers

@@ -20,13 +20,14 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore } from '@/@types/chart';
-import { DatasetStore } from '@/@types/dataset';
-import { themeIconList } from '@/@types/theme';
+import { ChartStore } from '@/@types/dataviz/chart';
+import { useDatasetStore } from '@/store/datasetStore';
+import { themeIconList } from '@/@types/dataviz/theme';
 import { useStore } from '@/store';
 import { computed } from 'vue';
 
 const store = useStore();
+const datasetStore = useDatasetStore();
 
 // State
 const themes = themeIconList.filter(t => t.active);
@@ -39,7 +40,7 @@ const currentTheme = computed<string>(
 // Methods
 const selectTheme = (theme: string) => {
   if (theme !== currentTheme.value) {
-    store.dispatch(DatasetStore.FETCH_COLLECTION, {
+    datasetStore.fetchCollection({
       themes: [theme],
       dataProvider: true,
     });

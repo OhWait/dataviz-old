@@ -5,15 +5,15 @@ import {
   IActions,
   IPolarForm,
   IState,
-} from '@/@types/chart/store';
+} from '@/@types/dataviz/chart/store';
 import { ActionTree } from 'vuex';
 import { chartRepository } from '@/api/dataviz/chartRepository';
-import { IPolarPayload } from '@/@types/chart/index.js';
+import { IPolarPayload } from '@/@types/dataviz/chart/index.js';
 import {
   IAxisOperationPayload,
   IFilterPayload,
   ISeriePayload,
-} from '@/@types/chart/model/payload.js';
+} from '@/@types/dataviz/chart/model/payload.js';
 
 export const actions: ActionTree<IState, RootState> & IActions = {
   async [ChartActionType.POST_POLAR]({ commit }, { uuid, slug, polar }) {

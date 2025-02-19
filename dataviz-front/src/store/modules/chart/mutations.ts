@@ -1,7 +1,7 @@
-import { IMutations, IState, ChartMutationType } from '@/@types/chart/store';
+import { IMutations, IState, ChartMutationType } from '@/@types/dataviz/chart/store';
 import { MutationTree } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
-import { View } from '@/@types/chart/index.js';
+import { View } from '@/@types/dataviz/chart/index.js';
 
 export const mutations: MutationTree<IState> & IMutations = {
   [ChartMutationType.RESET](state) {

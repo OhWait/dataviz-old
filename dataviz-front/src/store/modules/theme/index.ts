@@ -3,7 +3,7 @@ import { state } from './state';
 import { getters } from './getters';
 import { mutations } from './mutations';
 import { actions } from './actions';
-import { IState } from '@/@types/theme';
+import { IState } from '@/@types/dataviz/theme';
 import { RootState } from '@/@types/store';
 
 const store: Module<IState, RootState> = {

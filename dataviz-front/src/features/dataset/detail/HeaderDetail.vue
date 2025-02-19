@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { IDataset } from '@/@types/dataset';
+import { IDataset } from '@/@types/dataviz/dataset';
 import ProviderCard from '@/features/provider/ProviderCard.vue';
 
 interface Props {

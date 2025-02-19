@@ -1,4 +1,4 @@
-import { HYDRA_KEYS } from "../../api/hydraKeys";
+import { HYDRA_KEYS } from "./hydraKeys";
 
 export interface HydraCollection<T> {
   [HYDRA_KEYS.MEMBER]: T[];

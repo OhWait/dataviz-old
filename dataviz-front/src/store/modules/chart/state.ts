@@ -1,4 +1,4 @@
-import { IState } from '@/@types/chart/store';
+import { IState } from '@/@types/dataviz/chart/store';
 
 export const state: IState = {
   drawers: {

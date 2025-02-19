@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { DatasetRoutes, IDatasetCollection } from '@/@types/dataset';
+import { DatasetRoutes, IDatasetCollection } from '@/@types/dataviz/dataset';
 
 interface Props {
   item: IDatasetCollection;

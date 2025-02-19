@@ -4,8 +4,8 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore, View } from '@/@types/chart';
-import { Chart } from '@/@types/chart/store';
+import { ChartStore, View } from '@/@types/dataviz/chart';
+import { Chart } from '@/@types/dataviz/chart/store';
 import { useStore } from '@/store';
 import { computed } from 'vue';
 

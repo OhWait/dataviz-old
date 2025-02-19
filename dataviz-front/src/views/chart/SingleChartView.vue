@@ -14,7 +14,7 @@ import FilterDrawer from '@/features/chart/navigation/FilterDrawer.vue';
 import ChartViewer from '@/features/chart/ChartViewer.vue';
 import { useStore } from '@/store';
 import { computed, onBeforeMount } from 'vue';
-import { ChartStore } from '@/@types/chart';
+import { ChartStore } from '@/@types/dataviz/chart';
 
 const store = useStore();
 

@@ -33,7 +33,7 @@ import DescriptionDetail from '@/features/dataset/detail/DescriptionDetail.vue';
 import DataEntryDetail from '@/features/dataset/detail/DataEntryDetail.vue';
 import SkeletonCard from '@/components/SkeletonCard.vue';
 import { useI18n } from 'vue-i18n';
-import { DatasetRoutes } from '@/@types/dataset';
+import { DatasetRoutes } from '@/@types/dataviz/dataset';
 
 const { t } = useI18n();
 const datasetStore = useDatasetStore();

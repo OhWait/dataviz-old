@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { DataEntryStore } from '@/@types/dataEntry';
-import { useStore } from '@/store';
+import { useDataEntryStore } from '@/store/dataEntryStore';
+import { useI18n } from 'vue-i18n';
 
 // Props
 const props = defineProps<{ slug: string }>();
@@ -30,28 +30,29 @@ const props = defineProps<{ slug: string }>();
 const page = ref(1);
 const itemsPerPage = ref(200);
 
-const store = useStore();
+const store = useDataEntryStore();
+const { t } = useI18n();
 
 // Getters
-const items = computed(() => store.getters[DataEntryStore.GET_TABLE_MEMBERS]);
-const loading = computed(() => store.getters[DataEntryStore.GET_TABLE_LOADING]);
-const error = computed(() => store.getters[DataEntryStore.GET_TABLE_ERROR]);
+const items = computed(() => store.getTableMembers);
+const loading = computed(() => store.getTableLoading);
+const error = computed(() => store.getTableError);
 
 const headers = computed(() => {
   if (items.value.length > 0) {
-    return Object.keys(items.value.at(0)).map(key => ({ title: key, key }));
+    return Object.keys(items.value[0]).map(key => ({ title: key, key }));
   }
-
   return [];
 });
 
 // Actions
-const loadItems = async () =>
-  await store.dispatch(DataEntryStore.FETCH_TABLE, {
+const loadItems = async () => {
+  await store.fetchTable({
     slug: props.slug,
     page: page.value,
     itemsPerPage: itemsPerPage.value,
   });
+};
 
 // Lifecycle Hook
 onMounted(() => loadItems());

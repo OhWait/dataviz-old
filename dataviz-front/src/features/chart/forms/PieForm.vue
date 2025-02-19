@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { computed, onBeforeMount } from 'vue';
 import { useStore } from '@/store';
-import { ChartStore } from '@/@types/chart';
-import { IDataset } from '@/@types/dataset';
-import { IDataEntry } from '@/@types/dataEntry';
-import { Operation } from '@/@types/chart/model/payload';
+import { ChartStore } from '@/@types/dataviz/chart';
+import { IDataset } from '@/@types/dataviz/dataset';
+import { IDataEntry } from '@/@types/dataviz/dataEntry';
+import { Operation } from '@/@types/dataviz/chart/model/payload';
 import DataEntryPicker from './inputs/DataEntryPicker.vue';
 import ColumnPicker from './inputs/ColumnPicker.vue';
 import OperationPicker from './inputs/OperationPicker.vue';
-import { IPolarForm } from '@/@types/chart/store';
+import { IPolarForm } from '@/@types/dataviz/chart/store';
 
 // Store
 const store = useStore();

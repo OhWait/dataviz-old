@@ -14,8 +14,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useStore } from '@/store';
-import { ChartStore } from '@/@types/chart';
-import { IDataset } from '@/@types/dataset';
+import { ChartStore } from '@/@types/dataviz/chart';
+import { IDataset } from '@/@types/dataviz/dataset';
 
 // Props
 defineProps({

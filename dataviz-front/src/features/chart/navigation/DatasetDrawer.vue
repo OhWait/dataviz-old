@@ -50,12 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore } from '@/@types/chart';
-import { DatasetStore, IDataset, IDatasetCollection } from '@/@types/dataset';
+import { ChartStore } from '@/@types/dataviz/chart';
+import { useDatasetStore } from '@/store/datasetStore';
+import { IDataset, IDatasetCollection } from '@/@types/dataviz/dataset';
 import { useStore } from '@/store';
 import { computed } from 'vue';
 
 const store = useStore();
+const datasetStore = useDatasetStore();
 
 // Computed
 const drawer = computed<boolean>(
@@ -68,10 +70,10 @@ const currentDataset = computed<string | null>(
   () => store.getters[ChartStore.GET_CURRENT_DATASET]
 );
 const datasets = computed<IDatasetCollection[] | null>(
-  () => store.getters[DatasetStore.GET_COLLECTION_MEMBERS]
+  () => datasetStore.getCollectionMembers
 );
 const isLoading = computed<boolean>(
-  () => store.getters[DatasetStore.GET_COLLECTION_LOADING]
+  () => datasetStore.getCollectionLoading
 );
 
 // Methods
@@ -81,8 +83,8 @@ const selectDataset = async (datasetSlug: string) => {
   if (datasetSlug !== currentDataset.value) {
     store.commit(ChartStore.RESET_CHART);
 
-    store
-      .dispatch(DatasetStore.FETCH_ITEM, datasetSlug)
+    datasetStore
+      .fetchItem(datasetSlug)
       .then((dataset: IDataset) =>
         store.commit(ChartStore.SET_CURRENT_DATASET, dataset)
       );

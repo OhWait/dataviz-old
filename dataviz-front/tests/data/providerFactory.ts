@@ -1,6 +1,6 @@
 import { makeFactory } from 'factory.ts';
 import { faker } from '@faker-js/faker';
-import { IProvider } from '@/@types/provider/model.js';
+import { IProvider } from '@/@types/dataviz/provider/model.js';
 
 const providerFactory = makeFactory<IProvider>({
   slug: faker.lorem.slug(),

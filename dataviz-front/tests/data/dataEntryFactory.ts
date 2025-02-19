@@ -1,6 +1,6 @@
 import { makeFactory } from 'factory.ts';
 import { faker } from '@faker-js/faker';
-import { IDataEntry } from '@/@types/dataEntry/model';
+import { IDataEntry } from '@/@types/dataviz/dataEntry/model';
 import { metaColumnFactory } from '@test/data/metaRowFactory';
 
 const dataEntryFactory = makeFactory<IDataEntry>({

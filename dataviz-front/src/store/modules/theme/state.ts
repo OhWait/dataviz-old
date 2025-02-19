@@ -1,4 +1,4 @@
-import { IState } from '@/@types/theme/store.js';
+import { IState } from '@/@types/dataviz/theme/store.js';
 
 export const state: IState = {
   collection: null,

@@ -1,6 +1,6 @@
 import { api } from '@/api/dataviz/datavizClient';
 import HydraCollection from '@/@types/hydra/collectionResponse';
-import { ITheme } from '@/@types/theme/model.js';
+import { ITheme } from '@/@types/dataviz/theme/model.js';
 
 class ThemeRepository {
   static BASE_URL: string = 'theme';

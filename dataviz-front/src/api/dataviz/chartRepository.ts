@@ -3,7 +3,7 @@ import {
   ICartesianResponse,
   IPolarPayload,
   IPolarResponse,
-} from '@/@types/chart/index';
+} from '@/@types/dataviz/chart/index';
 import { api } from '@/api/dataviz/datavizClient';
 
 class ChartRepository {

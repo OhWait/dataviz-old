@@ -78,12 +78,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useStore } from '@/store';
-import { ChartStore } from '@/@types/chart';
-import { IDataset } from '@/@types/dataset';
-import { IDataEntry } from '@/@types/dataEntry';
+import { ChartStore } from '@/@types/dataviz/chart';
+import { IDataset } from '@/@types/dataviz/dataset';
+import { IDataEntry } from '@/@types/dataviz/dataEntry';
 import DataEntryPicker from './inputs/DataEntryPicker.vue';
 import ColumnPicker from './inputs/ColumnPicker.vue';
-import { IFilter } from '@/@types/chart/store';
+import { IFilter } from '@/@types/dataviz/chart/store';
 
 // Store
 const store = useStore();

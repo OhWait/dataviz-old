@@ -1,6 +1,6 @@
 import { api } from '@/api/dataviz/datavizClient';
 import HydraCollection from '@/@types/hydra/collectionResponse';
-import { IDataset, IDatasetCollection } from '@/@types/dataset';
+import { IDataset, IDatasetCollection } from '@/@types/dataviz/dataset';
 
 const BASE_URL = 'dataset';
 
