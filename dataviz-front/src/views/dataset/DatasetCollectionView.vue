@@ -13,21 +13,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, computed } from 'vue';
+import { useDatasetStore } from '@/store/datasetStore';
 import SkeletonCard from '@/components/SkeletonCard.vue';
 import DatasetCard from '@/features/dataset/DatasetCard.vue';
-import { useStore } from '@/store';
-import { DatasetStore } from '@/@types/dataset';
-import { computed, onMounted } from 'vue';
 
-const store = useStore();
+const datasetStore = useDatasetStore();
 
-onMounted(() => store.dispatch(DatasetStore.FETCH_COLLECTION));
+onMounted(() => datasetStore.fetchCollection());
 
-const items = computed(
-  () => store.getters[DatasetStore.GET_COLLECTION_MEMBERS]
-);
-
-const isLoading = computed(
-  () => store.getters[DatasetStore.GET_COLLECTION_LOADING]
-);
+const items = computed(() => datasetStore.getCollectionMembers);
+const isLoading = computed(() => datasetStore.getCollectionLoading);
 </script>

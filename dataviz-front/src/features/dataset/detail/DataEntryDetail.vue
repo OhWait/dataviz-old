@@ -68,71 +68,49 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
+import { ref, computed, PropType } from 'vue';
+import { useI18n } from 'vue-i18n';
 import MetaDetail from '@/features/metaColumn/MetaTable.vue';
 import PreviewDetail from '@/features/dataEntry/TablePreview.vue';
-import { IDataEntry } from '@/@types/dataEntry';
-import { IMetaColumn } from '@/@types/column';
+import { IDataEntry } from '@/@types/dataviz/dataEntry';
 
-type MetaDetail = {
-  metaColumns: IMetaColumn[];
-};
-
-type PreviewDetail = {
-  slug: string;
-};
-
-type TabComponent = typeof MetaDetail | typeof PreviewDetail;
-
-export default defineComponent({
-  props: {
-    dataEntries: {
-      type: Array as PropType<IDataEntry[]>,
-      required: true,
-    },
-  },
-
-  data() {
-    return {
-      currentDataEntry: this.dataEntries[0],
-      currentMetaTab: '',
-      metaTabs: [
-        {
-          text: this.$t('dataset.tab.meta'),
-          value: 'meta',
-        },
-        {
-          text: this.$t('dataset.tab.preview'),
-          value: 'preview',
-        },
-      ],
-    };
-  },
-
-  computed: {
-    hasMultipleDataEntries(): boolean {
-      return this.dataEntries.length > 1;
-    },
-  },
-
-  methods: {
-    getComponent(tab: string): TabComponent | null {
-      const componentMapping: Record<string, TabComponent> = {
-        meta: MetaDetail,
-        preview: PreviewDetail,
-      };
-
-      return componentMapping[tab] ?? null;
-    },
-
-    getPropsForTab(tab: string) {
-      if (tab === 'meta') {
-        return { metaColumns: this.currentDataEntry.columns };
-      }
-
-      return { slug: this.currentDataEntry.slug };
-    },
+const props = defineProps({
+  dataEntries: {
+    type: Array as PropType<IDataEntry[]>,
+    required: true,
   },
 });
+
+const { t } = useI18n();
+const currentDataEntry = ref(props.dataEntries[0]);
+const currentMetaTab = ref('');
+
+const metaTabs = computed(() => [
+  {
+    text: t('dataset.tab.meta'),
+    value: 'meta',
+  },
+  {
+    text: t('dataset.tab.preview'),
+    value: 'preview',
+  },
+]);
+
+const hasMultipleDataEntries = computed(() => props.dataEntries.length > 1);
+
+const getComponent = (tab: string) => {
+  const componentMapping: Record<string, any> = {
+    meta: MetaDetail,
+    preview: PreviewDetail,
+  };
+  return componentMapping[tab] ?? null;
+};
+
+const getPropsForTab = (tab: string) => {
+  if (tab === 'meta') {
+    return { metaColumns: currentDataEntry.value.columns };
+  }
+  return { slug: currentDataEntry.value.slug };
+};
 </script>

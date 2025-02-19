@@ -7,6 +7,7 @@ EXEC_BO = docker exec dataviz-bo-api
 EXEC_FRONT = docker exec -it dataviz-front
 EXEC_D_FRONT = docker exec -d dataviz-front
 SYMFONY_BO = $(EXEC_BO) bin/console
+SYMFONY_API = $(EXEC_API) bin/console
 
 ARG ?=
 
@@ -44,6 +45,10 @@ reset: kill install ## ♻️ Fully reset the project (kill + install)
 chown: ## 🛠 Fix user access permissions
 	sudo chown -R $$USER:$$USER .
 
+assets-missing: ## 🛠 Fix swagger missing
+	$(SYMFONY_API) assets:install --symlink --relative
+	$(SYMFONY_BO) assets:install --symlink --relative
+
 ## ----------------
 ## 🏛 Database Commands
 ## ----------------
@@ -61,8 +66,7 @@ db-migrate: ## 🔄 Execute all migrations
 db-fixtures: ## 🧪 Load database fixtures
 	$(SYMFONY_BO) doctrine:fixtures:load -n
 
-db-full: ## 🏗 Create DB, run migrations, and load fixtures
-	db-create db-migrate db-fixtures
+db-full: db-create db-migrate db-fixtures ## 🏗 Create DB, run migrations, and load fixtures
 
 ## ----------------
 ## ✅ Tests

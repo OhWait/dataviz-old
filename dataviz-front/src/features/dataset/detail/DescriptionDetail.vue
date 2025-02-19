@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { IDataset } from '@/@types/dataset';
+import { IDataset } from '@/@types/dataviz/dataset';
 
 defineProps<{ item: IDataset }>();
 </script>

@@ -1,17 +1,10 @@
 import { api } from '@/api/dataviz/datavizClient';
 import HydraCollection from '@/@types/hydra/collectionResponse';
-import { ITheme } from '@/@types/theme/model.js';
+import { ITheme } from '@/@types/dataviz/theme/model.js';
 
-class ThemeRepository {
-  static BASE_URL: string = 'theme';
+const BASE_URL: string = 'theme';
 
-  async getCollection(): Promise<HydraCollection<ITheme>> {
-    return api.get<HydraCollection<ITheme>>(ThemeRepository.BASE_URL);
-  }
+export const getCollection = async (): Promise<HydraCollection<ITheme>> => api.get<HydraCollection<ITheme>>(BASE_URL);
 
-  async getItem(slug: string): Promise<ITheme> {
-    return api.get<ITheme>(`${ThemeRepository.BASE_URL}/${slug}`);
-  }
-}
+export const getItem = async (slug: string): Promise<ITheme> => api.get<ITheme>(`${BASE_URL}/${slug}`);
 
-export const themeRepository = new ThemeRepository();
