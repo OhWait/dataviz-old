@@ -3,7 +3,7 @@
     <div class="chart-grid">
       <div
         class="chart-grid-item cursor-pointer"
-        v-for="view in views"
+        v-for="view in viewList"
         :key="view.type"
         @click="selectView(view.type)"
         :class="{ active: view.type === currentView }"
@@ -16,20 +16,19 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore, View } from '@/@types/dataviz/chart';
-import { useStore } from '@/store';
-import { viewList as views } from '@/utils/viewList';
+import { useChartStore } from '@/store/chartStore';
+import { View } from '@/@types/dataviz/chart/index.js';
+import { viewList } from '@/utils/viewList';
 import { computed } from 'vue';
 
-const store = useStore();
+// Store
+const chartStore = useChartStore();
 
-// Computed
-const currentView = computed<View | null>(
-  () => store.getters[ChartStore.GET_VISUALIZATION_VIEW]
-);
+// Computed properties
+const currentView = computed(() => chartStore.getVisualizationView);
 
 // Methods
-const selectView = (view: View) => store.commit(ChartStore.SET_VIEW, view);
+const selectView = (view: View) => chartStore.setView(view);
 </script>
 
 <style scoped>

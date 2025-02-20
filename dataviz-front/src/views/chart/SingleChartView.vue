@@ -3,7 +3,7 @@
   <DatasetDrawer />
   <VisualizationDrawer />
   <FilterDrawer />
-  <ChartViewer :uuid="uuid" />
+  <ChartViewer v-if="uuid" :uuid="uuid" />
 </template>
 
 <script setup lang="ts">
@@ -12,13 +12,15 @@ import ThemeDrawer from '@/features/chart/navigation/ThemeDrawer.vue';
 import VisualizationDrawer from '@/features/chart/navigation/VisualizationDrawer.vue';
 import FilterDrawer from '@/features/chart/navigation/FilterDrawer.vue';
 import ChartViewer from '@/features/chart/ChartViewer.vue';
-import { useStore } from '@/store';
 import { computed, onBeforeMount } from 'vue';
-import { ChartStore } from '@/@types/dataviz/chart';
+import { useChartStore } from '@/store/chartStore';
 
-const store = useStore();
+// Store
+const store = useChartStore();
 
-const uuid = computed(() => store.getters[ChartStore.GET_UUID]);
+// Computed properties
+const uuid = computed(() => store.getUuid);
 
-onBeforeMount(() => store.commit(ChartStore.INIT_SINGLE_CHART));
+// Lifecycle hook
+onBeforeMount(() => store.initSingleChart());
 </script>

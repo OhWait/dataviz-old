@@ -35,77 +35,86 @@
         :data-entry="seriesDataEntry"
       />
 
-      <v-btn block @click="submitPolar()">Envoyer</v-btn>
+      <v-btn block @click="submitPolar">Envoyer</v-btn>
     </v-form>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeMount } from 'vue';
-import { useStore } from '@/store';
-import { ChartStore } from '@/@types/dataviz/chart';
-import { IDataset } from '@/@types/dataviz/dataset';
-import { IDataEntry } from '@/@types/dataviz/dataEntry';
-import { Operation } from '@/@types/dataviz/chart/model/payload';
 import DataEntryPicker from './inputs/DataEntryPicker.vue';
 import ColumnPicker from './inputs/ColumnPicker.vue';
 import OperationPicker from './inputs/OperationPicker.vue';
-import { IPolarForm } from '@/@types/dataviz/chart/store';
+import { IPolarForm, Operation } from '@/@types/dataviz/chart';
+import { useChartStore } from '@/store/chartStore';
+import { IDataset } from '@/@types/dataviz/dataset';
+import { IMetaColumn } from '@/@types/dataviz/column';
 
 // Store
-const store = useStore();
+const chartStore = useChartStore();
 
-// Computed
-const dataset = computed<IDataset>(
-  () => store.getters[ChartStore.GET_DATASET_MODEL]
-);
-const uuid = computed<string>(() => store.getters[ChartStore.GET_UUID]);
-const polar = computed<IPolarForm>(
-  () => store.getters[ChartStore.GET_CURRENT_PIE_FORM]
-);
+// Computed properties
+/** @ts-ignore */
+const dataset = computed<IDataset>(() => chartStore.getDatasetModel);
+/** @ts-ignore */
+const uuid = computed<string>(() => chartStore.getUuid);
+/** @ts-ignore */
+const polar = computed<IPolarForm>(() => chartStore.getCurrentPolarForm);
 
-const findEntryBySlug = (slug: string): IDataEntry =>
-  dataset.value.dataEntries.find(entry => entry.slug === slug)!;
+const findEntryBySlug = (slug: string) => dataset.value.dataEntries.find(entry => entry.slug === slug);
 
-const valuesDataEntry = computed<IDataEntry>(() =>
-  findEntryBySlug(polar.value.values.dataEntry)
-);
+/** @ts-ignore */
+const valuesDataEntry = computed<IDataEntry>(() => findEntryBySlug(polar.value.values.dataEntry));
+/** @ts-ignore */
+const seriesDataEntry = computed<IDataEntry>(() => findEntryBySlug(polar.value.serie.dataEntry));
 
-const seriesDataEntry = computed<IDataEntry>(() =>
-  findEntryBySlug(polar.value.serie.dataEntry)
-);
-
-const dataTypeSelected = computed(
-  () =>
-    valuesDataEntry.value?.columns.find(
-      c => c.columnName === polar.value.values.column
-    )?.dataType
+const dataTypeSelected = computed(() =>
+  valuesDataEntry.value?.columns.find(
+    (c: IMetaColumn) => c.columnName === polar.value.values.column
+  )?.dataType
 );
 
 // Events
-const onValuesDataEntryChange = (dataEntry: string) =>
-  (polar.value.values = { dataEntry, operation: null, column: null });
-
-const onValuesColumnChange = (column: string) => {
-  polar.value.values.column = column;
-  polar.value.values.operation = null;
+const onValuesDataEntryChange = (dataEntry: string) => {
+  if (polar.value) {
+    polar.value.values = { dataEntry, operation: null, column: null };
+  }
 };
 
-const onValuesOperationChange = (operation: Operation) =>
-  (polar.value.values.operation = operation);
+const onValuesColumnChange = (column: string) => {
+  if (polar.value) {
+    polar.value.values.column = column;
+    polar.value.values.operation = null;
+  }
+};
 
-const onSeriesDataEntryChange = (dataEntry: string) =>
-  (polar.value.serie = { dataEntry, column: null });
+const onValuesOperationChange = (operation: Operation) => {
+  if (polar.value) {
+    polar.value.values.operation = operation;
+  }
+};
 
-const onSeriesColumnChange = (column: string) =>
-  (polar.value.serie.column = column);
+const onSeriesDataEntryChange = (dataEntry: string) => {
+  if (polar.value) {
+    polar.value.serie = { dataEntry, column: null };
+  }
+};
 
-const submitPolar = () =>
-  store.dispatch(ChartStore.POST_POLAR, {
-    uuid: uuid.value,
-    slug: dataset.value.slug,
-    polar: polar.value,
-  });
+const onSeriesColumnChange = (column: string) => {
+  if (polar.value) {
+    polar.value.serie.column = column;
+  }
+};
 
-onBeforeMount(() => store.commit(ChartStore.INIT_POLAR));
+const submitPolar = () => {
+  if (uuid.value && dataset.value && polar.value) {
+    chartStore.postPolar(uuid.value, dataset.value.slug, polar.value);
+  }
+};
+
+onBeforeMount(() => {
+  if (chartStore.getDatasetModel) {
+    chartStore.initPolar();
+  }
+});
 </script>

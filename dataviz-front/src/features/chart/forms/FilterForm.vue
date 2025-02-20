@@ -54,7 +54,6 @@
                 @click="clearFilter(index)"
                 variant="text"
                 v-bind="props"
-                siz
               />
             </template>
           </v-tooltip>
@@ -77,38 +76,32 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useStore } from '@/store';
-import { ChartStore } from '@/@types/dataviz/chart';
-import { IDataset } from '@/@types/dataviz/dataset';
-import { IDataEntry } from '@/@types/dataviz/dataEntry';
 import DataEntryPicker from './inputs/DataEntryPicker.vue';
 import ColumnPicker from './inputs/ColumnPicker.vue';
-import { IFilter } from '@/@types/dataviz/chart/store';
+import { useChartStore } from '@/store/chartStore';
 
 // Store
-const store = useStore();
+const chartStore = useChartStore();
 
 // Computed
-const dataset = computed<IDataset>(
-  () => store.getters[ChartStore.GET_DATASET_MODEL]
-);
-const defaultEntry = computed<IDataEntry>(
-  () => store.getters[ChartStore.GET_DEFAULT_ENTRY]
-);
+const dataset = computed(() => chartStore.getDatasetModel);
+const defaultEntry = computed(() => chartStore.getDefaultEntry);
+const filters = computed(() => chartStore.getCurrentFilters);
 
 // State
-const filters = computed<IFilter[]>(
-  () => store.getters[ChartStore.GET_CURRENT_FILTERS]
-);
-
-const addFilter = () =>
-  filters.value.push({
-    entry: defaultEntry.value,
-    dataEntry: defaultEntry.value.slug,
-    column: null,
-    values: [],
-    valueOptions: [],
-  });
+const addFilter = () => {
+  if (defaultEntry.value) {
+    filters.value.push({
+      entry: defaultEntry.value,
+      dataEntry: defaultEntry.value.slug,
+      column: null,
+      values: [],
+      valueOptions: [],
+    });
+  } else {
+    console.error('Default entry is not available');
+  }
+};
 
 const removeFilter = (index: number) => {
   filters.value.splice(index, 1);
@@ -124,7 +117,7 @@ const clearFilter = (index: number) => {
 };
 
 const onDataEntryChange = (index: number) => {
-  const entry = dataset.value.dataEntries.find(
+  const entry = dataset.value?.dataEntries.find(
     e => e.slug === filters.value[index].dataEntry
   );
 
@@ -133,16 +126,19 @@ const onDataEntryChange = (index: number) => {
     filters.value[index].column = null;
     filters.value[index].values = [];
     filters.value[index].valueOptions = [];
+  } else {
+    console.error('Data entry not found:', filters.value[index].dataEntry);
   }
 };
 
 const onColumnChange = (index: number) => {
-  const entry = dataset.value.dataEntries.find(
+  const entry = dataset.value?.dataEntries.find(
     e => e.slug === filters.value[index].dataEntry
   );
 
   // Shall never happen
   if (!entry) {
+    console.error('Data entry not found:', filters.value[index].dataEntry);
     return;
   }
 
@@ -153,6 +149,7 @@ const onColumnChange = (index: number) => {
   // Shall never happen
   if (!column) {
     filters.value[index].valueOptions = [];
+    console.error('Column not found:', filters.value[index].column);
     return;
   }
 

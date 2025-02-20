@@ -4,12 +4,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore, View } from '@/@types/dataviz/chart';
-import { Chart } from '@/@types/dataviz/chart/store';
-import { useStore } from '@/store';
 import { computed } from 'vue';
-
-const store = useStore();
+import { View } from '@/@types/dataviz/chart/index.js';
+import { useChartStore } from '@/store/chartStore';
 
 const props = defineProps({
   uuid: {
@@ -18,9 +15,11 @@ const props = defineProps({
   },
 });
 
+// Store
+const chartStore = useChartStore();
+
 // State
 const imgPath = '/media/charts/preview';
-
 const images = {
   [View.Pie]: `${imgPath}/pie.svg`,
   [View.Histogram]: `${imgPath}/bar_vertical.svg`,
@@ -30,16 +29,8 @@ const images = {
   [View.Line]: `${imgPath}/line.svg`,
 };
 
-// Computed
-const currentView = computed<View | null>(
-  () => store.getters[ChartStore.GET_VISUALIZATION_VIEW]
-);
-
-const imageSrc = computed(() =>
-  currentView.value ? images[currentView.value] : images[View.Histogram]
-);
-
-const chart = computed<Chart | null>(() =>
-  store.getters[ChartStore.GET_CHART](props.uuid)
-);
+// Computed properties
+const currentView = computed(() => chartStore.getVisualizationView);
+const imageSrc = computed(() => images[currentView.value || View.Histogram]);
+const chart = computed(() => chartStore.getChart(props.uuid));
 </script>

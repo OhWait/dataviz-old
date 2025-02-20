@@ -13,9 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useStore } from '@/store';
-import { ChartStore } from '@/@types/dataviz/chart';
-import { IDataset } from '@/@types/dataviz/dataset';
+import { useChartStore } from '@/store/chartStore';
 
 // Props
 defineProps({
@@ -29,17 +27,13 @@ defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 // Store
-const store = useStore();
-const dataset = computed<IDataset>(
-  () => store.getters[ChartStore.GET_DATASET_MODEL]
-);
-const hasMultipleDataEntries = computed<boolean>(
-  () => store.getters[ChartStore.HAS_MULTIPLE_ENTRIES]
-);
+const chartStore = useChartStore();
+const dataset = computed(() => chartStore.getDatasetModel);
+const hasMultipleDataEntries = computed(() => chartStore.hasMultipleEntries);
 
 // Data Entry Options
 const dataEntryOptions = computed(() =>
-  dataset.value.dataEntries.map(entry => ({
+  dataset.value!.dataEntries.map(entry => ({
     text: entry.title,
     value: entry.slug,
   }))

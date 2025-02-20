@@ -20,22 +20,20 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore } from '@/@types/dataviz/chart';
-import { useDatasetStore } from '@/store/datasetStore';
-import { themeIconList } from '@/utils/themeIconList';
-import { useStore } from '@/store';
 import { computed } from 'vue';
+import { themeIconList } from '@/utils/themeIconList';
+import { useChartStore } from '@/store/chartStore';
+import { useDatasetStore } from '@/store/datasetStore';
 
-const store = useStore();
+// Stores
+const chartStore = useChartStore();
 const datasetStore = useDatasetStore();
 
 // State
 const themes = themeIconList.filter(t => t.active);
 
-// Getters
-const currentTheme = computed<string>(
-  () => store.getters[ChartStore.GET_CURRENT_THEME]
-);
+// Computed properties
+const currentTheme = computed(() => chartStore.getCurrentTheme);
 
 // Methods
 const selectTheme = (theme: string) => {
@@ -46,6 +44,6 @@ const selectTheme = (theme: string) => {
     });
   }
 
-  store.commit(ChartStore.SET_THEME, theme);
+  chartStore.setTheme(theme);
 };
 </script>

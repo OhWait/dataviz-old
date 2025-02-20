@@ -3,36 +3,23 @@
     <template v-if="rail">
       <div class="vertical-text cursor-pointer bg-blue-grey-lighten-5">
         <span>{{ $t('dataset') }}</span>
-
         <v-icon icon="mdi-chevron-double-left" />
       </div>
     </template>
 
     <template v-else>
-      <div
-        class="bg-blue-grey-lighten-5 position-sticky top-0"
-        :style="{ zIndex: 1 }"
-      >
+      <div class="bg-blue-grey-lighten-5 position-sticky top-0" :style="{ zIndex: 1 }">
         <v-list-item :title="$t('dataset')">
           <template #append>
-            <v-btn
-              icon="mdi-chevron-double-left"
-              variant="text"
-              @click.stop="hideDrawer"
-            />
+            <v-btn icon="mdi-chevron-double-left" variant="text" @click.stop="hideDrawer" />
           </template>
         </v-list-item>
-
         <v-divider />
       </div>
 
       <v-list>
         <template v-if="isLoading">
-          <v-skeleton-loader
-            v-for="n in 5"
-            :key="n"
-            type="list-item,list-item-two-line,list-item"
-          />
+          <v-skeleton-loader v-for="n in 5" :key="n" type="list-item,list-item-two-line,list-item" />
         </template>
 
         <v-list-item
@@ -50,44 +37,29 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore } from '@/@types/dataviz/chart';
+import { useChartStore } from '@/store/chartStore';
 import { useDatasetStore } from '@/store/datasetStore';
-import { IDataset, IDatasetCollection } from '@/@types/dataviz/dataset';
-import { useStore } from '@/store';
 import { computed } from 'vue';
 
-const store = useStore();
+// Stores
+const chartStore = useChartStore();
 const datasetStore = useDatasetStore();
 
-// Computed
-const drawer = computed<boolean>(
-  () => store.getters[ChartStore.GET_DATASET_DRAWER]
-);
-const rail = computed<boolean>(
-  () => store.getters[ChartStore.GET_DATASET_RAIL]
-);
-const currentDataset = computed<string | null>(
-  () => store.getters[ChartStore.GET_CURRENT_DATASET]
-);
-const datasets = computed<IDatasetCollection[] | null>(
-  () => datasetStore.getCollectionMembers
-);
-const isLoading = computed<boolean>(
-  () => datasetStore.getCollectionLoading
-);
+// Computed properties
+const drawer = computed(() => chartStore.getDatasetDrawer);
+const rail = computed(() => chartStore.getDatasetRail);
+const currentDataset = computed(() => chartStore.getCurrentDataset);
+const datasets = computed(() => datasetStore.getCollectionMembers);
+const isLoading = computed(() => datasetStore.getCollectionLoading);
 
 // Methods
-const hideDrawer = () => store.commit(ChartStore.HIDE_DATASET_DRAWER);
-const showDrawer = () => store.commit(ChartStore.SHOW_DATASET_DRAWER);
+const hideDrawer = () => chartStore.hideDatasetDrawer();
+const showDrawer = () => chartStore.showDatasetDrawer();
 const selectDataset = async (datasetSlug: string) => {
   if (datasetSlug !== currentDataset.value) {
-    store.commit(ChartStore.RESET_CHART);
-
-    datasetStore
-      .fetchItem(datasetSlug)
-      .then((dataset: IDataset) =>
-        store.commit(ChartStore.SET_CURRENT_DATASET, dataset)
-      );
+    chartStore.resetChart();
+    const dataset = await datasetStore.fetchItem(datasetSlug);
+    chartStore.setCurrentDataset(dataset);
   }
 };
 </script>
