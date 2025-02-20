@@ -1,4 +1,4 @@
-import { View } from '../enum/View';
+import { View } from '../@types/dataviz/chart/enum/ViewEnum';
 import { i18n } from '@/plugins/i18n.js';
 
 const { t } = i18n.global;

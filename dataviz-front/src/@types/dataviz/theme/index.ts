@@ -6,12 +6,9 @@ import {
   ThemeMutationType,
   ThemeStore,
 } from './store';
-import type { IThemeIcon } from './iconList';
-import { themeIconList } from './iconList';
+import type { IThemeIcon } from '../../../utils/themeIconList';
 
 export {
-  // Helpers
-  themeIconList,
   IThemeIcon,
 
   // Model

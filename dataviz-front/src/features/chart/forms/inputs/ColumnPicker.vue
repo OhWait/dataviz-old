@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { dataTypeIconMapping } from '@/@types/dataviz/column/dataType';
+import { dataTypeIconMapping } from '@/utils/dataTypeIconMapping';
 import { IDataEntry } from '@/@types/dataviz/dataEntry';
 import { defineProps, defineEmits, computed } from 'vue';
 

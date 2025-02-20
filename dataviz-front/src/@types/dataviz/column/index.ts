@@ -1,8 +1,3 @@
-import type { IMetaColumn } from './model';
-import { DataType } from './model';
+export * from '@/@types/dataviz/column/model';
+export * from '@/@types/dataviz/column/enum/DataTypeEnum';
 
-export {
-  // Model
-  IMetaColumn,
-  DataType,
-};

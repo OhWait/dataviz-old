@@ -1,4 +1,5 @@
-import { IValues } from '@/@types/values/model';
+import { IValues } from '@/@types/dataviz/values/model';
+import { DataType } from '@/@types/dataviz/column/enum/DataTypeEnum';
 
 export interface IMetaColumn {
   columnName: string;
@@ -7,16 +8,4 @@ export interface IMetaColumn {
   characterMaximumLength?: number;
   label: string;
   values: IValues[];
-}
-
-export enum DataType {
-  CharacterVarying = 'character varying',
-  Integer = 'integer',
-  Float = 'float',
-  Numeric = 'numeric',
-  Boolean = 'boolean',
-  Date = 'date',
-  DateTime = 'datetime',
-  TimeWithoutTimeZone = 'time without time zone',
-  TimeWithTimeZone = 'time with time zone',
 }

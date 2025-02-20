@@ -11,18 +11,14 @@ import type {
   IActions,
   IDatasetDrawer,
 } from './store';
-import { View } from './enum/View';
-import { viewList } from './utils/viewList';
 import type { ICartesianPayload, IPolarPayload } from './model/payload';
 import type { ICartesianResponse, IPolarResponse } from './model/response';
 
+export * from '@/@types/dataviz/chart/enum/ViewEnum';
+export * from '@/@types/dataviz/chart/enum/DateOperationEnum';
+export * from '@/@types/dataviz/chart/enum/OperationEnum';
+
 export {
-  // enum
-  View,
-
-  // utils
-  viewList,
-
   // Store
   IState,
   IDatasetDrawer,

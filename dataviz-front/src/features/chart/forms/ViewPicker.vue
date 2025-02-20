@@ -16,8 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChartStore, View, viewList as views } from '@/@types/dataviz/chart';
+import { ChartStore, View } from '@/@types/dataviz/chart';
 import { useStore } from '@/store';
+import { viewList as views } from '@/utils/viewList';
 import { computed } from 'vue';
 
 const store = useStore();

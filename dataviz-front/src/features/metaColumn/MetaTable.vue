@@ -81,9 +81,9 @@
 <script setup lang="ts">
 import { IMetaColumn } from '@/@types/dataviz/column';
 import { IValues } from '@/@types/values';
-import { dataTypeIconMapping } from '@/@types/dataviz/column/dataType';
 import { useI18n } from 'vue-i18n';
 import { DataType } from '@/@types/dataviz/column/model';
+import { dataTypeIconMapping } from '@/utils/dataTypeIconMapping';
 
 const { t } = useI18n();
 

@@ -1,7 +1,7 @@
 import { makeFactory } from 'factory.ts';
 import { faker } from '@faker-js/faker';
-import { DataType, IMetaColumn } from '@/@types/dataviz/column/model';
-import { IValues } from '@/@types/values/model';
+import { IValues } from '@/@types/dataviz/values/model';
+import { DataType, IMetaColumn } from '@/@types/dataviz/column';
 
 const valuesFactory = makeFactory<IValues>({
   value: faker.lorem.word(),

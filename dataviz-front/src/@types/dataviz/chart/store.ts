@@ -1,13 +1,14 @@
 import { ActionContext } from 'vuex';
 import type { RootState } from '@/@types/store';
 import type { IDataset } from '@/@types/dataviz/dataset/model';
-import { View } from '@/@types/dataviz/chart/enum/View';
-import type { DateOperation, Operation } from '@/@types/dataviz/chart/model/payload';
+import { View } from '@/@types/dataviz/chart/enum/ViewEnum';
 import { IDataEntry } from '@/@types/dataviz/dataEntry/model.js';
 import {
   ICartesianResponse,
   IPolarResponse,
 } from '@/@types/dataviz/chart/model/response.js';
+import { Operation } from '@/@types/dataviz/chart/enum/OperationEnum';
+import { DateOperation } from '@/@types/dataviz/chart/enum/DateOperationEnum';
 
 interface IChart<TPayload, TResponse> {
   uuid?: string;

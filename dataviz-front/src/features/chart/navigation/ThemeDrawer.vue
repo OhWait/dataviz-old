@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { ChartStore } from '@/@types/dataviz/chart';
 import { useDatasetStore } from '@/store/datasetStore';
-import { themeIconList } from '@/@types/dataviz/theme';
+import { themeIconList } from '@/utils/themeIconList';
 import { useStore } from '@/store';
 import { computed } from 'vue';
 

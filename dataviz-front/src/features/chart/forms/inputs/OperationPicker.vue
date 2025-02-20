@@ -14,9 +14,9 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
-import { operationList } from '@/@types/dataviz/chart/utils/operationList';
+import { operationList } from '@/utils/operationList';
 import { DataType } from '@/@types/dataviz/column';
-import { Operation } from '@/@types/dataviz/chart/model/payload';
+import { Operation } from '@/@types/dataviz/chart';
 
 // Props
 const props = defineProps({

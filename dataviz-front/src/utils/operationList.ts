@@ -1,5 +1,5 @@
-import { Operation } from '@/@types/dataviz/chart/model/payload.js';
-import { DataType } from '@/@types/dataviz/column/model.js';
+import { Operation } from '@/@types/dataviz/chart';
+import { DataType } from '@/@types/dataviz/column/enum/DataTypeEnum';
 import { i18n } from '@/plugins/i18n.js';
 
 const { t } = i18n.global;
