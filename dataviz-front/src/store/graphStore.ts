@@ -88,6 +88,10 @@ interface IDrawer {
     rail: boolean;
     view: View | null;
   };
+  filter: {
+    drawer: boolean;
+    rail: boolean;
+  };
 }
 
 interface GraphState {
@@ -111,6 +115,10 @@ export const useGraphStore = defineStore('graph', {
         rail: false,
         view: null,
       },
+      filter: {
+        drawer: false,
+        rail: false,
+      },
     },
     charts: [],
   }),
@@ -124,14 +132,14 @@ export const useGraphStore = defineStore('graph', {
       return this;
     },
 
-    toggleDrawer(type: 'dataset' | 'visualization', open: boolean) {
+    toggleDrawer(type: 'dataset' | 'visualization' | 'filter', open: boolean) {
       this.drawers[type].drawer = true;
       this.drawers[type].rail = open ? false : true;
 
       return this;
     },
 
-    setDataset(dataset: IDataset) {
+    setDrawerDataset(dataset: IDataset) {
       this.drawers.dataset.currentDataset = dataset.slug;
       this.drawers.visualization.drawer = true;
       this.drawers.visualization.view = null;
@@ -141,6 +149,8 @@ export const useGraphStore = defineStore('graph', {
 
     setDrawerView(view: View) {
       this.drawers.visualization.view = view;
+      this.drawers.filter.drawer = true;
+      this.drawers.filter.rail = false;
 
       return this;
     },
@@ -163,7 +173,7 @@ export const useGraphStore = defineStore('graph', {
     },
 
     updateChart(uuid: string, view: View) {
-      const chart = this.charts.find(c => c.uuid === uuid);
+      const chart = this.getChart(uuid);
 
       if (!chart) {
         throw new Error('Chart not found !');
@@ -185,8 +195,16 @@ export const useGraphStore = defineStore('graph', {
       chart.payload = {
         values: { column: null, operation: null, dataEntry: null },
         serie: { column: null, dataEntry: null },
-        filters: [],
+        filters: chart.payload?.filters ?? [],
       };
+
+      return this;
+    },
+
+    updateFilters(uuid: string, filters: IFilter[]) {
+      const payload = this.getChart(uuid)?.payload;
+
+      if (payload) payload.filters = filters;
 
       return this;
     },

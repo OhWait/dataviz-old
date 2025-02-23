@@ -17,7 +17,7 @@
 
     <template v-else>
       <div
-        class="bg-blue-grey-lighten-5 position-sticky top-0"
+        class="bg-blue-grey-lighten-5 position-sticky top-0 border-b-sm"
         :style="{ zIndex: 1 }"
       >
         <div class="d-flex justify-space-between align-center px-3 py-2">
@@ -28,7 +28,6 @@
             @click.stop="toggleDrawer(false)"
           />
         </div>
-        <v-divider />
       </div>
 
       <v-list>

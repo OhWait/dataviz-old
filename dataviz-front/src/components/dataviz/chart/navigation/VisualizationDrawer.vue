@@ -17,7 +17,7 @@
 
     <template v-else>
       <div
-        class="bg-blue-grey-lighten-5 position-sticky top-0"
+        class="bg-blue-grey-lighten-5 position-sticky top-0 border-b-sm"
         :style="{ zIndex: 1 }"
       >
         <div class="d-flex justify-space-between align-center px-3 py-2">
@@ -49,9 +49,9 @@
 
 <script setup lang="ts">
 import { IDataset } from '@/@types/dataviz/dataset';
-import ViewForm from '../form/ViewForm.vue';
 import { View } from '@/@types/dataviz/chart';
-import ChartFormWrapper from '../form/ChartFormWrapper.vue';
+import ViewForm from '@/components/dataviz/chart/form/ViewForm.vue';
+import ChartFormWrapper from '@/components/dataviz/chart/form/ChartFormWrapper.vue';
 import { ICartesianForm, IPolarForm } from '@/store/graphStore';
 
 // Props

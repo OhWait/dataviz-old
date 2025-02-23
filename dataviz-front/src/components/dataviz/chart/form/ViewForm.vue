@@ -2,11 +2,11 @@
   <v-container>
     <div class="chart-grid">
       <div
-        class="chart-grid-item cursor-pointer"
         v-for="view in viewList"
         :key="view.type"
-        @click="handleViewClick(view.type)"
+        class="chart-grid-item cursor-pointer"
         :class="{ active: view.type === currentView }"
+        @click="handleViewClick(view.type)"
       >
         <v-tooltip activator="parent">{{ view.title }}</v-tooltip>
         <v-img :src="view.icon" />
