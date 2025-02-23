@@ -44,9 +44,11 @@ export const useDataEntryStore = defineStore('dataEntry', {
   },
 
   getters: {
-    getTableMembers: (state) => state.collection ? state.collection[HYDRA_KEYS.MEMBER] : [],
-    getTableTotalItems: (state) => state.collection ? state.collection[HYDRA_KEYS.TOTAL_ITEMS] : 0,
-    getTableLoading: (state) => state.collectionLoading,
-    getTableError: (state) => state.collectionError,
+    getTableMembers: state =>
+      state.collection ? state.collection[HYDRA_KEYS.MEMBER] : [],
+    getTableTotalItems: state =>
+      state.collection ? state.collection[HYDRA_KEYS.TOTAL_ITEMS] : 0,
+    getTableLoading: state => state.collectionLoading,
+    getTableError: state => state.collectionError,
   },
 });

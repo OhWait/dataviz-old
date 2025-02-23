@@ -33,7 +33,10 @@ export const useDatasetStore = defineStore('dataset', {
       this.collectionLoading = true;
       this.collectionError = null;
       try {
-        const result = await getCollection(payload?.themes, payload?.dataProvider);
+        const result = await getCollection(
+          payload?.themes,
+          payload?.dataProvider
+        );
         this.collection = result;
         return result;
       } catch (e) {
@@ -61,12 +64,14 @@ export const useDatasetStore = defineStore('dataset', {
   },
 
   getters: {
-    getCollectionMembers: (state) => state.collection?.[HYDRA_KEYS.MEMBER] || [],
-    getCollectionLoading: (state) => state.collectionLoading,
-    getCollectionError: (state) => state.collectionError,
-    getCollectionTotalItems: (state) => state.collection?.[HYDRA_KEYS.TOTAL_ITEMS] || 0,
-    getItem: (state) => state.item,
-    getItemLoading: (state) => state.itemLoading,
-    getItemError: (state) => state.itemError,
+    getCollectionMembers: (state): IDatasetCollection[] =>
+      state.collection?.[HYDRA_KEYS.MEMBER] || [],
+    getCollectionLoading: (state): boolean => state.collectionLoading,
+    getCollectionError: (state): Error | null => state.collectionError,
+    getCollectionTotalItems: (state): number =>
+      state.collection?.[HYDRA_KEYS.TOTAL_ITEMS] || 0,
+    getItem: (state): IDataset | null => state.item,
+    getItemLoading: (state): boolean => state.itemLoading,
+    getItemError: (state): Error | null => state.itemError,
   },
 });

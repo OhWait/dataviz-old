@@ -1,1 +1,1 @@
-export * from './model';
+export * from '@/@types/dataviz/dataEntry/model';
