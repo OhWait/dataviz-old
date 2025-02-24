@@ -11,11 +11,6 @@
     <v-btn :to="{ name: Routes.Chart.Index }">
       {{ $t('navbar.item.chart') }}
     </v-btn>
-
-    <v-btn :to="{ name: Routes.Chart.Bis }">
-      {{ $t('navbar.item.chart') }}
-    </v-btn>
-
     <v-spacer />
   </v-app-bar>
 </template>

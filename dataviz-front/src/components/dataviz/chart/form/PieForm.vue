@@ -33,22 +33,34 @@
         :label="$t('chart.form.polar.series')"
         :data-entry="serieDataEntry"
       />
+
+      <v-btn
+        block
+        @click="submitPolar()"
+      >
+        Envoyer
+      </v-btn>
     </v-form>
   </v-container>
 </template>
 
 <script setup lang="ts">
+import { IPolarForm } from '@/@types/dataviz/chart';
+import { IDataset } from '@/@types/dataviz/dataset';
 import ColumnPicker from './input/ColumnPicker.vue';
 import OperationPicker from './input/OperationPicker.vue';
 import DataEntryPicker from './input/DataEntryPicker.vue';
-import { IDataset } from '@/@types/dataviz/dataset';
-import { IPolarForm } from '@/store/graphStore';
 import { computed, watch } from 'vue';
 
 // Props
 const props = defineProps<{
   payload: IPolarForm;
   dataset: IDataset;
+}>();
+
+// Emits
+const emit = defineEmits<{
+  (e: 'submit', payload: IPolarForm): void;
 }>();
 
 // Computed
@@ -70,6 +82,9 @@ const dataType = computed(
       c => c.columnName === props.payload.values.column
     )?.dataType
 );
+
+// Methods
+const submitPolar = () => emit('submit', props.payload);
 
 // Reset column and operation when dataEntry changes
 watch(

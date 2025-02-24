@@ -3,13 +3,13 @@
     v-if="currentView"
     :is="formComponents[currentView]"
     v-bind="props"
+    @submit="submitForm"
   />
 </template>
 
 <script setup lang="ts">
-import { View } from '@/@types/dataviz/chart';
+import { ICartesianForm, IPolarForm, TChartForm, View } from '@/@types/dataviz/chart';
 import PieForm from './PieForm.vue';
-import { ICartesianForm, IPolarForm } from '@/store/graphStore';
 import { IDataset } from '@/@types/dataviz/dataset';
 
 // Props
@@ -17,6 +17,11 @@ const props = defineProps<{
   currentView: View | null;
   payload: IPolarForm | ICartesianForm;
   dataset: IDataset;
+}>();
+
+// Emits
+const emit = defineEmits<{
+  (e: 'submit', payload: TChartForm): void;
 }>();
 
 const formComponents: Record<View, any> = {
@@ -27,4 +32,7 @@ const formComponents: Record<View, any> = {
   [View.StackedBar]: PieForm, // TODO
   [View.Line]: PieForm, // TODO
 };
+
+// Methods
+const submitForm = (payload: TChartForm) => emit('submit', payload);
 </script>

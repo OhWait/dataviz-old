@@ -37,11 +37,12 @@
 
       <v-divider />
 
-      <ChartFormWrapper
+      <VisualisationFormWrapper
         v-if="currentView && dataset && payload"
         :current-view="currentView"
         :payload="payload"
         :dataset="dataset"
+        @submit="handleSubmit"
       />
     </template>
   </v-navigation-drawer>
@@ -49,10 +50,14 @@
 
 <script setup lang="ts">
 import { IDataset } from '@/@types/dataviz/dataset';
-import { View } from '@/@types/dataviz/chart';
-import ViewForm from '@/components/dataviz/chart/form/ViewForm.vue';
-import ChartFormWrapper from '@/components/dataviz/chart/form/ChartFormWrapper.vue';
-import { ICartesianForm, IPolarForm } from '@/store/graphStore';
+import {
+  ICartesianForm,
+  IPolarForm,
+  TChartForm,
+  View,
+} from '@/@types/dataviz/chart';
+import ViewForm from '../form/ViewForm.vue';
+import VisualisationFormWrapper from '../form/VisualisationFormWrapper.vue';
 
 // Props
 defineProps<{
@@ -63,13 +68,15 @@ defineProps<{
   dataset?: IDataset;
 }>();
 
-// Events
+// Emits
 const emit = defineEmits<{
   (e: 'update:drawer', state: boolean): void;
   (e: 'changeView', view: View): void;
+  (e: 'submit', payload: TChartForm): void;
 }>();
 
 // Methods
 const toggleDrawer = (state: boolean) => emit('update:drawer', state);
 const handleViewChange = (view: View) => emit('changeView', view);
+const handleSubmit = (payload: TChartForm) => emit('submit', payload);
 </script>

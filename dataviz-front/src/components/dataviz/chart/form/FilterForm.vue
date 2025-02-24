@@ -93,7 +93,7 @@
 import DataEntryPicker from './input/DataEntryPicker.vue';
 import ColumnPicker from './input/ColumnPicker.vue';
 import { ref, computed, watchEffect } from 'vue';
-import { IFilter } from '@/store/graphStore';
+import { IFilter } from '@/store/chartStore';
 import { IDataset } from '@/@types/dataviz/dataset';
 
 // Props & Emits

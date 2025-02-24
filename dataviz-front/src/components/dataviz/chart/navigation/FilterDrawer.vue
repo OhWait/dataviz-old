@@ -42,9 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import FilterForm from '../form/FilterForm.vue';
-import { IFilter } from '@/store/graphStore';
+import { IFilter } from '@/@types/dataviz/chart';
 import { IDataset } from '@/@types/dataviz/dataset';
+import FilterForm from '../form/FilterForm.vue';
 
 // Props
 defineProps<{

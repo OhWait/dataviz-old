@@ -1,11 +1,21 @@
-import { defineStore } from 'pinia';
-import { v4 as uuidv4 } from 'uuid';
-import { polarDataTransformer } from '@/utils/chart/dataTransformer';
-import { ChartState, IPolarForm, View } from '@/@types/dataviz/chart';
+import {
+  IChartState,
+  IDrawer,
+  IFilter,
+  IPolarForm,
+  TChart,
+  TChartForm,
+  TDrawerKey,
+  TResponse,
+  View,
+} from '@/@types/dataviz/chart';
+import { IDataset } from '@/@types/dataviz/dataset';
 import { postPolar } from '@/api/dataviz/chartRepository';
+import { polarDataTransformer } from '@/utils/chart/dataTransformer';
+import { defineStore } from 'pinia';
 
 export const useChartStore = defineStore('chart', {
-  state: (): ChartState => ({
+  state: (): IChartState => ({
     drawers: {
       theme: {
         currentTheme: null,
@@ -13,152 +23,136 @@ export const useChartStore = defineStore('chart', {
       dataset: {
         drawer: false,
         rail: false,
-        model: null,
+        currentDataset: null,
       },
       visualization: {
         drawer: false,
         rail: false,
         view: null,
       },
-      filters: {
+      filter: {
         drawer: false,
         rail: false,
       },
     },
-    uuid: null,
     charts: [],
   }),
 
   actions: {
-    async postPolar(uuid: string, slug: string, polar: IPolarForm) {
-      const chart = this.charts.find(c => c.uuid === uuid);
-      if (!chart) {
-        throw new Error(`Action postPolar failed, uuid: ${uuid} not found.`);
-      }
-
-      chart.isLoading = true;
-      chart.error = null;
-      chart.response = null;
-
-      try {
-        const response = await postPolar(slug, polarDataTransformer(polar));
-        chart.isLoading = false;
-        chart.response = response;
-        return response;
-      } catch (e) {
-        chart.isLoading = false;
-        chart.error = e as Error;
-        throw e;
+    async postForm(slug: string, uuid: string, form: TChartForm) {
+      if ('values' in form) {
+        await this.postPolar(slug, uuid, form);
       }
     },
 
-    setTheme(theme: string) {
+    async postPolar(slug: string, uuid: string, polar: IPolarForm) {
+      const response = await postPolar(slug, polarDataTransformer(polar));
+      const chart = this.getChart(uuid);
+
+      if (chart) {
+        chart.response = response;
+      }
+    },
+
+    setActiveTheme(theme: string) {
       this.drawers.theme.currentTheme = theme;
       this.drawers.dataset.drawer = true;
       this.drawers.dataset.rail = false;
+
+      return this;
     },
 
-    showDatasetDrawer() {
-      this.drawers.dataset.drawer = true;
-      this.drawers.dataset.rail = false;
+    toggleDrawer(key: TDrawerKey, open: boolean) {
+      this.drawers[key].drawer = true;
+      this.drawers[key].rail = open ? false : true;
+
+      return this;
     },
 
-    hideDatasetDrawer() {
-      this.drawers.dataset.rail = true;
-    },
-
-    setCurrentDataset(dataset: any) {
-      this.drawers.dataset.model = dataset;
+    setDrawerDataset(dataset: IDataset) {
+      this.drawers.dataset.currentDataset = dataset.slug;
       this.drawers.visualization.drawer = true;
       this.drawers.visualization.view = null;
-      this.drawers.filters.drawer = true;
+
+      return this;
     },
 
-    showVisualizationDrawer() {
-      this.drawers.visualization.drawer = true;
-      this.drawers.visualization.rail = false;
-    },
-
-    hideVisualizationDrawer() {
-      this.drawers.visualization.rail = true;
-    },
-
-    setView(view: View) {
+    setDrawerView(view: View) {
       this.drawers.visualization.view = view;
+      this.drawers.filter.drawer = true;
+      this.drawers.filter.rail = false;
+
+      return this;
     },
 
-    showFiltersDrawer() {
-      this.drawers.filters.drawer = true;
-      this.drawers.filters.rail = false;
-    },
-
-    hideFiltersDrawer() {
-      this.drawers.filters.rail = true;
-    },
-
-    initSingleChart() {
-      this.uuid = uuidv4();
-    },
-
-    resetChart() {
-      const chartIndex = this.charts.findIndex(c => c.uuid === this.uuid);
-      if (chartIndex !== -1) {
-        this.charts.splice(chartIndex, 1);
-      }
-      this.drawers.visualization.drawer = false;
-      this.drawers.filters.drawer = false;
-    },
-
-    initPolar() {
-      const dataEntry = this.drawers.dataset.model?.dataEntries.at(0)?.slug;
-      const uuid = this.uuid;
-
-      if (!dataEntry || !uuid) {
-        throw new Error('Data entry or UUID is missing');
-      }
-
+    initChart(uuid: string, dataset: IDataset) {
       const chartIndex = this.charts.findIndex(c => c.uuid === uuid);
+
       if (chartIndex !== -1) {
         this.charts.splice(chartIndex, 1);
       }
 
       this.charts.push({
         uuid,
-        view: View.Pie,
+        dataset,
         active: true,
         isLoading: false,
-        payload: {
-          values: {
-            column: null,
-            operation: null,
-            dataEntry,
-          },
-          serie: {
-            column: null,
-            dataEntry,
-          },
-          filters: [],
-        },
       });
+
+      return this;
+    },
+
+    updateChart(uuid: string, view: View) {
+      const chart = this.getChart(uuid);
+
+      if (!chart) {
+        throw new Error('Chart not found !');
+      }
+
+      switch (view) {
+        case View.Pie:
+          this.transformToPolar(chart);
+          break;
+        default:
+          console.warn(`No handler for view type: ${view}`);
+      }
+
+      return this;
+    },
+
+    transformToPolar(chart: TChart) {
+      chart.view = View.Pie;
+      chart.payload = {
+        values: { column: null, operation: null, dataEntry: null },
+        serie: { column: null, dataEntry: null },
+        filters: chart.payload?.filters ?? [],
+      };
+
+      return this;
+    },
+
+    updateFilters(uuid: string, filters: IFilter[]) {
+      const payload = this.getChart(uuid)?.payload;
+
+      if (payload) payload.filters = filters;
+
+      return this;
     },
   },
 
   getters: {
-    getCurrentTheme: (state) => state.drawers.theme.currentTheme,
-    getDatasetDrawer: (state) => state.drawers.dataset.drawer,
-    getDatasetRail: (state) => state.drawers.dataset.rail,
-    getDatasetModel: (state) => state.drawers.dataset.model,
-    getCurrentDataset: (state) => state.drawers.dataset.model?.slug ?? null,
-    hasMultipleEntries: (state) => (state.drawers.dataset.model?.dataEntries.length ?? 0) > 1,
-    getDefaultEntry: (state) => state.drawers.dataset.model?.dataEntries.at(0) ?? null,
-    getVisualizationDrawer: (state) => state.drawers.visualization.drawer,
-    getVisualizationRail: (state) => state.drawers.visualization.rail,
-    getVisualizationView: (state) => state.drawers.visualization.view,
-    getFiltersDrawer: (state) => state.drawers.filters.drawer,
-    getFiltersRail: (state) => state.drawers.filters.rail,
-    getUuid: (state) => state.uuid,
-    getCurrentFilters: (state) => state.charts.find(c => c.uuid === state.uuid)?.payload?.filters ?? [],
-    getCurrentPolarForm: (state) => state.charts.find(c => c.uuid === state.uuid && c.view === View.Pie)?.payload ?? null,
-    getChart: (state) => (uuid: string) => state.charts.find(c => c.uuid === uuid && c.response) ?? null,
+    getDrawers: (state): IDrawer => state.drawers,
+    getDataset:
+      state =>
+      (uuid: string): IDataset | null =>
+        state.charts.find(c => c.uuid === uuid)?.dataset ?? null,
+    getChart:
+      state =>
+      (uuid: string): TChart | null =>
+        state.charts.find(c => c.uuid === uuid) ?? null,
+    getResponse:
+      state =>
+      (uuid: string): TResponse | null | undefined =>
+        state.charts.find(c => c.uuid === uuid)?.response,
   },
 });
