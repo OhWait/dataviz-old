@@ -5,8 +5,8 @@ import {
   IPolarForm,
   TChart,
   TChartForm,
+  TChartResponse,
   TDrawerKey,
-  TResponse,
   View,
 } from '@/@types/dataviz/chart';
 import { IDataset } from '@/@types/dataviz/dataset';
@@ -50,6 +50,7 @@ export const useChartStore = defineStore('chart', {
       const chart = this.getChart(uuid);
 
       if (chart) {
+        console.log(chart, response);
         chart.response = response;
       }
     },
@@ -152,7 +153,7 @@ export const useChartStore = defineStore('chart', {
         state.charts.find(c => c.uuid === uuid) ?? null,
     getResponse:
       state =>
-      (uuid: string): TResponse | null | undefined =>
+      (uuid: string): TChartResponse | null | undefined =>
         state.charts.find(c => c.uuid === uuid)?.response,
   },
 });

@@ -36,8 +36,8 @@
     @update:filters="updateFilters($event)"
   />
 
-  <ChartViewer
-    :view="drawers.visualization.view"
+  <ChartViewerWrapper
+    :view="chart?.view"
     :chart="chart"
     :response="chart?.response"
   />
@@ -51,7 +51,7 @@ import ThemeDrawer from '@/components/dataviz/chart/navigation/ThemeDrawer.vue';
 import DatasetDrawer from '@/components/dataviz/chart/navigation/DatasetDrawer.vue';
 import VisualizationDrawer from '@/components/dataviz/chart/navigation/VisualizationDrawer.vue';
 import FilterDrawer from '@/components/dataviz/chart/navigation/FilterDrawer.vue';
-import ChartViewer from '@/components/dataviz/chart/ChartViewer.vue';
+import ChartViewerWrapper from '@/components/dataviz/chart/charts/ChartViewerWrapper.vue';
 import { computed, reactive } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 

@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import { ICartesianForm, IPolarForm, TChartForm, View } from '@/@types/dataviz/chart';
-import PieForm from './PieForm.vue';
 import { IDataset } from '@/@types/dataviz/dataset';
+import PieForm from './PieForm.vue';
 
 // Props
 const props = defineProps<{

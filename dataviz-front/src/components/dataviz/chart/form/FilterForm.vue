@@ -1,7 +1,7 @@
 <template>
   <div
     class="position-sticky bg-white pa-3"
-    :style="{ zIndex: 1, top: '57px' }"
+    :style="{ zIndex: 1, top: '65px' }"
   >
     <v-btn
       @click="addFilter"
