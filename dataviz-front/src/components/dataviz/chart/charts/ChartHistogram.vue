@@ -1,70 +1,91 @@
 <template>
-  <v-chart class="chart" :option="option" autoresize />
+  <v-chart
+    :option="option"
+    autoresize
+  />
 </template>
 
 <script setup lang="ts">
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { PieChart } from 'echarts/charts';
+import { BarChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
+  GridComponent,
 } from 'echarts/components';
-import VChart, { THEME_KEY } from 'vue-echarts';
-import { ref, provide } from 'vue';
+import VChart from 'vue-echarts';
+import { computed } from 'vue';
+import { ICartesianResponse } from '@/@types/dataviz/chart';
 
 use([
   CanvasRenderer,
-  PieChart,
+  BarChart,
   TitleComponent,
   TooltipComponent,
   LegendComponent,
+  GridComponent,
 ]);
 
-provide(THEME_KEY, 'dark');
+// Props
+const props = defineProps<{
+  data: ICartesianResponse;
+}>();
 
-const option = ref({
+// Extraire et trier les années
+const years = computed(() => {
+  return [
+    ...new Set(
+      props.data.series.flatMap(serie => serie.data.map(d => d.label))
+    ),
+  ].sort((a, b) => Number(a) - Number(b)); // Tri chronologique
+});
+
+// Computed option
+const option = computed(() => ({
   title: {
-    text: 'Traffic Sources',
+    text: 'Histogram Chart',
     left: 'center',
   },
   tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b} : {c} ({d}%)',
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: (params: any[]) => {
+      const year = params[0].axisValue; // Ajout de l'année
+      return (
+        `${year}<br/>` +
+        params
+          .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
+          .join('<br/>')
+      );
+    },
   },
   legend: {
-    orient: 'vertical',
-    left: 'left',
-    data: ['Direct', 'Email', 'Ad Networks', 'Video Ads', 'Search Engines'],
+    left: 'center',
+    bottom: 0,
   },
-  series: [
-    {
-      name: 'Traffic Sources',
-      type: 'pie',
-      radius: '55%',
-      center: ['50%', '60%'],
-      data: [
-        { value: 335, name: 'Direct' },
-        { value: 310, name: 'Email' },
-        { value: 234, name: 'Ad Networks' },
-        { value: 135, name: 'Video Ads' },
-        { value: 1548, name: 'Search Engines' },
-      ],
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)',
-        },
-      },
+  xAxis: {
+    type: 'category',
+    data: years.value, // Années bien ordonnées
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: {
+      formatter: (value: number) => formatValue(value),
     },
-  ],
-});
-</script>
+  },
+  series: props.data.series.map(serie => ({
+    name: serie.label || 'Unknown',
+    type: 'bar',
+    data: years.value.map(year => {
+      const point = serie.data.find(d => d.label === year);
+      return point ? Math.ceil(point.y) : 0;
+    }),
+  })),
+}));
 
-<style scoped>
-.chart {
-  height: 100vh;
-}
-</style>
+// Formatter
+const formatValue = (value: number) =>
+  Math.ceil(value).toLocaleString('fr-FR').replace(/\./g, ',');
+</script>

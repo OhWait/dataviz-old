@@ -37,7 +37,6 @@
   />
 
   <ChartViewerWrapper
-    :view="chart?.view"
     :chart="chart"
     :response="chart?.response"
   />

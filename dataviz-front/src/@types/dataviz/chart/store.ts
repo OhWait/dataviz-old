@@ -48,7 +48,7 @@ export interface ICartesianForm {
 
   serie: {
     column: string | null;
-    dataEntry: string;
+    dataEntry: string | null;
   };
 
   filters: IFilter[];

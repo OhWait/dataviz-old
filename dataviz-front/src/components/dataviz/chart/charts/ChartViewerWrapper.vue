@@ -1,7 +1,7 @@
 <template>
   <component
-    v-if="chart && chart.response && view"
-    :is="chartComponents[view]"
+    v-if="chart && chart.response && chart.response.view"
+    :is="chartComponents[chart.response.view]"
     :data="chart.response"
   />
 
@@ -26,7 +26,6 @@ import ChartLine from './ChartLine.vue';
 
 // Props
 const props = defineProps<{
-  view?: View | null;
   chart: TChart | null;
   response?: TChartResponse | null;
 }>();
@@ -42,5 +41,5 @@ const chartComponents: Record<View, any> = {
 };
 
 // Computed
-const imageSrc = computed(() => chartImages[props.view || View.Pie]);
+const imageSrc = computed(() => chartImages[props.chart?.view || View.Pie]);
 </script>
