@@ -16,13 +16,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { TChart, TChartResponse, View } from '@/@types/dataviz/chart/index.js';
-import { chartImages } from '@/utils/chart/chartImage';
-import ChartPie from './ChartPie.vue';
-import ChartHistogram from './ChartHistogram.vue';
-import ChartStackedHistogram from './ChartStackedHistogram.vue';
-import ChartBar from './ChartBar.vue';
-import ChartStackedBar from './ChartStackedBar.vue';
-import ChartLine from './ChartLine.vue';
+import { viewList } from '@/utils/viewList';
+import PieChart from './PieChart.vue';
+import DonutChart from './DonutChart.vue';
+import LineChart from './LineChart.vue';
+import StackedColumnChart from './StackedColumnChart.vue';
+import StackedBarChart from './StackedBarChart.vue';
+import ColumnChart from './ColumnChart.vue';
+import BarChart from './BarChart.vue';
 
 // Props
 const props = defineProps<{
@@ -32,14 +33,19 @@ const props = defineProps<{
 
 // Setup
 const chartComponents: Record<View, any> = {
-  [View.Pie]: ChartPie,
-  [View.Histogram]: ChartHistogram,
-  [View.StackedHistogram]: ChartStackedHistogram,
-  [View.Bar]: ChartBar,
-  [View.StackedBar]: ChartStackedBar,
-  [View.Line]: ChartLine,
+  [View.PieChart]: PieChart,
+  [View.DonutChart]: DonutChart,
+  [View.ColumnChart]: ColumnChart,
+  [View.StackedColumnChart]: StackedColumnChart,
+  [View.BarChart]: BarChart,
+  [View.StackedBarChart]: StackedBarChart,
+  [View.LineChart]: LineChart,
 };
 
 // Computed
-const imageSrc = computed(() => chartImages[props.chart?.view || View.Pie]);
+const imageSrc = computed(
+  () =>
+    viewList.find(v => v.type === props.chart?.view)?.preview ||
+    viewList.at(0)?.preview
+);
 </script>

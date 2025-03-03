@@ -33,28 +33,28 @@ const props = defineProps<{
   data: ICartesianResponse;
 }>();
 
-// Extraire et trier les années
-const years = computed(() => {
+// Extraire et trier les catégories
+const categories = computed(() => {
   return [
     ...new Set(
       props.data.series.flatMap(serie => serie.data.map(d => d.label))
     ),
-  ].sort((a, b) => Number(a) - Number(b)); // Tri chronologique
+  ];
 });
 
 // Computed option
 const option = computed(() => ({
   title: {
-    text: 'Histogram Chart',
+    text: 'Bar Chart',
     left: 'center',
   },
   tooltip: {
     trigger: 'axis',
     axisPointer: { type: 'shadow' },
     formatter: (params: any[]) => {
-      const year = params[0].axisValue; // Ajout de l'année
+      const category = params[0].axisValue;
       return (
-        `${year}<br/>` +
+        `${category}<br/>` +
         params
           .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
           .join('<br/>')
@@ -66,20 +66,20 @@ const option = computed(() => ({
     bottom: 0,
   },
   xAxis: {
-    type: 'category',
-    data: years.value, // Années bien ordonnées
-  },
-  yAxis: {
-    type: 'value',
+    type: 'value', // Axe X = Valeurs
     axisLabel: {
       formatter: (value: number) => formatValue(value),
     },
   },
+  yAxis: {
+    type: 'category', // Axe Y = Catégories
+    data: categories.value,
+  },
   series: props.data.series.map(serie => ({
     name: serie.label || 'Unknown',
     type: 'bar',
-    data: years.value.map(year => {
-      const point = serie.data.find(d => d.label === year);
+    data: categories.value.map(category => {
+      const point = serie.data.find(d => d.label === category);
       return point ? Math.ceil(point.y) : 0;
     }),
   })),

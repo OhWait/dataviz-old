@@ -137,17 +137,18 @@ export const useChartStore = defineStore('chart', {
         throw new Error('Chart not found !');
       }
 
-      if (View.Pie === view) {
+      chart.view = view;
+
+      if (View.PieChart === view || View.DonutChart === view) {
         this.transformToPolar(chart);
         return this;
       }
 
-      this.transformToCartesian(chart, view);
+      this.transformToCartesian(chart);
       return this;
     },
 
     transformToPolar(chart: TChart) {
-      chart.view = View.Pie;
       chart.payload = {
         values: { column: null, operation: null, dataEntry: null },
         serie: { column: null, dataEntry: null },
@@ -157,14 +158,15 @@ export const useChartStore = defineStore('chart', {
       return this;
     },
 
-    transformToCartesian(chart: TChart, view: View) {
-      chart.view = view;
+    transformToCartesian(chart: TChart) {
       chart.payload = {
         distribution: { column: null, dataEntry: null, dateOperation: null },
         operation: { column: null, operation: null, dataEntry: null },
         serie: { column: null, dataEntry: null },
         filters: chart.payload?.filters ?? [],
       };
+
+      return this;
     },
 
     updateFilters(uuid: string, filters: IFilter[]) {

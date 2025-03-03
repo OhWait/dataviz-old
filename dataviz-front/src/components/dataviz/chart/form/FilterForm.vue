@@ -51,6 +51,7 @@
             multiple
             chips
             required
+            closableChips
           >
             <template #item="{ props }">
               <v-list-item

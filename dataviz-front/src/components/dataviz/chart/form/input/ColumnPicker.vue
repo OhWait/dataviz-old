@@ -8,6 +8,7 @@
     variant="underlined"
     :disabled="disabled"
     :rules="rules ?? []"
+    clearable
     @update:model-value="emit('update:modelValue', $event)"
   >
     <template #item="{ item, props }">
