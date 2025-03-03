@@ -57,7 +57,7 @@ describe('useChartStore', () => {
     });
 
     it('should set drawer view correctly', () => {
-      const view = View.Pie;
+      const view = View.PieChart;
       store.setDrawerView(view);
 
       expect(store.drawers.visualization.view).toBe(view);
@@ -97,6 +97,7 @@ describe('useChartStore', () => {
         serie: { column: 'col2', dataEntry: 'data2' },
         filters: [{ column: 'col3', values: ['value1'] }],
       };
+      store.updateChart(uuid, View.PieChart);
 
       const mockResponse = { data: 'response data' };
       (postPolar as vi.Mock).mockResolvedValue(mockResponse);
@@ -135,32 +136,22 @@ describe('useChartStore', () => {
   describe('Chart Update', () => {
     it('should update filters correctly', () => {
       const filters = [{ column: 'col1', values: ['value1', 'value2'] }];
-      store.updateChart(uuid, View.Pie).updateFilters(uuid, filters);
+      store.updateChart(uuid, View.PieChart).updateFilters(uuid, filters);
 
       const chart = store.getChart(uuid);
       expect(chart?.payload?.filters).toEqual(filters);
     });
 
     it('should update chart view to Polar (Pie) and transform payload', () => {
-      store.updateChart(uuid, View.Pie);
+      store.updateChart(uuid, View.PieChart);
 
       const chart = store.getChart(uuid);
-      expect(chart?.view).toBe(View.Pie);
+      expect(chart?.view).toBe(View.PieChart);
       expect(chart?.payload?.values).toEqual({
         column: null,
         operation: null,
         dataEntry: null,
       });
-    });
-
-    it('should handle unknown view type in updateChart', () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation();
-
-      store.updateChart(uuid, 'UnknownView' as any);
-
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'No handler for view type: UnknownView'
-      );
     });
   });
 });

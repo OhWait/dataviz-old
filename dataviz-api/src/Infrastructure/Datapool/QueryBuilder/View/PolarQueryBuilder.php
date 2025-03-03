@@ -17,13 +17,14 @@ class PolarQueryBuilder extends AbstractViewQueryBuilder
 
     public function process(SelectInterface $select): void
     {
-        $select
-            ->cols([
-                $this->colAggregateOperation($this->request->values()) => 'y',
-                $this->request->serie()->fullColumnName() => 'serie',
-            ])
-            ->groupBy(['"serie"'])
-            ->orderBy(['"serie"']);
+        $select->cols([$this->colAggregateOperation($this->request->values()) => 'y']);
+
+        if ($this->request->hasSerie()) {
+            $select
+                ->cols([$this->request->serie()->fullColumnName() => 'serie'])
+                ->groupBy(['"serie"'])
+                ->orderBy(['"serie"']);
+        }
 
         $this->bindWhere($select);
     }

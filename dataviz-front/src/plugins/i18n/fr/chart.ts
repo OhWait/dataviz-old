@@ -11,7 +11,8 @@ export default {
   'chart.drawer.filters': 'Filtres',
 
   'chart.icon.pie': 'Graphique en secteurs',
-  'chart.icon.histogram': 'Histograme',
+  'chart.icon.donut': 'Graphique en anneau',
+  'chart.icon.histogram': 'Histogramme',
   'chart.icon.stacked_histogram': 'Histogramme empilé',
   'chart.icon.bar': 'Graphique à barres',
   'chart.icon.stacked_bar': 'Graphique à barres empilées',

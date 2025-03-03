@@ -5,14 +5,14 @@ import { Operation } from './enum/OperationEnum';
 import { View } from './enum/ViewEnum';
 import { ICartesianResponse, IPolarResponse } from './model/response';
 
-export type TResponse = IPolarResponse | ICartesianResponse;
+export type TChartResponse = IPolarResponse | ICartesianResponse;
 
-interface IChart<TPayload, TResponse> {
+interface IChart<TChartPayload, TChartResponse> {
   uuid: string;
   active: boolean;
   isLoading: boolean;
-  payload?: TPayload;
-  response?: TResponse | null;
+  payload?: TChartPayload;
+  response?: TChartResponse | null;
   error?: Error | null;
   view?: View | null;
   dataset: IDataset;
@@ -48,7 +48,7 @@ export interface ICartesianForm {
 
   serie: {
     column: string | null;
-    dataEntry: string;
+    dataEntry: string | null;
   };
 
   filters: IFilter[];

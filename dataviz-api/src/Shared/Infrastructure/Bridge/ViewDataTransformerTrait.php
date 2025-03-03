@@ -10,7 +10,7 @@ use App\Shared\Domain\Model\RequestColumnInterface;
 
 trait ViewDataTransformerTrait
 {
-    private function label(RequestColumnInterface $param, array $row, string $propertyPath): string
+    private function label(?RequestColumnInterface $param, array $row, string $propertyPath): string
     {
         $nameSerie = $this->propertyAccessor->toString(
             $row,
@@ -18,7 +18,7 @@ trait ViewDataTransformerTrait
             'serie',
         );
 
-        $label = $param->meta()?->metaRows()->findFirst(function (int $index, MetaRow $row) use ($nameSerie) {
+        $label = $param?->meta()?->metaRows()->findFirst(function (int $index, MetaRow $row) use ($nameSerie) {
             return $row->value()->equals(new MetaRowValue($nameSerie));
         })?->label()->value;
 

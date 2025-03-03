@@ -63,7 +63,7 @@ class Request
     }
 
     /**
-     * @return RequestColumnInterface[]&RequestColumnOverrideInterface[]
+     * @return array<string, RequestColumnInterface&RequestColumnOverrideInterface>
      */
     public function protectedParams(): array
     {

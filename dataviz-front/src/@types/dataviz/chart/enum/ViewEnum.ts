@@ -1,8 +1,9 @@
 export enum View {
-  Pie = 'PIE',
-  Histogram = 'HISTOGRAM',
-  StackedHistogram = 'STACKED_HISTOGRAM',
-  Bar = 'BAR',
-  StackedBar = 'STACKED_BAR',
-  Line = 'LINE',
+  PieChart = "PIE_CHART",
+  DonutChart = "DONOT_CHART",
+  ColumnChart = "COLUMN_CHART",
+  StackedColumnChart = "STACKED_COLUMN_CHART",
+  BarChart = "BAR_CHART",
+  StackedBarChart = "STACKED_BAR_CHART",
+  LineChart = "LINE_CHART",
 }

@@ -10,7 +10,6 @@ use App\Domain\Dataviz\Model\MetaColumn;
 use App\Shared\Domain\Enum\ViolationTypeEnum;
 use App\Shared\Domain\Model\RequestColumnInterface;
 use App\Shared\Domain\UseCase\Validator\AbstractValidator;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * ColumnsValidator is a simple class for validating the parameters of a request before processing it into database.
@@ -22,14 +21,12 @@ use Zenstruck\Foundry\Test\Factories;
  */
 class ColumnsValidator extends AbstractValidator
 {
-    use Factories;
-
     public function __construct(private readonly Dataset $dataset)
     {
     }
 
     /**
-     * @param RequestColumnInterface[] $params
+     * @param array<string, RequestColumnInterface&RequestColumnInterface> $params
      */
     public function process(array $params): void
     {
@@ -51,9 +48,7 @@ class ColumnsValidator extends AbstractValidator
         $column = $ask
             ->dataEntry()
             ->metaColumns()
-            ->findFirst(function (int $key, MetaColumn $column) use ($ask) {
-                return $ask->column()->equals($column->columnName());
-            });
+            ->findFirst(fn (int $key, MetaColumn $column) => $ask->column()->equals($column->columnName()));
 
         if (null === $column) {
             $this->addMetaColumnViolation($ask, $propertyPath);

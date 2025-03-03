@@ -8,6 +8,7 @@
     :disabled="!dataType"
     variant="underlined"
     :rules="rules ?? []"
+    clearable
     @update:model-value="emit('update:modelValue', $event)"
   />
 </template>
@@ -23,11 +24,12 @@ const props = defineProps<{
   modelValue: Operation | null;
   dataType?: DataType;
   rules?: ((value: any) => boolean | string)[];
-
 }>();
 
 // Emit
-const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>();
+const emit = defineEmits<{ 
+  (e: 'update:modelValue', value: Operation | null): void 
+}>();
 
 // Computed
 const valueOperationOptions = computed(() =>

@@ -1,3 +1,5 @@
+import { View } from "../enum/ViewEnum";
+
 interface IDataResponse {
   y: number;
   label?: string;
@@ -20,6 +22,7 @@ interface IQueryResponse {
 interface IChartResponse<T extends IDataResponse | ICartesianDataResponse> {
   series: ISerieResponse<T>[];
   query?: IQueryResponse;
+  view?: View;
 }
 
 export interface ICartesianResponse

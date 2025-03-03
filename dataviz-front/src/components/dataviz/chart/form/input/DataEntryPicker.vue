@@ -7,6 +7,7 @@
     item-value="value"
     variant="underlined"
     :rules="rules ?? []"
+    clearable
     @update:model-value="emit('update:modelValue', $event)"
   />
 </template>

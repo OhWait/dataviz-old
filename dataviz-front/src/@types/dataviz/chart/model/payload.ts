@@ -33,6 +33,6 @@ export interface ICartesianPayload {
 
 export interface IPolarPayload {
   values: IAxisOperationPayload;
-  serie: ISeriePayload;
+  serie?: ISeriePayload;
   filters?: IFilterPayload[];
 }

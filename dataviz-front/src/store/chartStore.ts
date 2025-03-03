@@ -1,17 +1,21 @@
 import {
+  ICartesianForm,
   IChartState,
   IDrawer,
   IFilter,
   IPolarForm,
   TChart,
   TChartForm,
+  TChartResponse,
   TDrawerKey,
-  TResponse,
   View,
 } from '@/@types/dataviz/chart';
 import { IDataset } from '@/@types/dataviz/dataset';
-import { postPolar } from '@/api/dataviz/chartRepository';
-import { polarDataTransformer } from '@/utils/chart/dataTransformer';
+import { postCartesian, postPolar } from '@/api/dataviz/chartRepository';
+import {
+  cartesianDataTransformer,
+  polarDataTransformer,
+} from '@/utils/chart/dataTransformer';
 import { defineStore } from 'pinia';
 
 export const useChartStore = defineStore('chart', {
@@ -42,16 +46,40 @@ export const useChartStore = defineStore('chart', {
     async postForm(slug: string, uuid: string, form: TChartForm) {
       if ('values' in form) {
         await this.postPolar(slug, uuid, form);
+      } else {
+        await this.postCartesian(slug, uuid, form);
       }
     },
 
-    async postPolar(slug: string, uuid: string, polar: IPolarForm) {
-      const response = await postPolar(slug, polarDataTransformer(polar));
+    async postPolar(slug: string, uuid: string, form: IPolarForm) {
+      try {
+        const payload = polarDataTransformer(form);
+        const response = await postPolar(slug, payload);
+        this.setResponse(uuid, response);
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    async postCartesian(slug: string, uuid: string, form: ICartesianForm) {
+      try {
+        const payload = cartesianDataTransformer(form);
+        const response = await postCartesian(slug, payload);
+        this.setResponse(uuid, response);
+      } catch (e) {
+        throw e;
+      }
+    },
+
+    setResponse(uuid: string, response: TChartResponse) {
       const chart = this.getChart(uuid);
 
-      if (chart) {
+      if (chart && chart.view) {
         chart.response = response;
+        chart.response.view = chart.view;
       }
+
+      return this;
     },
 
     setActiveTheme(theme: string) {
@@ -109,21 +137,31 @@ export const useChartStore = defineStore('chart', {
         throw new Error('Chart not found !');
       }
 
-      switch (view) {
-        case View.Pie:
-          this.transformToPolar(chart);
-          break;
-        default:
-          console.warn(`No handler for view type: ${view}`);
+      chart.view = view;
+
+      if (View.PieChart === view || View.DonutChart === view) {
+        this.transformToPolar(chart);
+        return this;
       }
 
+      this.transformToCartesian(chart);
       return this;
     },
 
     transformToPolar(chart: TChart) {
-      chart.view = View.Pie;
       chart.payload = {
         values: { column: null, operation: null, dataEntry: null },
+        serie: { column: null, dataEntry: null },
+        filters: chart.payload?.filters ?? [],
+      };
+
+      return this;
+    },
+
+    transformToCartesian(chart: TChart) {
+      chart.payload = {
+        distribution: { column: null, dataEntry: null, dateOperation: null },
+        operation: { column: null, operation: null, dataEntry: null },
         serie: { column: null, dataEntry: null },
         filters: chart.payload?.filters ?? [],
       };
@@ -152,7 +190,7 @@ export const useChartStore = defineStore('chart', {
         state.charts.find(c => c.uuid === uuid) ?? null,
     getResponse:
       state =>
-      (uuid: string): TResponse | null | undefined =>
+      (uuid: string): TChartResponse | null | undefined =>
         state.charts.find(c => c.uuid === uuid)?.response,
   },
 });

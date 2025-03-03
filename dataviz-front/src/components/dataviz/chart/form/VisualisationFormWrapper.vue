@@ -9,8 +9,9 @@
 
 <script setup lang="ts">
 import { ICartesianForm, IPolarForm, TChartForm, View } from '@/@types/dataviz/chart';
-import PieForm from './PieForm.vue';
 import { IDataset } from '@/@types/dataviz/dataset';
+import PieForm from './PolarForm.vue';
+import CartesianForm from './CartesianForm.vue';
 
 // Props
 const props = defineProps<{
@@ -25,12 +26,13 @@ const emit = defineEmits<{
 }>();
 
 const formComponents: Record<View, any> = {
-  [View.Pie]: PieForm,
-  [View.Histogram]: PieForm, // TODO
-  [View.StackedHistogram]: PieForm, // TODO
-  [View.Bar]: PieForm, // TODO
-  [View.StackedBar]: PieForm, // TODO
-  [View.Line]: PieForm, // TODO
+  [View.PieChart]: PieForm,
+  [View.DonutChart]: PieForm,
+  [View.ColumnChart]: CartesianForm,
+  [View.StackedColumnChart]: CartesianForm,
+  [View.BarChart]: CartesianForm,
+  [View.StackedBarChart]: CartesianForm,
+  [View.LineChart]: CartesianForm,
 };
 
 // Methods

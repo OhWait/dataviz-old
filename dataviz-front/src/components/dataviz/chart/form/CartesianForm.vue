@@ -3,25 +3,50 @@
     <v-form
       ref="formRef"
       validate-on="submit"
-      @submit.prevent="submitPolar"
+      @submit.prevent="submitCartesian"
     >
-      <!-- Select for Values -->
+      <!-- Select for Distribution -->
       <DataEntryPicker
         v-if="hasMultipleDataEntries"
-        v-model="form.values.dataEntry"
+        v-model="form.distribution.dataEntry"
         :dataset="dataset"
         :rules="[required]"
       />
 
       <ColumnPicker
-        v-model="form.values.column"
-        :label="$t('chart.form.polar.values')"
-        :data-entry="valuesDataEntry"
+        v-model="form.distribution.column"
+        :label="
+          reverseAxe
+            ? $t('chart.form.cartesian.operation')
+            : $t('chart.form.cartesian.distribution')
+        "
+        :data-entry="operationDataEntry"
+        :rules="[required]"
+      />
+
+      <br />
+
+      <!-- Select for Operation -->
+      <DataEntryPicker
+        v-if="hasMultipleDataEntries"
+        v-model="form.operation.dataEntry"
+        :dataset="dataset"
+        :rules="[required]"
+      />
+
+      <ColumnPicker
+        v-model="form.operation.column"
+        :label="
+          reverseAxe
+            ? $t('chart.form.cartesian.distribution')
+            : $t('chart.form.cartesian.operation')
+        "
+        :data-entry="serieDataEntry"
         :rules="[required]"
       />
 
       <OperationPicker
-        v-model="form.values.operation"
+        v-model="form.operation.operation"
         :data-type="dataType"
         :rules="[required]"
       />
@@ -40,7 +65,6 @@
         v-model="form.serie.column"
         :label="$t('chart.form.polar.series')"
         :data-entry="serieDataEntry"
-        :rules="[required]"
       />
 
       <v-btn
@@ -54,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { IPolarForm } from '@/@types/dataviz/chart';
+import { ICartesianForm, View } from '@/@types/dataviz/chart';
 import { IDataset } from '@/@types/dataviz/dataset';
 import ColumnPicker from './input/ColumnPicker.vue';
 import OperationPicker from './input/OperationPicker.vue';
@@ -62,16 +86,18 @@ import DataEntryPicker from './input/DataEntryPicker.vue';
 import { computed, watch, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VForm } from 'vuetify/lib/components/index.mjs';
+import { reversedCartesianAxe } from '@/utils/viewList';
 
 // Props
 const props = defineProps<{
-  payload: IPolarForm;
+  currentView: View;
+  payload: ICartesianForm;
   dataset: IDataset;
 }>();
 
 // Emits
 const emit = defineEmits<{
-  (e: 'submit', payload: IPolarForm): void;
+  (e: 'submit', payload: ICartesianForm): void;
 }>();
 
 // Setup
@@ -81,14 +107,19 @@ const formRef = ref<VForm | null>(null);
 const form = reactive({ ...props.payload });
 
 // Computed
+const reverseAxe = computed(() =>
+  reversedCartesianAxe.includes(props.currentView)
+);
 const dataEntries = computed(() => props.dataset.dataEntries);
 const hasMultipleDataEntries = computed(() => dataEntries.value.length > 1);
-const valuesDataEntry = computed(() => getDataEntry(form.values.dataEntry));
+const operationDataEntry = computed(() =>
+  getDataEntry(form.operation.dataEntry)
+);
 const serieDataEntry = computed(() => getDataEntry(form.serie.dataEntry));
 const dataType = computed(
   () =>
-    valuesDataEntry.value?.columns.find(
-      c => c.columnName === form.values.column
+    operationDataEntry.value?.columns.find(
+      c => c.columnName === form.operation.column
     )?.dataType
 );
 
@@ -96,7 +127,7 @@ const dataType = computed(
 const getDataEntry = (slug: string | null) =>
   dataEntries.value.find(d => d.slug === slug) ?? dataEntries.value[0];
 
-const submitPolar = async () => {
+const submitCartesian = async () => {
   if (!formRef.value) return;
 
   const { valid } = await formRef.value.validate();
@@ -106,18 +137,31 @@ const submitPolar = async () => {
   }
 };
 
-// Reset column and operation when dataEntry changes
+// Reset distribution
 watch(
-  () => form.values.dataEntry,
+  () => form.distribution.dataEntry,
   () => {
-    form.values.column = null;
-    form.values.operation = null;
+    form.distribution.column = null;
+    form.distribution.dateOperation = null;
   }
 );
 
-// Reset operation when column changes
+// Reset operation
 watch(
-  () => form.values.column,
-  () => (form.values.operation = null)
+  () => form.operation.dataEntry,
+  () => {
+    form.operation.column = null;
+    form.operation.operation = null;
+  }
+);
+watch(
+  () => form.operation.column,
+  () => (form.operation.operation = null)
+);
+
+// Reset series
+watch(
+  () => form.serie.dataEntry,
+  () => (form.serie.column = null)
 );
 </script>

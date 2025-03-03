@@ -111,4 +111,43 @@ final class InseePop1aPolarTest extends ApiTestCase
             ],
         ]);
     }
+    
+    public function testPostWithoutSerieShouldntGroupBy(): void
+    {
+        static::createClient()->request('POST', '/chart/pop1a/polar', [
+            'json' => [
+                'values' => [
+                    'column' => 'nb',
+                    'operation' => 'SUM',
+                ],
+                'filters' => [[
+                    'column' => 'millesime',
+                    'values' => ['2006', '2007'],
+                ]],
+            ],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        $sqlExpected = (new QueryFactory('pgsql'))
+            ->newSelect()
+            ->cols(['SUM(pop1a.nb)' => 'y'])
+            ->from('insee.pop1a AS pop1a')
+            ->where('pop1a.millesime IN (:millesime)', ['millesime' => ['2006', '2007']]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'series' => [[
+                'data' => [
+                    ['y' => 4768.643115, 'label' => 'serie'],
+                ],
+            ]],
+            'query' => [
+                'statement' => $sqlExpected->getStatement(),
+                'bindValues' => $sqlExpected->getBindValues(),
+            ],
+        ]);
+    }
 }
