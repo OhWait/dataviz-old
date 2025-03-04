@@ -1,5 +1,8 @@
 <template>
-  <v-card color="blue-grey-lighten-5" :to="to">
+  <v-card
+    color="blue-grey-lighten-5"
+    :to="to"
+  >
     <v-card-title>{{ item.title }}</v-card-title>
     <v-card-subtitle>{{ item.shortTitle }}</v-card-subtitle>
 
@@ -18,12 +21,11 @@
 import { computed } from 'vue';
 import { DatasetRoutes, IDatasetCollection } from '@/@types/dataviz/dataset';
 
-interface Props {
+const props = defineProps<{
   item: IDatasetCollection;
   link?: boolean;
-}
+}>();
 
-const props = defineProps<Props>();
 const to = computed(() =>
   props.link
     ? { name: DatasetRoutes.Item, params: { slug: props.item?.slug } }

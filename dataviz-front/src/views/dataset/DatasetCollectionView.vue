@@ -16,7 +16,7 @@
 import { onMounted, computed } from 'vue';
 import { useDatasetStore } from '@/store/datasetStore';
 import SkeletonCard from '@/components/SkeletonCard.vue';
-import DatasetCard from '@/features/dataset/DatasetCard.vue';
+import DatasetCard from '@/components/dataviz/dataset/DatasetCard.vue';
 
 const datasetStore = useDatasetStore();
 

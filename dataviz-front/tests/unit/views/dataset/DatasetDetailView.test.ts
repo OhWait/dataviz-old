@@ -2,9 +2,9 @@ import { mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useDatasetStore } from '@/store/datasetStore';
 import DatasetDetailView from '@/views/dataset/DatasetDetailView.vue';
-import HeaderDetail from '@/features/dataset/detail/HeaderDetail.vue';
-import DescriptionDetail from '@/features/dataset/detail/DescriptionDetail.vue';
-import DataEntryDetail from '@/features/dataset/detail/DataEntryDetail.vue';
+import HeaderDetail from '@/components/dataviz/dataset/HeaderDetail.vue';
+import DescriptionDetail from '@/components/dataviz/dataset/DescriptionDetail.vue';
+import DataEntryDetail from '@/components/dataviz/dataEntry/DataEntryDetail.vue';
 import SkeletonCard from '@/components/SkeletonCard.vue';
 import { datasetFactory } from '@test/data/dataviz/datasetFactory';
 

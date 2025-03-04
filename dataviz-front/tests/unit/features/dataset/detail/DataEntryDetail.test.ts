@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 import MetaDetail from '@/features/metaColumn/MetaTable.vue';
-import PreviewDetail from '@/features/dataEntry/TablePreview.vue';
+import PreviewDetail from '@/components/dataviz/dataEntry/TablePreview.vue';
 import { createI18n } from 'vue-i18n';
-import DataEntryDetail from '@/features/dataset/detail/DataEntryDetail.vue';
+import DataEntryDetail from '@/components/dataviz/dataEntry/DataEntryDetail.vue';
 import { dataEntryFactory } from '@test/data/dataviz/dataEntryFactory';
 
 const i18n = createI18n({
