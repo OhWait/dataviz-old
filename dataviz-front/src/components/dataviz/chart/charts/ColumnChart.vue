@@ -51,15 +51,11 @@ const option = computed(() => ({
   tooltip: {
     trigger: 'axis',
     axisPointer: { type: 'shadow' },
-    formatter: (params: any[]) => {
-      const year = params[0].axisValue; // Ajout de l'année
-      return (
-        `${year}<br/>` +
-        params
-          .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
-          .join('<br/>')
-      );
-    },
+    formatter: (params: any[]) =>
+      `${params[0].axisValue}<br/>` +
+      params
+        .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
+        .join('<br/>'),
   },
   legend: {
     left: 'center',

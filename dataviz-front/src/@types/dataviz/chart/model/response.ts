@@ -6,7 +6,7 @@ interface IDataResponse {
 }
 
 interface ICartesianDataResponse extends IDataResponse {
-  x: number;
+  x: number | string | null;
 }
 
 interface ISerieResponse<T extends IDataResponse> {
