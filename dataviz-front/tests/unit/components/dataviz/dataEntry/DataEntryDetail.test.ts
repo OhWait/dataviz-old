@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
-import MetaDetail from '@/features/metaColumn/MetaTable.vue';
-import PreviewDetail from '@/features/dataEntry/TablePreview.vue';
+import MetaDetail from '@/components/dataviz/metaColumn/MetaTable.vue';
+import PreviewDetail from '@/components/dataviz/dataEntry/TablePreview.vue';
 import { createI18n } from 'vue-i18n';
-import DataEntryDetail from '@/features/dataset/detail/DataEntryDetail.vue';
+import DataEntryDetail from '@/components/dataviz/dataEntry/DataEntryDetail.vue';
 import { dataEntryFactory } from '@test/data/dataviz/dataEntryFactory';
 
 const i18n = createI18n({
@@ -22,7 +22,6 @@ vi.mock('@/features/dataEntry/TablePreview.vue', () => ({
   default: { template: '<div>MockPreviewDetail</div>' },
 }));
 
-
 const mockDataEntries = dataEntryFactory.buildList(3);
 
 describe('DateEntryDetail.vue', () => {
@@ -31,13 +30,20 @@ describe('DateEntryDetail.vue', () => {
   beforeEach(() => {
     wrapper = mount(DataEntryDetail, {
       global: { plugins: [i18n] },
-      props: { dataEntries: mockDataEntries },
+      props: {
+        dataEntries: mockDataEntries,
+        items: [],
+        loading: false,
+        error: null,
+      },
     });
   });
 
   it('renders correctly with multiple data entries', () => {
     expect(wrapper.find('#data-entry-tabs').exists()).toBe(true);
-    expect(wrapper.findAll('#data-entry-tabs .v-tab')).toHaveLength(mockDataEntries.length);
+    expect(wrapper.findAll('#data-entry-tabs .v-tab')).toHaveLength(
+      mockDataEntries.length
+    );
   });
 
   it('switches between data entries when tabs are clicked', async () => {
@@ -54,10 +60,10 @@ describe('DateEntryDetail.vue', () => {
   it('switches between metadata and preview components', async () => {
     const metaTab = wrapper.findAll('#meta-tabs .v-tab')[0];
     const previewTab = wrapper.findAll('#meta-tabs .v-tab')[1];
-    
+
     await metaTab.trigger('click');
     expect(wrapper.findComponent(MetaDetail).exists()).toBe(true);
-    
+
     await previewTab.trigger('click');
     expect(wrapper.findComponent(PreviewDetail).exists()).toBe(true);
   });

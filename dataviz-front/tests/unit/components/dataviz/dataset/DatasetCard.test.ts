@@ -1,5 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import DatasetCard from '@/features/dataset/DatasetCard.vue';
+import DatasetCard from '@/components/dataviz/dataset/DatasetCard.vue';
 import { DatasetRoutes } from '@/@types/dataviz/dataset';
 import { datasetFactory } from '@test/data/dataviz/datasetFactory';
 

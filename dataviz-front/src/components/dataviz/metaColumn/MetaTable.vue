@@ -33,15 +33,23 @@
 
         <td class="text-center">
           <v-tooltip activator="parent">{{ item.dataType }}</v-tooltip>
-          <v-icon :icon="getIconDataType(item.dataType)" size="x-large" />
+          <v-icon
+            :icon="getIconDataType(item.dataType)"
+            size="x-large"
+          />
         </td>
 
         <td class="text-center">
-          <v-icon :icon="getIconNullable(item.isNullable)" size="x-large" />
+          <v-icon
+            :icon="getIconNullable(item.isNullable)"
+            size="x-large"
+          />
         </td>
 
-        <td v-text="item.characterMaximumLength" class="text-center" />
-
+        <td
+          v-text="item.characterMaximumLength"
+          class="text-center"
+        />
         <td v-text="item.label" />
       </tr>
     </template>
@@ -49,7 +57,10 @@
     <template #expanded-row="{ item }">
       <tr>
         <td :colspan="headers.length">
-          <v-card class="ma-3 mx-auto" width="500">
+          <v-card
+            class="ma-3 mx-auto"
+            width="500"
+          >
             <v-data-table
               density="compact"
               fixed-header
@@ -79,17 +90,19 @@
 </template>
 
 <script setup lang="ts">
-import { IMetaColumn } from '@/@types/dataviz/column';
-import { IValues } from '@/@types/values';
+import { DataType, IMetaColumn } from '@/@types/dataviz/column';
 import { useI18n } from 'vue-i18n';
-import { DataType } from '@/@types/dataviz/column/model';
 import { dataTypeIconMapping } from '@/utils/dataTypeIconMapping';
+import { IValues } from '@/@types/dataviz/values';
 
 const { t } = useI18n();
 
-defineProps<{ metaColumns: IMetaColumn[] }>();
+// Props
+defineProps<{
+  metaColumns: IMetaColumn[];
+}>();
 
-// State
+// Headers
 const headers = [
   { title: '', key: 'data-table-expand' },
   { title: t('metacolumn.column_name'), key: 'columnName' },
@@ -107,14 +120,13 @@ const valueHeaders = [
   { title: 'Label', key: 'label' },
 ];
 
-// Methods
+// Helpers
 const getIconNullable = (isNullable: boolean) =>
   isNullable ? 'mdi-toggle-switch-off-outline' : 'mdi-toggle-switch';
 
-const getIconDataType = (dataType: DataType) => {
-  return dataTypeIconMapping[dataType] || 'mdi-help-circle';
-};
+const getIconDataType = (dataType: DataType) =>
+  dataTypeIconMapping[dataType] || 'mdi-help-circle';
 
 const fixedHeight = (values: IValues[] | undefined) =>
-  values && values.length > 12 ? 500 : -1;
+  (values?.length ?? 0) > 12 ? 500 : -1;
 </script>

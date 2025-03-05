@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { useDatasetStore } from '@/store/datasetStore';
 import DatasetCollectionView from '@/views/dataset/DatasetCollectionView.vue';
-import DatasetCard from '@/features/dataset/DatasetCard.vue';
+import DatasetCard from '@/components/dataviz/dataset/DatasetCard.vue';
 import SkeletonCard from '@/components/SkeletonCard.vue';
 import { datasetCollectionFactory } from '@test/data/dataviz/datasetFactory';
 import { HYDRA_KEYS } from '@/@types/hydra/hydraKeys';

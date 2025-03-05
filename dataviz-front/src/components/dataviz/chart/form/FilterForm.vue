@@ -102,7 +102,9 @@ const props = defineProps<{
   filters: IFilter[];
   dataset: IDataset;
 }>();
-const emit = defineEmits<{ (e: 'update:filters', filters: IFilter[]): void }>();
+const emit = defineEmits<{
+  (e: 'update:filters', filters: IFilter[]): void;
+}>();
 
 // Reactive Filters
 const filters = ref([...props.filters]);

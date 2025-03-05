@@ -51,15 +51,11 @@ const option = computed(() => ({
   tooltip: {
     trigger: 'axis',
     axisPointer: { type: 'shadow' },
-    formatter: (params: any[]) => {
-      const category = params[0].axisValue;
-      return (
-        `${category}<br/>` +
-        params
-          .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
-          .join('<br/>')
-      );
-    },
+    formatter: (params: any[]) =>
+      `${params[0].axisValue}<br/>` +
+      params
+        .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
+        .join('<br/>'),
   },
   legend: {
     left: 'center',

@@ -1,8 +1,15 @@
 <template>
   <v-card>
     <div class="d-flex flex-no-wrap justify-space-between">
-      <div v-if="imgSrc" class="align-self-center">
-        <v-img :src="imgSrc" class="ma-3" width="125" />
+      <div
+        v-if="imgSrc"
+        class="align-self-center"
+      >
+        <v-img
+          :src="imgSrc"
+          class="ma-3"
+          width="125"
+        />
       </div>
 
       <div class="text-content">
@@ -21,14 +28,12 @@
 </template>
 
 <script setup lang="ts">
-import { IProvider } from '@/@types/provider';
+import { IProvider } from '@/@types/dataviz/provider';
 import { getImageUrl } from '@/api/dataviz/datavizClient';
 
-interface Props {
+const props = defineProps<{
   item: IProvider;
-}
-
-const props = defineProps<Props>();
+}>();
 
 const imgSrc = props.item.image ? getImageUrl(props.item.image) : null;
 </script>

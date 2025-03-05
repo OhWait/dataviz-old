@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { IDataset } from '@/@types/dataviz/dataset';
-import ProviderCard from '@/features/provider/ProviderCard.vue';
+import ProviderCard from '@/components/dataviz/provider/ProviderCard.vue';
 
 interface Props {
   item: IDataset;

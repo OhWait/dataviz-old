@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { BarChart, LineChart } from 'echarts/charts';
+import { LineChart } from 'echarts/charts';
 import {
   TitleComponent,
   TooltipComponent,
@@ -34,7 +34,7 @@ const props = defineProps<{
 }>();
 
 // Extraire et trier les années
-const years = computed(() => {
+const xAxis = computed(() => {
   return [
     ...new Set(
       props.data.series.flatMap(serie => serie.data.map(d => d.label))
@@ -51,15 +51,11 @@ const option = computed(() => ({
   tooltip: {
     trigger: 'axis',
     axisPointer: { type: 'shadow' },
-    formatter: (params: any[]) => {
-      const year = params[0].axisValue; // Ajout de l'année
-      return (
-        `${year}<br/>` +
-        params
-          .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
-          .join('<br/>')
-      );
-    },
+    formatter: (params: any[]) =>
+      `${params[0].axisValue}<br/>` +
+      params
+        .map(p => `${p.seriesName} : ${formatValue(p.value)}`)
+        .join('<br/>'),
   },
   legend: {
     left: 'center',
@@ -67,7 +63,7 @@ const option = computed(() => ({
   },
   xAxis: {
     type: 'category',
-    data: years.value, // Années bien ordonnées
+    data: xAxis.value,
   },
   yAxis: {
     type: 'value',
@@ -78,8 +74,8 @@ const option = computed(() => ({
   series: props.data.series.map(serie => ({
     name: serie.label || 'Unknown',
     type: 'line',
-    data: years.value.map(year => {
-      const point = serie.data.find(d => d.label === year);
+    data: xAxis.value.map(xAxis => {
+      const point = serie.data.find(d => d.label === xAxis);
       return point ? Math.ceil(point.y) : 0;
     }),
   })),
