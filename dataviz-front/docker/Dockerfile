@@ -30,7 +30,7 @@ EXPOSE 5173
 CMD ["yarn", "dev"]
 
 # Production Stage
-FROM nginx:latest AS prod
+FROM nginx:1.27.4-alpine AS prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 

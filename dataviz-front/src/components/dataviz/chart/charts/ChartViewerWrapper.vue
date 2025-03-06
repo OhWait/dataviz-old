@@ -18,7 +18,6 @@ import { computed } from 'vue';
 import { TChart, TChartResponse, View } from '@/@types/dataviz/chart/index.js';
 import { viewList } from '@/utils/viewList';
 import PieChart from './PieChart.vue';
-import DonutChart from './DonutChart.vue';
 import LineChart from './LineChart.vue';
 import StackedColumnChart from './StackedColumnChart.vue';
 import StackedBarChart from './StackedBarChart.vue';
@@ -34,7 +33,7 @@ const props = defineProps<{
 // Setup
 const chartComponents: Record<View, any> = {
   [View.PieChart]: PieChart,
-  [View.DonutChart]: DonutChart,
+  [View.DonutChart]: PieChart,
   [View.ColumnChart]: ColumnChart,
   [View.StackedColumnChart]: StackedColumnChart,
   [View.BarChart]: BarChart,

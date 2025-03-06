@@ -16,7 +16,7 @@ import {
 } from 'echarts/components';
 import VChart from 'vue-echarts';
 import { computed } from 'vue';
-import { IPolarResponse } from '@/@types/dataviz/chart';
+import { IPolarResponse, View } from '@/@types/dataviz/chart';
 
 use([
   CanvasRenderer,
@@ -53,11 +53,15 @@ const option = computed(() => ({
   series: props.data.series.map(serie => ({
     name: serie.label || 'Unknown',
     type: 'pie',
+    radius:
+      props.data.view === View.DonutChart ? ['40%', '70%'] : ['0%', '70%'],
     center: ['50%', '50%'],
-    data: serie.data.map(d => ({
-      value: Math.ceil(d.y),
-      name: d.label || 'Unknown',
-    })),
+    data: serie.data
+      .map(d => ({
+        value: Math.ceil(d.y),
+        name: d.label || 'Unknown',
+      }))
+      .sort((a, b) => b.value - a.value),
     emphasis: {
       itemStyle: {
         shadowBlur: 10,

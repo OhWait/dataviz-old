@@ -149,21 +149,51 @@ export const useChartStore = defineStore('chart', {
     },
 
     transformToPolar(chart: TChart) {
+      if ('values' in (chart.payload || {})) {
+        return this;
+      }
+
+      const oldPayload = chart.payload as ICartesianForm | undefined;
+
       chart.payload = {
-        values: { column: null, operation: null, dataEntry: null },
-        serie: { column: null, dataEntry: null },
-        filters: chart.payload?.filters ?? [],
+        values: {
+          column: oldPayload?.operation?.column ?? null,
+          operation: oldPayload?.operation?.operation ?? null,
+          dataEntry: oldPayload?.operation?.dataEntry ?? null,
+        },
+        serie: {
+          column: oldPayload?.serie?.column ?? null,
+          dataEntry: oldPayload?.serie?.dataEntry ?? null,
+        },
+        filters: oldPayload?.filters ?? [],
       };
 
       return this;
     },
 
     transformToCartesian(chart: TChart) {
+      if ('distribution' in (chart.payload || {})) {
+        return this;
+      }
+
+      const oldPayload = chart.payload as IPolarForm | undefined;
+
       chart.payload = {
-        distribution: { column: null, dataEntry: null, dateOperation: null },
-        operation: { column: null, operation: null, dataEntry: null },
-        serie: { column: null, dataEntry: null },
-        filters: chart.payload?.filters ?? [],
+        distribution: {
+          column: null,
+          dataEntry: null,
+          dateOperation: null,
+        },
+        operation: {
+          column: oldPayload?.values?.column ?? null,
+          operation: oldPayload?.values?.operation ?? null,
+          dataEntry: oldPayload?.values?.dataEntry ?? null,
+        },
+        serie: {
+          column: oldPayload?.serie?.column ?? null,
+          dataEntry: oldPayload?.serie?.dataEntry ?? null,
+        },
+        filters: oldPayload?.filters ?? [],
       };
 
       return this;

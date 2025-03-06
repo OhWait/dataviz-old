@@ -27,7 +27,7 @@ const chartComponents = [
   {
     name: 'DonutChart',
     data: polarResponseFactory.build(),
-    component: () => import('@/components/dataviz/chart/charts/DonutChart.vue'),
+    component: () => import('@/components/dataviz/chart/charts/PieChart.vue'),
   },
   {
     name: 'LineChart',

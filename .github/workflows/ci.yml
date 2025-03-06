@@ -1,0 +1,117 @@
+name: CI/CD Dataviz
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: ~
+  workflow_dispatch: ~
+
+env:
+  APP_SECRET:                   ${{ secrets.APP_SECRET }}
+  POSTGRES_DB_API:              ${{ vars.POSTGRES_DB_API }}
+  POSTGRES_DB_POOL:             ${{ vars.POSTGRES_DB_POOL }}
+  POSTGRES_USER:                ${{ vars.POSTGRES_USER }}
+  POSTGRES_PASSWORD:            ${{ secrets.POSTGRES_PASSWORD }}
+  API_HTTP3_PORT:               ${{ vars.API_HTTP3_PORT }}
+  API_HTTPS_PORT:               ${{ vars.API_HTTPS_PORT }}
+  API_HTTP_PORT:                ${{ vars.API_HTTP_PORT }}
+  BO_API_HTTP3_PORT:            ${{ vars.BO_API_HTTP3_PORT }}
+  BO_API_HTTPS_PORT:            ${{ vars.BO_API_HTTPS_PORT }}
+  BO_API_HTTP_PORT:             ${{ vars.BO_API_HTTP_PORT }}
+  API_CADDY_MERCURE_URL:        ${{ vars.API_CADDY_MERCURE_URL }}
+  API_CADDY_MERCURE_PUBLIC_URL: ${{ vars.API_CADDY_MERCURE_PUBLIC_URL }}
+  API_CADDY_MERCURE_JWT_SECRET: ${{ secrets.API_CADDY_MERCURE_JWT_SECRET }}
+  BO_CADDY_MERCURE_URL:         ${{ vars.BO_CADDY_MERCURE_URL }}
+  BO_CADDY_MERCURE_PUBLIC_URL:  ${{ vars.BO_CADDY_MERCURE_PUBLIC_URL }}
+  BO_CADDY_MERCURE_JWT_SECRET:  ${{ secrets.BO_CADDY_MERCURE_JWT_SECRET }}
+  SERVER_NAME:                  ${{ vars.SERVER_NAME }}
+  TRUSTED_PROXIES:              ${{ vars.TRUSTED_PROXIES }}
+  TRUSTED_HOSTS:                ${{ vars.TRUSTED_HOSTS }}
+  XDEBUG_MODE:                  ${{ vars.XDEBUG_MODE }}
+  VITE_BACKEND_URL:             ${{ vars.VITE_BACKEND_URL }}
+  BASE_URL:                     ${{ vars.BASE_URL }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start services
+        run: docker compose -f compose.yaml -f compose.override.yaml up -d
+
+      - name: Wait for all services
+        run: |
+          services=("dataviz-api" "dataviz-bo-api" "dataviz-front")
+
+          all_healthy=false
+
+          while [ "$all_healthy" = false ]; do
+            all_healthy=true
+            for service in "${services[@]}"; do
+              status="$(docker inspect --format="{{if .Config.Healthcheck}}{{print .State.Health.Status}}{{end}}" "$(docker compose ps -q $service)")"
+              case $status in
+                starting)
+                  all_healthy=false
+                  ;;
+                unhealthy)
+                  echo "$service is unhealthy"
+                  docker compose ps
+                  docker compose logs $service
+                  exit 1
+                  ;;
+              esac
+            done
+            sleep 1
+          done
+
+      - name: Check HTTP reachability
+        run: curl -v -o /dev/null http://localhost
+
+      - name: Check API reachability
+        run: curl -vk -o /dev/null https://localhost
+
+      - name: Create test database
+        run: |
+          docker compose exec -T dataviz-api bin/console -e test doctrine:database:create
+          docker compose exec -T dataviz-api bin/console -e test doctrine:database:create --connection=pool
+
+      - name: Run migrations
+        run: |
+          docker compose exec -T dataviz-api bin/console -n -e test doctrine:migrations:migrate
+          docker compose exec -T dataviz-api bin/console -n -e test doctrine:migrations:migrate --em=pool --configuration=migrations/Datapool/doctrine_migrations.yaml
+      
+      - name: API - Unit tests
+        run: docker compose exec -T dataviz-api vendor/bin/phpunit --testsuite unit
+
+      - name: API - Integration tests
+        run: docker compose exec -T dataviz-api vendor/bin/phpunit --testsuite api
+
+      - name: BO - Integration tests
+        run: docker compose exec -T dataviz-bo-api vendor/bin/phpunit
+
+      - name: FRONT - Run unit tests
+        run: docker compose exec -T dataviz-front yarn test-ci
+
+  lint:
+    name: Lint Dockerfiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfiles
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          recursive: true
