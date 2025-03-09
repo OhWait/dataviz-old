@@ -4,8 +4,32 @@ declare(strict_types=1);
 
 namespace App\Presentation\Datapool\Resource\AdministrativeDivision;
 
+use ApiPlatform\Metadata as API;
+use ApiPlatform\OpenApi\Model;
 use App\Domain\Datapool\Model\AdministrativeDivision\Department;
+use App\Presentation\Datapool\State\Provider\AdministrativeDivision\DepartmentCollectionProvider;
 
+#[API\ApiResource(
+    routePrefix: '/administrative-division',
+    operations: [
+        new API\GetCollection(
+            uriTemplate: '/department',
+            openapi: new Model\Operation(
+                tags: ['Administrative Division'],
+                summary: 'Liste des départements',
+                description: 'Récupère la liste de toutes les départements.',
+            ),
+            provider: DepartmentCollectionProvider::class,
+            parameters: [
+                new API\QueryParameter(
+                    key: 'label',
+                    schema: ['type' => 'string'],
+                )
+            ],
+            formats: ['json'],
+        ),
+    ],
+)]
 class DepartmentResource
 {
     public function __construct(

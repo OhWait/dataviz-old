@@ -38,7 +38,20 @@ final class Version20240609082911 extends AbstractMigration
                 libelle VARCHAR(255) NOT NULL,
                 can VARCHAR(5) DEFAULT NULL,
                 comparent VARCHAR(5) DEFAULT NULL,
-                PRIMARY KEY (annee, codgeo)
+                PRIMARY KEY (annee, codgeo, typecom)
+            )
+        ');
+        $this->addSql('
+            CREATE TABLE territoire.departement (
+                annee INT NOT NULL,
+                dep VARCHAR(3) NOT NULL,
+                reg VARCHAR(2) DEFAULT NULL,
+                cheflieu VARCHAR(5) DEFAULT NULL,
+                tncc VARCHAR(1) DEFAULT NULL,
+                ncc VARCHAR(255) NOT NULL,
+                nccenr VARCHAR(255) NOT NULL,
+                libelle VARCHAR(255) NOT NULL,
+                PRIMARY KEY (annee, dep)
             )
         ');
     }
@@ -46,6 +59,7 @@ final class Version20240609082911 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE IF EXISTS territoire.commune');
+        $this->addSql('DROP TABLE IF EXISTS territoire.departement');
     }
 
     private function executeSqlFilesFromPath(string $path): void

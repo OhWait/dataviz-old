@@ -21,10 +21,10 @@ class Department
         private DepartmentCode $code,
 
         #[ORM\Column(length: 2, nullable: true)]
-        private ?string $reg,
+        public ?string $reg,
 
-        #[ORM\Column(length: 5, nullable: true)]
-        public ?string $cheflieu,
+        #[ORM\Column(length: 5, nullable: true, name: 'cheflieu')]
+        public ?string $capital,
 
         #[ORM\Column(length: 1, nullable: true)]
         public ?string $tncc,
