@@ -34,8 +34,8 @@ services:
       TRUSTED_PROXIES: ${TRUSTED_PROXIES}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS}
       POSTGRES_VERSION: 17
-      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
-      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}?serverVersion=17
       MERCURE_URL: ${API_CADDY_MERCURE_URL}
       MERCURE_PUBLIC_URL: ${API_CADDY_MERCURE_PUBLIC_URL}
       MERCURE_JWT_SECRET: ${API_CADDY_MERCURE_JWT_SECRET}
@@ -68,8 +68,8 @@ services:
       TRUSTED_PROXIES: ${TRUSTED_PROXIES}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS}
       POSTGRES_VERSION: 17
-      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
-      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}?serverVersion=17
       MERCURE_URL: ${BO_CADDY_MERCURE_URL}
       MERCURE_PUBLIC_URL: ${BO_CADDY_MERCURE_PUBLIC_URL}
       MERCURE_JWT_SECRET: ${BO_CADDY_MERCURE_JWT_SECRET}
@@ -97,22 +97,15 @@ services:
 
   dataviz-map:
     container_name: dataviz-map
-    image: gospatial/tegola:0.21.2
+    image: pramsey/pg_tileserv:latest
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASS=${POSTGRES_PASSWORD}
-      - POSTGRES_DBNAME=${POSTGRES_DB_POOL}
-      - POSTGRES_PORT=5432
-      - POSTGRES_HOST=dataviz-db
-      - SSL_MODE=disable
-      - TEGOLA_PORT=8080
-      - TEGOLA_SQL_DEBUG=EXECUTE_SQL
-    command: serve --config /config/tegola.conf
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}"
+      PG_TILE_CACHE_PATH: /tmp/pg_tiles_cache
+      PG_TILE_CACHE_SIZE: 500MB
     ports:
-      - "8080:8080"
+      - "7800:7800"
     volumes:
-      - ./dataviz-map/config:/config:z
-    restart: always
+      - pg_tiles_cache:/tmp/pg_tiles_cache
     depends_on:
       - dataviz-db
 
@@ -122,3 +115,4 @@ volumes:
   dataviz_bo_caddy_data:
   dataviz_bo_caddy_config:
   db_data:
+  pg_tiles_cache:

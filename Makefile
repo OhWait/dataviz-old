@@ -28,7 +28,7 @@ up: ## 🚀 Start containers and open related URLs
 	wslview https://localhost:4430
 	wslview https://localhost:443
 	wslview http://localhost:4040
-	wslview http://localhost:8080
+	wslview http://localhost:7800
 
 start: ## ▶️  Start containers without recreating them
 	$(DOCKER_COMPOSE) up -d --remove-orphans --no-recreate
