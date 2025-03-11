@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Routes from '@/@types/routes';
 import datasetRoutes from '@/router/datasetRoutes.js';
 import chartRoutes from '@/router/chartRoutes.js';
-import Territory from '@/components/Territory.vue';
+import AdministrativeDivisionView from '@/views/AdministrativeDivisionView.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/map',
     name: 'map',
-    component: Territory,
+    component: AdministrativeDivisionView,
   },
 ];
 

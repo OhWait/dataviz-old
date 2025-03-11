@@ -26,8 +26,7 @@ use App\Presentation\Datapool\State\Provider\AdministrativeDivision\Municipality
                     key: 'label',
                     schema: ['type' => 'string'],
                 )
-                ],
-            formats: ['json'],
+            ],
         ),
     ],
 )]
