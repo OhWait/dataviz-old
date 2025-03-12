@@ -49,6 +49,8 @@ import { IAdministrativeDivision } from '@/store/administrativeDivisionStore';
 import { granularityEndpoints as granularities } from '@/utils/granularityHelper';
 import { ref } from 'vue';
 
+let searchTimeout: NodeJS.Timeout | null = null;
+
 // Props
 const props = defineProps<{
   data: HydraCollection<IAdministrativeDivision> | null;
@@ -66,9 +68,12 @@ const search = ref('');
 const selectedItems = ref<IAdministrativeDivision[]>([]);
 
 // Methods
-const onSearch = () => emit('search', search.value);
-
-const selectGranularity = (granularity: Granularity) => {
+const selectGranularity = (granularity: Granularity) =>
   emit('changeGranularity', granularity);
+
+
+const onSearch = () => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => emit('search', search.value), 1500);
 };
 </script>

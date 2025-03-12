@@ -25,6 +25,7 @@ import Map from '@/components/territory/Map.vue';
 import { computed, onMounted, ref } from 'vue';
 
 const store = useAdministrativeDivisionStore();
+const itemsPerPage = 10;
 
 // Computed
 const currentGranularity = computed(() => store.getCurrentGranularity);
@@ -32,12 +33,23 @@ const data = computed(() => store.getCollection);
 
 // Methods
 const handleGranularityChange = (granularity: Granularity) =>
-  store.fetchAdministrativeDivision(granularity);
+  store.fetchAdministrativeDivision({
+    granularity,
+    itemsPerPage,
+  });
 
-const handleSearch = (search: string) => {
-  console.log(search);
-};
+const handleSearch = (label: string) =>
+  store.fetchAdministrativeDivision({
+    label,
+    granularity: currentGranularity.value,
+    itemsPerPage,
+  });
 
 // LifeCycle
-onMounted(() => store.fetchAdministrativeDivision(currentGranularity.value));
+onMounted(() =>
+  store.fetchAdministrativeDivision({
+    granularity: currentGranularity.value,
+    itemsPerPage,
+  })
+);
 </script>

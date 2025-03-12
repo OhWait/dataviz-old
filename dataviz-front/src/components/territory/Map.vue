@@ -21,6 +21,8 @@ const selectedFilters = reactive([
   { codgeo: '64122' },
 ]);
 
+// TODO : Remove this when the issue is fixed
+// @ts-ignore
 L.DomEvent.fakeStop = function () {
   return true;
 };

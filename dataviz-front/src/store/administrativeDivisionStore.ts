@@ -17,6 +17,16 @@ export interface IAdministrativeDivision {
   label: string;
 }
 
+export interface IAdministrativeDivisionPayload {
+  label?: string;
+  itemsPerPage?: number;
+  page?: number;
+}
+
+export interface IGlobalPayload extends IAdministrativeDivisionPayload {
+  granularity?: Granularity;
+}
+
 interface IAdministrativeDivisionState {
   municipality: HydraCollection<IMunicipality> | null;
   municipalityLoading: boolean;
@@ -57,17 +67,19 @@ export const useAdministrativeDivisionStore = defineStore(
     }),
 
     actions: {
-      async fetchAdministrativeDivision(granularity: Granularity) {
-        this.granularity = granularity;
+      async fetchAdministrativeDivision(
+        payload: IGlobalPayload = { itemsPerPage: 10, page: 1 }
+      ) {
         this.collectionLoading = true;
         this.collectionError = null;
 
         try {
           let data;
 
-          switch (granularity) {
+          switch (payload.granularity) {
+            default:
             case Granularity.Municipalitie:
-              data = await this.fetchMunicipalities();
+              data = await this.fetchMunicipalities(payload);
 
               this.collection = {
                 ...data,
@@ -101,9 +113,6 @@ export const useAdministrativeDivisionStore = defineStore(
                 })),
               };
               break;
-
-            default:
-              throw new Error('Granularity not supported');
           }
         } catch (e) {
           this.collectionError = e as Error;
@@ -112,11 +121,12 @@ export const useAdministrativeDivisionStore = defineStore(
         }
       },
 
-      async fetchMunicipalities() {
+      async fetchMunicipalities(payload: IAdministrativeDivisionPayload) {
+        const { label, itemsPerPage, page } = payload;
         this.municipalityLoading = true;
         this.municipalityError = null;
         try {
-          const result = await getMunicipalities();
+          const result = await getMunicipalities(label, itemsPerPage, page);
           this.municipality = result;
           return result;
         } catch (e) {
