@@ -7,6 +7,7 @@ namespace App\Domain\Datapool\Model\AdministrativeDivision;
 use App\Domain\Datapool\ValueObject\Piic\PiicCode;
 use App\Domain\Datapool\ValueObject\Piic\PiicLabel;
 use App\Domain\Datapool\ValueObject\Piic\PiicNature;
+use App\Domain\Datapool\ValueObject\Piic\PiicNbMunicipalities;
 use App\Domain\Datapool\ValueObject\Piic\PiicYear;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +20,7 @@ class Piic
     #[ORM\OneToMany(targetEntity: Affiliation::class, mappedBy: 'piic')]
     private Collection $affiliations;
 
-    private ?int $nbMunicipalities = 0;
+    private PiicNbMunicipalities $nbMunicipalities;
 
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
@@ -34,10 +35,10 @@ class Piic
         #[ORM\Embedded(columnPrefix: false)]
         private PiicNature $nature,
 
-        ?int $nbMunicipalities = 0
+        int $nbMunicipalities = 0,
     ) {
         $this->affiliations = new ArrayCollection();
-        $this->nbMunicipalities = $nbMunicipalities;
+        $this->nbMunicipalities = new PiicNbMunicipalities($nbMunicipalities);
     }
 
     public function year(): PiicYear
@@ -65,7 +66,7 @@ class Piic
         return $this->affiliations;
     }
 
-    public function nbMunicipalities(): int
+    public function nbMunicipalities(): PiicNbMunicipalities
     {
         return $this->nbMunicipalities;
     }

@@ -7,12 +7,20 @@ namespace App\Domain\Datapool\Model\AdministrativeDivision;
 use App\Domain\Datapool\ValueObject\Department\DepartmentCode;
 use App\Domain\Datapool\ValueObject\Department\DepartmentLabel;
 use App\Domain\Datapool\ValueObject\Department\DepartmentYear;
+use App\Domain\Datapool\ValueObject\Department\DepartmentNbMunicipalities;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire.departement')]
 class Department
 {
+    #[ORM\OneToMany(targetEntity: Affiliation::class, mappedBy: 'department')]
+    private Collection $affiliations;
+
+    private DepartmentNbMunicipalities $nbMunicipalities;
+
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
         private DepartmentYear $year,
@@ -37,7 +45,11 @@ class Department
 
         #[ORM\Embedded(columnPrefix: false)]
         private DepartmentLabel $label,
+
+        int $nbMunicipalities = 0,
     ) {
+        $this->affiliations = new ArrayCollection();
+        $this->nbMunicipalities = new DepartmentNbMunicipalities($nbMunicipalities);
     }
 
     public function year(): DepartmentYear
@@ -53,5 +65,15 @@ class Department
     public function label(): DepartmentLabel
     {
         return $this->label;
+    }
+
+    public function affiliations(): Collection
+    {
+        return $this->affiliations;
+    }
+
+    public function nbMunicipalities(): DepartmentNbMunicipalities
+    {
+        return $this->nbMunicipalities;
     }
 }

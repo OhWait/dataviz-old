@@ -61,7 +61,7 @@ class PiicResource
             epci: $model->code()->value,
             label: $model->label()->value,
             nature: $model->nature()->value,
-            nbMunicipalities: $model->nbMunicipalities(),
+            nbMunicipalities: $model->nbMunicipalities()->value,
         );
     }
 

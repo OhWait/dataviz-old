@@ -22,7 +22,7 @@ class Affiliation
     #[ORM\JoinColumn(name: 'epci', referencedColumnName: 'epci')]
     private ?Piic $piic = null;
 
-    #[ORM\OneToOne(targetEntity: Department::class)]
+    #[ORM\ManyToOne(inversedBy: 'affiliations')]
     #[ORM\JoinColumn(name: 'annee', referencedColumnName: 'annee')]
     #[ORM\JoinColumn(name: 'dep', referencedColumnName: 'dep')]
     private Department $department;

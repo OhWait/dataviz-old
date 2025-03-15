@@ -33,7 +33,7 @@ const itemsPerPage = 10;
 // Computed
 const granularity = ref<Granularity>(Granularity.Municipalitie);
 const isLoading = computed(
-  () => store.getLoadingMunicipality || store.getLoadingPiic
+  () => store.getLoadingMunicipality || store.getLoadingPiic || store.getLoadingDepartment
 );
 const data = computed(() => {
   if (granularity.value === Granularity.Municipalitie) {
@@ -45,6 +45,10 @@ const data = computed(() => {
     Granularity.PublicInstitutionForIntermunicipaleCooperation
   ) {
     return store.getPiics;
+  }
+
+  if (granularity.value === Granularity.Department) {
+    return store.getDepartments;
   }
 
   return null;

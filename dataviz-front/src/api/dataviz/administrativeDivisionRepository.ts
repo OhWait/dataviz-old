@@ -1,5 +1,5 @@
 import {
-  IDepartment,
+  IDepartmentCollection,
   IMunicipality,
   IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
@@ -35,4 +35,4 @@ export const getPiics = (payload: IAdministrativeDivisionPayload) =>
   getEntities<IPiicCollection>('piic', payload);
 
 export const getDepartments = (payload: IAdministrativeDivisionPayload) =>
-  getEntities<IDepartment>('department', payload);
+  getEntities<IDepartmentCollection>('department', payload);

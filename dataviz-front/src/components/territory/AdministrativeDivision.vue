@@ -47,12 +47,20 @@
       :data="data.member"
       @select="selectPiic"
     />
+
+    <DepartmentList
+      v-else-if="
+        currentGranularity === Granularity.Department &&
+        isDepartmentCollection(data)
+      "
+      :data="data.member"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import {
-  IDepartment,
+  IDepartmentCollection,
   IMunicipality,
   IPiic,
   IPiicCollection,
@@ -63,12 +71,15 @@ import { granularityEndpoints as granularities } from '@/utils/granularityHelper
 import { ref } from 'vue';
 import MunicipalityList from './list/MunicipalityList.vue';
 import PiicList from './list/PiicList.vue';
+import DepartmentList from './list/DepartmentList.vue';
 
 let searchTimeout: NodeJS.Timeout | null = null;
 
 // Props
 defineProps<{
-  data: HydraCollection<IMunicipality | IPiicCollection | IDepartment> | null;
+  data: HydraCollection<
+    IMunicipality | IPiicCollection | IDepartmentCollection
+  > | null;
   currentGranularity: Granularity | null;
   isLoading: boolean;
 }>();
@@ -120,6 +131,14 @@ const isPiicCollection = (
 ): data is HydraCollection<IPiicCollection> => {
   return (
     typeof data?.member === 'object' && data?.member[0] && data?.member[0].epci
+  );
+};
+
+const isDepartmentCollection = (
+  data: any
+): data is HydraCollection<IDepartmentCollection> => {
+  return (
+    typeof data?.member === 'object' && data?.member[0] && data?.member[0].dep
   );
 };
 </script>

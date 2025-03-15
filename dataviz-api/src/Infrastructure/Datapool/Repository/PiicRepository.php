@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Datapool\Repository;
 
-use App\Application\Datapool\Query\FindAllPiicQuery;
 use App\Domain\Datapool\Model\AdministrativeDivision\Piic;
 use App\Domain\Datapool\Repository\PiicRepositoryInterface;
 use App\Shared\Application\Query\PaginatedQueryInterface;
 use App\Shared\Infrastructure\Doctrine\DoctrineRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -22,32 +20,20 @@ class PiicRepository extends DoctrineRepository implements PiicRepositoryInterfa
         parent::__construct($registry, Piic::class);
     }
 
-    /**
-     * @param FindAllPiicQuery $query
-     */
-    protected function withFilters(
-        QueryBuilder $qb,
-        string $alias,
-        mixed $query,
-    ): QueryBuilder {
+    protected function items(PaginatedQueryInterface $query): array
+    {
+        $qb = $this->createQueryBuilder('p');
+
         if ($query->label) {
             $qb
-                ->andWhere(sprintf('LOWER(%s.label.value) LIKE LOWER(:label)', $alias))
+                ->andWhere('LOWER(p.label.value) LIKE LOWER(:label)')
                 ->setParameter('label', "%{$query->label}%");
         }
 
-        return $qb;
-    }
-
-    protected function items(PaginatedQueryInterface $query): array
-    {
-        $qb = $this->createQueryBuilder('p')
+        $results = $qb
             ->leftJoin('p.affiliations', 'a')
-            ->addSelect('COUNT(a) AS nbMunicipalities')
-            ->groupBy('p');
-
-        $results = $this
-            ->withFilters($qb, 'p', $query)
+            ->addSelect('COUNT(a) AS nb')
+            ->groupBy('p')
             ->getQuery()
             ->setFirstResult(($query->page() - 1) * $query->itemsPerPage())
             ->setMaxResults($query->itemsPerPage())
@@ -59,7 +45,7 @@ class PiicRepository extends DoctrineRepository implements PiicRepositoryInterfa
                 $result[0]->code(),
                 $result[0]->label(),
                 $result[0]->nature(),
-                $result['nbMunicipalities'],
+                $result['nb'],
             ),
             $results,
         );

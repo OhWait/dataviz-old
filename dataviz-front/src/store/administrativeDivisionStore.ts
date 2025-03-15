@@ -1,5 +1,5 @@
 import {
-  IDepartment,
+  IDepartmentCollection,
   IMunicipality,
   IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
@@ -24,8 +24,8 @@ interface IAdministrativeDivisionState {
   piics: HydraCollection<IPiicCollection> | null;
   isLoadingPiic: boolean;
   piicError: Error | null;
-  department: HydraCollection<IDepartment> | null;
-  departmentLoading: boolean;
+  departments: HydraCollection<IDepartmentCollection> | null;
+  isLoadingDepartment: boolean;
   departmentError: Error | null;
 }
 
@@ -41,8 +41,8 @@ export const useAdministrativeDivisionStore = defineStore(
       isLoadingPiic: false,
       piicError: null,
 
-      department: null,
-      departmentLoading: false,
+      departments: null,
+      isLoadingDepartment: false,
       departmentError: null,
     }),
 
@@ -93,17 +93,17 @@ export const useAdministrativeDivisionStore = defineStore(
       },
 
       async fetchDepartments(payload: IAdministrativeDivisionPayload) {
-        this.departmentLoading = true;
+        this.isLoadingDepartment = true;
         this.departmentError = null;
         try {
           const result = await getDepartments(payload);
-          this.department = result;
+          this.departments = result;
           return result;
         } catch (e) {
           this.departmentError = e as Error;
           throw e;
         } finally {
-          this.departmentLoading = false;
+          this.isLoadingDepartment = false;
         }
       },
     },
@@ -115,8 +115,8 @@ export const useAdministrativeDivisionStore = defineStore(
       getPiics: state => state.piics,
       getLoadingPiic: state => state.isLoadingPiic,
       getPiicError: state => state.piicError,
-      getDepartment: state => state.department,
-      getDepartmentLoading: state => state.departmentLoading,
+      getDepartments: state => state.departments,
+      getLoadingDepartment: state => state.isLoadingDepartment,
       getDepartmentError: state => state.departmentError,
     },
   }

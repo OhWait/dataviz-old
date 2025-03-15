@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Datapool\Repository;
 
-use App\Application\Datapool\Query\FindAllDepartmentQuery;
 use App\Domain\Datapool\Model\AdministrativeDivision\Department;
 use App\Domain\Datapool\Repository\DepartmentRepositoryInterface;
 use App\Shared\Application\Query\PaginatedQueryInterface;
 use App\Shared\Infrastructure\Doctrine\DoctrineRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -22,28 +20,38 @@ class DepartmentRepository extends DoctrineRepository implements DepartmentRepos
         parent::__construct($registry, Department::class);
     }
 
-    /**
-     * @param FindAllDepartmentQuery $query
-     */
-    protected function withFilters(
-        QueryBuilder $qb,
-        string $alias,
-        mixed $query,
-    ): QueryBuilder {
+    protected function items(PaginatedQueryInterface $query): array
+    {
+        $qb = $this->createQueryBuilder('p');
+
         if ($query->label) {
             $qb
-                ->andWhere(sprintf('LOWER(%s.label.value) LIKE LOWER(:label)', $alias))
+                ->andWhere('LOWER(p.label.value) LIKE LOWER(:label)')
                 ->setParameter('label', "%{$query->label}%");
         }
 
-        return $qb;
-    }
+        $results = $qb
+            ->leftJoin('p.affiliations', 'a')
+            ->addSelect('COUNT(a) AS nb')
+            ->groupBy('p')
+            ->getQuery()
+            ->setFirstResult(($query->page() - 1) * $query->itemsPerPage())
+            ->setMaxResults($query->itemsPerPage())
+            ->getResult();
 
-    protected function withOrderBy(
-        QueryBuilder $qb,
-        string $alias,
-        PaginatedQueryInterface $query,
-    ): QueryBuilder {
-        return $qb->orderBy(sprintf('%s.label.value', $alias), 'ASC');
+        return array_map(
+            fn(array $result) => new Department(
+                $result[0]->year(),
+                $result[0]->code(),
+                $result[0]->reg,
+                $result[0]->capital,
+                $result[0]->tncc,
+                $result[0]->ncc,
+                $result[0]->nccenr,
+                $result[0]->label(),
+                $result['nb'],
+            ),
+            $results,
+        );
     }
 }
