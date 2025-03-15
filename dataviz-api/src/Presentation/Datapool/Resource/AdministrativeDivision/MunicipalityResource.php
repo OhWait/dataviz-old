@@ -26,7 +26,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 description: 'Récupère la liste de toutes les communes.',
             ),
             provider: MunicipalityCollectionProvider::class,
-            output: MunicipalityResource::class,
             parameters: [
                 new API\QueryParameter(
                     key: 'label',
@@ -50,6 +49,9 @@ class MunicipalityResource
         
         #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
         public DepartmentResource $department,
+
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
+        public ?PiicResource $piic = null,
     ) {}
 
     public static function fromDomain(Municipality $model): self
@@ -58,6 +60,7 @@ class MunicipalityResource
             annee: $model->year()->value,
             codgeo: $model->codgeo()->value,
             label: $model->label()->value,
+            piic: $model->piic() ? PiicResource::fromDomain($model->piic()) : null,
             department: DepartmentResource::fromDomain($model->department()),
         );
     }

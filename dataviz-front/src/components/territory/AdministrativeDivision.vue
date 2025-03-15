@@ -32,10 +32,20 @@
     <MunicipalityList
       v-else-if="
         currentGranularity === Granularity.Municipalitie &&
-        isHydraCollectionOfMunicipality(data)
+        isMunicipalityCollection(data)
       "
       :data="data.member"
       @select="selectMunicipality"
+    />
+
+    <PiicList
+      v-else-if="
+        currentGranularity ===
+          Granularity.PublicInstitutionForIntermunicipaleCooperation &&
+        isPiicCollection(data)
+      "
+      :data="data.member"
+      @select="selectPiic"
     />
   </v-container>
 </template>
@@ -44,18 +54,21 @@
 import {
   IDepartment,
   IMunicipality,
+  IPiic,
+  IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import HydraCollection from '@/@types/hydra/collectionResponse';
 import { granularityEndpoints as granularities } from '@/utils/granularityHelper';
 import { ref } from 'vue';
 import MunicipalityList from './list/MunicipalityList.vue';
+import PiicList from './list/PiicList.vue';
 
 let searchTimeout: NodeJS.Timeout | null = null;
 
 // Props
 defineProps<{
-  data: HydraCollection<IMunicipality | IDepartment> | null;
+  data: HydraCollection<IMunicipality | IPiicCollection | IDepartment> | null;
   currentGranularity: Granularity | null;
   isLoading: boolean;
 }>();
@@ -64,7 +77,8 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'search', value: string): void;
   (e: 'changeGranularity', granularity: Granularity): void;
-  (e: 'select', municipality: IMunicipality): void;
+  (e: 'selectMunicipality', municipality: IMunicipality): void;
+  (e: 'selectPiic', piic: IPiic): void;
 }>();
 
 // Variables
@@ -87,15 +101,25 @@ const onSearch = () => {
 };
 
 const selectMunicipality = (municipality: IMunicipality) =>
-  emit('select', municipality);
+  emit('selectMunicipality', municipality);
 
-const isHydraCollectionOfMunicipality = (
+const isMunicipalityCollection = (
   data: any
 ): data is HydraCollection<IMunicipality> => {
   return (
     typeof data?.member === 'object' &&
     data?.member[0] &&
     data?.member[0].codgeo
+  );
+};
+
+const selectPiic = (piic: IPiic) => emit('selectPiic', piic);
+
+const isPiicCollection = (
+  data: any
+): data is HydraCollection<IPiicCollection> => {
+  return (
+    typeof data?.member === 'object' && data?.member[0] && data?.member[0].epci
   );
 };
 </script>

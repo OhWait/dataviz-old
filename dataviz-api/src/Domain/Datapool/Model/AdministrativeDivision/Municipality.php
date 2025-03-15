@@ -74,6 +74,11 @@ class Municipality
         return $this->label;
     }
 
+    public function piic(): Piic
+    {
+        return $this->affiliation->piic();
+    }
+
     public function department(): Department
     {
         return $this->affiliation->department();

@@ -1,5 +1,9 @@
+export interface IPiicCollection extends IPiic{
+  nbMunicipalities: number;
+}
+
 export interface IPiic {
-  codepiic: string;
+  epci: string;
   label: string;
   nature: string;
 }

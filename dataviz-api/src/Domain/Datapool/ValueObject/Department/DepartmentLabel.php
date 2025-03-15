@@ -10,7 +10,7 @@ use Webmozart\Assert\Assert;
 #[ORM\Embeddable]
 final class DepartmentLabel
 {
-    #[ORM\Column(name: 'libelle', length: 255)]
+    #[ORM\Column(name: 'libdep', length: 255)]
     public readonly string $value;
 
     public function __construct(string $value)

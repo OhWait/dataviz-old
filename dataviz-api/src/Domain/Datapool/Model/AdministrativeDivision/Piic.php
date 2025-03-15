@@ -8,13 +8,19 @@ use App\Domain\Datapool\ValueObject\Piic\PiicCode;
 use App\Domain\Datapool\ValueObject\Piic\PiicLabel;
 use App\Domain\Datapool\ValueObject\Piic\PiicNature;
 use App\Domain\Datapool\ValueObject\Piic\PiicYear;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'territoire.epci')]
 class Piic
 {
+    #[ORM\OneToMany(targetEntity: Affiliation::class, mappedBy: 'piic')]
+    private Collection $affiliations;
+
+    private ?int $nbMunicipalities = 0;
+
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
         private PiicYear $year,
@@ -28,9 +34,10 @@ class Piic
         #[ORM\Embedded(columnPrefix: false)]
         private PiicNature $nature,
 
-        #[ORM\Column(length: 5, type: Types::INTEGER, name: 'nb_com')]
-        public int $nbMunicipality,
+        ?int $nbMunicipalities = 0
     ) {
+        $this->affiliations = new ArrayCollection();
+        $this->nbMunicipalities = $nbMunicipalities;
     }
 
     public function year(): PiicYear
@@ -51,5 +58,15 @@ class Piic
     public function nature(): PiicNature
     {
         return $this->nature;
+    }
+
+    public function affiliations(): Collection
+    {
+        return $this->affiliations;
+    }
+
+    public function nbMunicipalities(): int
+    {
+        return $this->nbMunicipalities;
     }
 }

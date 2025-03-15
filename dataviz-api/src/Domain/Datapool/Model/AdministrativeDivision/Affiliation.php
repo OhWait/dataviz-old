@@ -17,6 +17,11 @@ class Affiliation
     #[ORM\JoinColumn(name: 'codgeo', referencedColumnName: 'codgeo')]
     private Municipality $municipality;
 
+    #[ORM\ManyToOne(inversedBy: 'affiliations')]
+    #[ORM\JoinColumn(name: 'annee', referencedColumnName: 'annee')]
+    #[ORM\JoinColumn(name: 'epci', referencedColumnName: 'epci')]
+    private ?Piic $piic = null;
+
     #[ORM\OneToOne(targetEntity: Department::class)]
     #[ORM\JoinColumn(name: 'annee', referencedColumnName: 'annee')]
     #[ORM\JoinColumn(name: 'dep', referencedColumnName: 'dep')]
@@ -36,6 +41,11 @@ class Affiliation
     public function municipality(): Municipality
     {
         return $this->municipality;
+    }
+
+    public function piic(): Piic
+    {
+        return $this->piic;
     }
 
     public function department(): Department

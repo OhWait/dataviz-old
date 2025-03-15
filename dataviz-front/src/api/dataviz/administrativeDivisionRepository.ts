@@ -1,42 +1,38 @@
 import {
   IDepartment,
   IMunicipality,
-  IPiic,
+  IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
 import { api } from './datavizClient';
 import HydraCollection from '@/@types/hydra/collectionResponse';
 
 const BASE_URL = 'administrative-division';
 
-export const getMunicipalities = async (
-  label?: string,
-  itemsPerPage?: number,
-  page?: number,
-): Promise<HydraCollection<IMunicipality>> => {
-  const params = new URLSearchParams();
+export interface IAdministrativeDivisionPayload {
+  label?: string;
+  itemsPerPage?: number;
+  page?: number;
+}
 
-  if (label) {
-    params.append('label', label);
-  }
+const getEntities = async <T>(
+  endpoint: string,
+  filters: Partial<IAdministrativeDivisionPayload> = {}
+): Promise<HydraCollection<T>> => {
+  const params = new URLSearchParams(
+    Object.entries(filters)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => [key, value!.toString()])
+  );
 
-  if (itemsPerPage) {
-    params.append('itemsPerPage', itemsPerPage.toString());
-  }
-
-  if (page) {
-    params.append('page', page.toString());
-  }
-
-  const queryString = params.toString();
-  const url = queryString
-    ? `${BASE_URL}/municipality?${queryString}`
-    : `${BASE_URL}/municipality`;
-
-  return api.get<HydraCollection<IMunicipality>>(url);
+  const url = `${BASE_URL}/${endpoint}${params.toString() ? `?${params}` : ''}`;
+  return api.get<HydraCollection<T>>(url);
 };
 
-export const getPiics = async (): Promise<HydraCollection<IPiic>> =>
-  api.get<HydraCollection<IPiic>>(`${BASE_URL}/piic`);
+export const getMunicipalities = (payload: IAdministrativeDivisionPayload) =>
+  getEntities<IMunicipality>('municipality', payload);
 
-export const getDepartments = async (): Promise<HydraCollection<IDepartment>> =>
-  api.get<HydraCollection<IDepartment>>(`${BASE_URL}/department`);
+export const getPiics = (payload: IAdministrativeDivisionPayload) =>
+  getEntities<IPiicCollection>('piic', payload);
+
+export const getDepartments = (payload: IAdministrativeDivisionPayload) =>
+  getEntities<IDepartment>('department', payload);

@@ -29,9 +29,12 @@ final class PiicCollectionProvider extends AbstractProvider
         array $uriVariables = [],
         array $context = [],
     ): PartialPaginatorInterface {
+        $queryParameters = $context['filters'] ?? [];
+
         $message = new FindAllPiicQuery(
             page: $this->pagination->getPage($context),
             itemsPerPage: $this->pagination->getLimit($operation, $context),
+            label: $queryParameters['label'] ?? null,
         );
 
         $collection = $this->dispatch($message);

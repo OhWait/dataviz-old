@@ -1,7 +1,7 @@
 import {
   IDepartment,
   IMunicipality,
-  IPiic,
+  IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import HydraCollection from '@/@types/hydra/collectionResponse';
@@ -9,14 +9,9 @@ import {
   getDepartments,
   getMunicipalities,
   getPiics,
+  IAdministrativeDivisionPayload,
 } from '@/api/dataviz/administrativeDivisionRepository';
 import { defineStore } from 'pinia';
-
-export interface IAdministrativeDivisionPayload {
-  label?: string;
-  itemsPerPage?: number;
-  page?: number;
-}
 
 export interface IGlobalPayload extends IAdministrativeDivisionPayload {
   granularity?: Granularity;
@@ -26,8 +21,8 @@ interface IAdministrativeDivisionState {
   municipalities: HydraCollection<IMunicipality> | null;
   isLoadingMunicipality: boolean;
   municipalityError: Error | null;
-  piic: HydraCollection<IPiic> | null;
-  piicLoading: boolean;
+  piics: HydraCollection<IPiicCollection> | null;
+  isLoadingPiic: boolean;
   piicError: Error | null;
   department: HydraCollection<IDepartment> | null;
   departmentLoading: boolean;
@@ -42,8 +37,8 @@ export const useAdministrativeDivisionStore = defineStore(
       isLoadingMunicipality: false,
       municipalityError: null,
 
-      piic: null,
-      piicLoading: false,
+      piics: null,
+      isLoadingPiic: false,
       piicError: null,
 
       department: null,
@@ -52,27 +47,26 @@ export const useAdministrativeDivisionStore = defineStore(
     }),
 
     actions: {
-      async fetchAdministrativeDivision(payload: IGlobalPayload) {
-        const { granularity } = payload;
+      async fetchAdministrativeDivision(globalPayload: IGlobalPayload) {
+        const { granularity, ...payload } = globalPayload;
 
         switch (granularity) {
           case Granularity.Municipalitie:
             return this.fetchMunicipalities(payload);
           case Granularity.PublicInstitutionForIntermunicipaleCooperation:
-            return this.fetchPiics();
+            return this.fetchPiics(payload);
           case Granularity.Department:
-            return this.fetchDepartments();
+            return this.fetchDepartments(payload);
           default:
             return null;
         }
       },
 
       async fetchMunicipalities(payload: IAdministrativeDivisionPayload) {
-        const { label, itemsPerPage, page } = payload;
         this.isLoadingMunicipality = true;
         this.municipalityError = null;
         try {
-          const result = await getMunicipalities(label, itemsPerPage, page);
+          const result = await getMunicipalities(payload);
           this.municipalities = result;
           return result;
         } catch (e) {
@@ -83,26 +77,26 @@ export const useAdministrativeDivisionStore = defineStore(
         }
       },
 
-      async fetchPiics() {
-        this.piicLoading = true;
+      async fetchPiics(payload: IAdministrativeDivisionPayload) {
+        this.isLoadingPiic = true;
         this.piicError = null;
         try {
-          const result = await getPiics();
-          this.piic = result;
+          const result = await getPiics(payload);
+          this.piics = result;
           return result;
         } catch (e) {
           this.piicError = e as Error;
           throw e;
         } finally {
-          this.piicLoading = false;
+          this.isLoadingPiic = false;
         }
       },
 
-      async fetchDepartments() {
+      async fetchDepartments(payload: IAdministrativeDivisionPayload) {
         this.departmentLoading = true;
         this.departmentError = null;
         try {
-          const result = await getDepartments();
+          const result = await getDepartments(payload);
           this.department = result;
           return result;
         } catch (e) {
@@ -118,8 +112,8 @@ export const useAdministrativeDivisionStore = defineStore(
       getMunicipalities: state => state.municipalities,
       getLoadingMunicipality: state => state.isLoadingMunicipality,
       getMunicipalityError: state => state.municipalityError,
-      getPiic: state => state.piic,
-      getPiicLoading: state => state.piicLoading,
+      getPiics: state => state.piics,
+      getLoadingPiic: state => state.isLoadingPiic,
       getPiicError: state => state.piicError,
       getDepartment: state => state.department,
       getDepartmentLoading: state => state.departmentLoading,

@@ -8,7 +8,7 @@
           :isLoading="isLoading"
           @change-granularity="handleGranularityChange"
           @search="handleSearch"
-          @select="handleSelect"
+          @select-municipality="handleMunicipalitySelect"
         />
       </v-col>
 
@@ -32,21 +32,32 @@ const itemsPerPage = 10;
 
 // Computed
 const granularity = ref<Granularity>(Granularity.Municipalitie);
-const isLoading = computed(() => store.getLoadingMunicipality);
+const isLoading = computed(
+  () => store.getLoadingMunicipality || store.getLoadingPiic
+);
 const data = computed(() => {
   if (granularity.value === Granularity.Municipalitie) {
     return store.getMunicipalities;
   }
 
+  if (
+    granularity.value ===
+    Granularity.PublicInstitutionForIntermunicipaleCooperation
+  ) {
+    return store.getPiics;
+  }
+
   return null;
-})
+});
 
 // Methods
-const handleGranularityChange = (granularity: Granularity) =>
+const handleGranularityChange = (gra: Granularity) => {
+  granularity.value = gra;
   store.fetchAdministrativeDivision({
-    granularity,
+    granularity: gra,
     itemsPerPage,
   });
+};
 
 const handleSearch = (label: string) =>
   store.fetchAdministrativeDivision({
@@ -55,7 +66,7 @@ const handleSearch = (label: string) =>
     itemsPerPage,
   });
 
-const handleSelect = (municipality: IMunicipality) => {
+const handleMunicipalitySelect = (municipality: IMunicipality) => {
   console.log(municipality);
 };
 

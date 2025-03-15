@@ -7,6 +7,10 @@
     >
       <v-list-item-title>{{ item.label }}</v-list-item-title>
 
+      <v-list-item-subtitle v-if="item.piic">
+        {{ item.piic.label }}
+      </v-list-item-subtitle>
+
       <v-list-item-subtitle>
         ({{ item.department.dep }}) {{ item.department.label }}
       </v-list-item-subtitle>
