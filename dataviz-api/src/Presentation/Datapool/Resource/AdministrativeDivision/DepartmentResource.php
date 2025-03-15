@@ -7,13 +7,16 @@ namespace App\Presentation\Datapool\Resource\AdministrativeDivision;
 use ApiPlatform\Metadata as API;
 use ApiPlatform\OpenApi\Model;
 use App\Domain\Datapool\Model\AdministrativeDivision\Department;
+use App\Presentation\Datapool\Enum\AdministrativeGroupEnum;
 use App\Presentation\Datapool\State\Provider\AdministrativeDivision\DepartmentCollectionProvider;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[API\ApiResource(
     routePrefix: '/administrative-division',
+    shortName: 'Department',
     operations: [
         new API\GetCollection(
-            uriTemplate: '/department',
+            uriTemplate: '/administrative-division/department',
             openapi: new Model\Operation(
                 tags: ['Administrative Division'],
                 summary: 'Liste des départements',
@@ -26,7 +29,6 @@ use App\Presentation\Datapool\State\Provider\AdministrativeDivision\DepartmentCo
                     schema: ['type' => 'string'],
                 )
             ],
-            formats: ['json'],
         ),
     ],
 )]
@@ -35,8 +37,11 @@ class DepartmentResource
     public function __construct(
         public int $year,
 
-        public string $codedep,
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
+        public string $dep,
 
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
         public string $label,
     ) {
     }
@@ -45,7 +50,7 @@ class DepartmentResource
     {
         return new self(
             year: $model->year()->value,
-            codedep: $model->code()->value,
+            dep: $model->code()->value,
             label: $model->label()->value,
         );
     }

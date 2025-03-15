@@ -10,7 +10,6 @@ use Webmozart\Assert\Assert;
 #[ORM\Embeddable]
 final class MunicipalityLabel
 {
-    #[ORM\Id]
     #[ORM\Column(name: 'libelle', length: 255)]
     public readonly string $value;
 

@@ -36,8 +36,7 @@ class MunicipalityRepository extends DoctrineRepository implements MunicipalityR
                 ->setParameter('label', "%{$query->label}%");
         }
 
-        return $qb
-            ->andWhere(sprintf("%s.typecom.value = 'COM'", $alias));
+        return $qb;
     }
 
     protected function withOrderBy(

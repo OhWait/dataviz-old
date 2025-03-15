@@ -38,7 +38,7 @@ final class Version20240609082911 extends AbstractMigration
                 libelle VARCHAR(255) NOT NULL,
                 can VARCHAR(5) DEFAULT NULL,
                 comparent VARCHAR(5) DEFAULT NULL,
-                PRIMARY KEY (annee, codgeo, typecom)
+                PRIMARY KEY (annee, codgeo)
             )
         ');
         $this->addSql('

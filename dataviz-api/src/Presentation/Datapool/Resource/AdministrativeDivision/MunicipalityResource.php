@@ -7,13 +7,19 @@ namespace App\Presentation\Datapool\Resource\AdministrativeDivision;
 use ApiPlatform\Metadata as API;
 use ApiPlatform\OpenApi\Model;
 use App\Domain\Datapool\Model\AdministrativeDivision\Municipality;
+use App\Presentation\Datapool\Enum\AdministrativeGroupEnum;
 use App\Presentation\Datapool\State\Provider\AdministrativeDivision\MunicipalityCollectionProvider;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[API\ApiResource(
     routePrefix: '/administrative-division',
+    shortName: 'Municipality',
     operations: [
         new API\GetCollection(
             uriTemplate: '/municipality',
+            normalizationContext: [
+                'groups' => [AdministrativeGroupEnum::MUNICIPALITY],
+            ],
             openapi: new Model\Operation(
                 tags: ['Administrative Division'],
                 summary: 'Liste des communes',
@@ -33,17 +39,26 @@ use App\Presentation\Datapool\State\Provider\AdministrativeDivision\Municipality
 class MunicipalityResource
 {
     public function __construct(
+        public int $annee,
+
         #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
         public string $codgeo,
 
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
         public string $label,
+        
+        #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
+        public DepartmentResource $department,
     ) {}
 
     public static function fromDomain(Municipality $model): self
     {
         return new self(
+            annee: $model->year()->value,
             codgeo: $model->codgeo()->value,
             label: $model->label()->value,
+            department: DepartmentResource::fromDomain($model->department()),
         );
     }
 
