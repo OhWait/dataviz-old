@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     shortName: 'Department',
     operations: [
         new API\GetCollection(
-            uriTemplate: '/administrative-division/department',
+            uriTemplate: '/department',
             openapi: new Model\Operation(
                 tags: ['Administrative Division'],
                 summary: 'Liste des départements',

@@ -19,61 +19,83 @@
       v-model="search"
       label="Search"
       @input="onSearch"
+      :loading="isTyping"
     />
 
-    <v-list v-if="data?.member">
-      <v-list-item
-        v-for="item in data.member"
-        :key="item.code"
-        @click="selectedItems.push(item)"
-      >
-        <v-list-item-title>{{ item.label }}</v-list-item-title>
-      </v-list-item>
-    </v-list>
+    <v-skeleton-loader
+      v-if="isLoading"
+      type="list-item-two-line"
+      :loading="isLoading"
+      :item-count="10"
+    />
 
-    <v-chip
-      v-for="item in selectedItems"
-      :key="item.code"
-      close
-      @click:close="selectedItems.splice(selectedItems.indexOf(item), 1)"
-    >
-      {{ item.label }}
-    </v-chip>
+    <MunicipalityList
+      v-else-if="
+        currentGranularity === Granularity.Municipalitie &&
+        isHydraCollectionOfMunicipality(data)
+      "
+      :data="data.member"
+      @select="selectMunicipality"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { Granularity } from '@/@types/dataviz/dataset';
+import {
+  IDepartment,
+  IMunicipality,
+} from '@/@types/dataviz/administrativeDivision';
+import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import HydraCollection from '@/@types/hydra/collectionResponse';
-import { IAdministrativeDivision } from '@/store/administrativeDivisionStore';
 import { granularityEndpoints as granularities } from '@/utils/granularityHelper';
 import { ref } from 'vue';
+import MunicipalityList from './list/MunicipalityList.vue';
 
 let searchTimeout: NodeJS.Timeout | null = null;
 
 // Props
-const props = defineProps<{
-  data: HydraCollection<IAdministrativeDivision> | null;
+defineProps<{
+  data: HydraCollection<IMunicipality | IDepartment> | null;
   currentGranularity: Granularity | null;
+  isLoading: boolean;
 }>();
 
 // Emits
 const emit = defineEmits<{
   (e: 'search', value: string): void;
   (e: 'changeGranularity', granularity: Granularity): void;
+  (e: 'select', municipality: IMunicipality): void;
 }>();
 
 // Variables
 const search = ref('');
-const selectedItems = ref<IAdministrativeDivision[]>([]);
+const isTyping = ref(false);
 
 // Methods
 const selectGranularity = (granularity: Granularity) =>
   emit('changeGranularity', granularity);
 
-
 const onSearch = () => {
+  isTyping.value = true;
+
   if (searchTimeout) clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => emit('search', search.value), 1500);
+
+  searchTimeout = setTimeout(() => {
+    emit('search', search.value);
+    isTyping.value = false;
+  }, 1500);
+};
+
+const selectMunicipality = (municipality: IMunicipality) =>
+  emit('select', municipality);
+
+const isHydraCollectionOfMunicipality = (
+  data: any
+): data is HydraCollection<IMunicipality> => {
+  return (
+    typeof data?.member === 'object' &&
+    data?.member[0] &&
+    data?.member[0].codgeo
+  );
 };
 </script>

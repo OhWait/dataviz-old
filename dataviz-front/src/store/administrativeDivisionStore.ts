@@ -12,11 +12,6 @@ import {
 } from '@/api/dataviz/administrativeDivisionRepository';
 import { defineStore } from 'pinia';
 
-export interface IAdministrativeDivision {
-  code: string;
-  label: string;
-}
-
 export interface IAdministrativeDivisionPayload {
   label?: string;
   itemsPerPage?: number;
@@ -28,8 +23,8 @@ export interface IGlobalPayload extends IAdministrativeDivisionPayload {
 }
 
 interface IAdministrativeDivisionState {
-  municipality: HydraCollection<IMunicipality> | null;
-  municipalityLoading: boolean;
+  municipalities: HydraCollection<IMunicipality> | null;
+  isLoadingMunicipality: boolean;
   municipalityError: Error | null;
   piic: HydraCollection<IPiic> | null;
   piicLoading: boolean;
@@ -37,18 +32,14 @@ interface IAdministrativeDivisionState {
   department: HydraCollection<IDepartment> | null;
   departmentLoading: boolean;
   departmentError: Error | null;
-  granularity: Granularity;
-  collection: HydraCollection<IAdministrativeDivision> | null;
-  collectionLoading: boolean;
-  collectionError: Error | null;
 }
 
 export const useAdministrativeDivisionStore = defineStore(
   'administrativeDivision',
   {
     state: (): IAdministrativeDivisionState => ({
-      municipality: null,
-      municipalityLoading: false,
+      municipalities: null,
+      isLoadingMunicipality: false,
       municipalityError: null,
 
       piic: null,
@@ -58,82 +49,37 @@ export const useAdministrativeDivisionStore = defineStore(
       department: null,
       departmentLoading: false,
       departmentError: null,
-
-      // Auto depending granularity
-      granularity: Granularity.Municipalitie,
-      collection: null,
-      collectionLoading: false,
-      collectionError: null,
     }),
 
     actions: {
-      async fetchAdministrativeDivision(
-        payload: IGlobalPayload = { itemsPerPage: 10, page: 1 }
-      ) {
-        this.collectionLoading = true;
-        this.collectionError = null;
+      async fetchAdministrativeDivision(payload: IGlobalPayload) {
+        const { granularity } = payload;
 
-        try {
-          let data;
-
-          switch (payload.granularity) {
-            default:
-            case Granularity.Municipalitie:
-              data = await this.fetchMunicipalities(payload);
-
-              this.collection = {
-                ...data,
-                member: data.member.map((item: IMunicipality) => ({
-                  code: item.codgeo,
-                  label: item.label,
-                })),
-              };
-              break;
-
-            case Granularity.Department:
-              data = await this.fetchDepartments();
-
-              this.collection = {
-                ...data,
-                member: data.member.map((item: IDepartment) => ({
-                  code: item.codedep,
-                  label: item.label,
-                })),
-              };
-              break;
-
-            case Granularity.PublicInstitutionForIntermunicipaleCooperation:
-              data = await this.fetchPiics();
-
-              this.collection = {
-                ...data,
-                member: data.member.map((item: IPiic) => ({
-                  code: item.codepiic,
-                  label: item.label,
-                })),
-              };
-              break;
-          }
-        } catch (e) {
-          this.collectionError = e as Error;
-        } finally {
-          this.collectionLoading = false;
+        switch (granularity) {
+          case Granularity.Municipalitie:
+            return this.fetchMunicipalities(payload);
+          case Granularity.PublicInstitutionForIntermunicipaleCooperation:
+            return this.fetchPiics();
+          case Granularity.Department:
+            return this.fetchDepartments();
+          default:
+            return null;
         }
       },
 
       async fetchMunicipalities(payload: IAdministrativeDivisionPayload) {
         const { label, itemsPerPage, page } = payload;
-        this.municipalityLoading = true;
+        this.isLoadingMunicipality = true;
         this.municipalityError = null;
         try {
           const result = await getMunicipalities(label, itemsPerPage, page);
-          this.municipality = result;
+          this.municipalities = result;
           return result;
         } catch (e) {
           this.municipalityError = e as Error;
           throw e;
         } finally {
-          this.municipalityLoading = false;
+          this.isLoadingMunicipality = false;
         }
       },
 
@@ -169,8 +115,8 @@ export const useAdministrativeDivisionStore = defineStore(
     },
 
     getters: {
-      getMunicipality: state => state.municipality,
-      getMunicipalityLoading: state => state.municipalityLoading,
+      getMunicipalities: state => state.municipalities,
+      getLoadingMunicipality: state => state.isLoadingMunicipality,
       getMunicipalityError: state => state.municipalityError,
       getPiic: state => state.piic,
       getPiicLoading: state => state.piicLoading,
@@ -178,10 +124,6 @@ export const useAdministrativeDivisionStore = defineStore(
       getDepartment: state => state.department,
       getDepartmentLoading: state => state.departmentLoading,
       getDepartmentError: state => state.departmentError,
-      getCollection: state => state.collection,
-      getCollectionLoading: state => state.collectionLoading,
-      getCollectionError: state => state.collectionError,
-      getCurrentGranularity: state => state.granularity,
     },
   }
 );

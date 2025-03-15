@@ -1,4 +1,4 @@
 export interface IDepartment {
-  codedep: string;
+  dep: string;
   label: string;
 };
