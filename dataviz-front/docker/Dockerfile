@@ -4,9 +4,6 @@ FROM node:22.14-alpine AS builder
 WORKDIR /app
 ENV PATH=/node_modules/.bin:$PATH
 
-ARG VITE_BACKEND_URL
-ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-
 COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile
@@ -34,5 +31,5 @@ FROM nginx:1.27.4-alpine AS prod
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 5173
 CMD ["nginx", "-g", "daemon off;"]

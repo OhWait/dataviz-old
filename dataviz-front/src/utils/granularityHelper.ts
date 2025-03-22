@@ -1,19 +1,22 @@
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
+import { i18n } from '@/plugins/i18n';
+
+const { t } = i18n.global;
 
 export const granularityEndpoints = [
   {
     granularity: Granularity.Municipalitie,
-    collectionUrl: '/administrative-division/municipality',
+    title: t('granularity.municipality'),
     tileUrl: '/territory.municipality',
   },
   {
-    granularity: Granularity.PublicInstitutionForIntermunicipaleCooperation,
-    collectionUrl: '/administrative-division/piic',
+    granularity: Granularity.Piic,
+    title: t('granularity.piic'),
     tileUrl: '/territory.piic',
   },
   {
     granularity: Granularity.Department,
-    collectionUrl: '/administrative-division/department',
+    title: t('granularity.department'),
     tileUrl: '/territory.department',
   },
 ];

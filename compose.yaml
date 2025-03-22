@@ -17,8 +17,8 @@ services:
   dataviz-front:
     container_name: dataviz-front
     environment:
-      VITE_BACKEND_URL: ${VITE_BACKEND_URL}
-      BASE_URL: ${BASE_URL}
+      VITE_API_URL: ${API_URL}
+      VITE_TILE_URL: ${TILE_URL}
     entrypoint: /bin/sh
     tty: true
     ports:

@@ -29,8 +29,8 @@ env:
   TRUSTED_PROXIES:              ${{ vars.TRUSTED_PROXIES }}
   TRUSTED_HOSTS:                ${{ vars.TRUSTED_HOSTS }}
   XDEBUG_MODE:                  ${{ vars.XDEBUG_MODE }}
-  VITE_BACKEND_URL:             ${{ vars.VITE_BACKEND_URL }}
-  BASE_URL:                     ${{ vars.BASE_URL }}
+  API_URL:                      ${{ vars.API_URL }}
+  TILE_URL:                     ${{ vars.TILE_URL }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

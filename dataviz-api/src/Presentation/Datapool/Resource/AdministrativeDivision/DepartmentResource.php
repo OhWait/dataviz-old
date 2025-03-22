@@ -48,7 +48,7 @@ class DepartmentResource
         public string $label,
 
         #[Groups([AdministrativeGroupEnum::DEPARTMENT])]
-        public int $nbMunicipalities = 0,
+        public ?int $nbMunicipalities = 0,
     ) {}
 
     public static function fromDomain(Department $model): self
@@ -57,7 +57,7 @@ class DepartmentResource
             year: $model->year()->value,
             dep: $model->code()->value,
             label: $model->label()->value,
-            nbMunicipalities: $model->nbMunicipalities()->value,
+            nbMunicipalities: $model->nbMunicipalities()?->value,
         );
     }
 

@@ -20,7 +20,7 @@ class Piic
     #[ORM\OneToMany(targetEntity: Affiliation::class, mappedBy: 'piic')]
     private Collection $affiliations;
 
-    private PiicNbMunicipalities $nbMunicipalities;
+    private ?PiicNbMunicipalities $nbMunicipalities = null;
 
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
@@ -66,7 +66,7 @@ class Piic
         return $this->affiliations;
     }
 
-    public function nbMunicipalities(): PiicNbMunicipalities
+    public function nbMunicipalities(): ?PiicNbMunicipalities
     {
         return $this->nbMunicipalities;
     }

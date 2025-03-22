@@ -10,14 +10,14 @@
           :active="item.granularity === currentGranularity"
           @click="selectGranularity(item.granularity)"
         >
-          {{ item.granularity }}
+          {{ item.title }}
         </v-btn>
       </v-col>
     </v-row>
 
     <v-text-field
       v-model="search"
-      label="Search"
+      :label="$t('search')"
       @input="onSearch"
       :loading="isTyping"
     />
@@ -40,9 +40,7 @@
 
     <PiicList
       v-else-if="
-        currentGranularity ===
-          Granularity.PublicInstitutionForIntermunicipaleCooperation &&
-        isPiicCollection(data)
+        currentGranularity === Granularity.Piic && isPiicCollection(data)
       "
       :data="data.member"
       @select="selectPiic"
@@ -97,8 +95,10 @@ const search = ref('');
 const isTyping = ref(false);
 
 // Methods
-const selectGranularity = (granularity: Granularity) =>
+const selectGranularity = (granularity: Granularity) => {
+  search.value = '';
   emit('changeGranularity', granularity);
+};
 
 const onSearch = () => {
   isTyping.value = true;

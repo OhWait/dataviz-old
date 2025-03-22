@@ -4,6 +4,7 @@ import generic from './generic';
 import dataEntry from './dataEntry';
 import metaColumn from './metaColumn';
 import chart from './chart';
+import territory from './territory';
 
 export const fr = {
   ...generic,
@@ -12,4 +13,5 @@ export const fr = {
   ...dataEntry,
   ...metaColumn,
   ...chart,
+  ...territory,
 };

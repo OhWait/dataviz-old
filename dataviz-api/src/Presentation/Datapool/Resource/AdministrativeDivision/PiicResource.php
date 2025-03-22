@@ -51,7 +51,7 @@ class PiicResource
         public string $nature,
 
         #[Groups([AdministrativeGroupEnum::PIIC])]
-        public int $nbMunicipalities = 0,
+        public ?int $nbMunicipalities = 0,
     ) {}
 
     public static function fromDomain(Piic $model): self
@@ -61,7 +61,7 @@ class PiicResource
             epci: $model->code()->value,
             label: $model->label()->value,
             nature: $model->nature()->value,
-            nbMunicipalities: $model->nbMunicipalities()->value,
+            nbMunicipalities: $model->nbMunicipalities()?->value,
         );
     }
 

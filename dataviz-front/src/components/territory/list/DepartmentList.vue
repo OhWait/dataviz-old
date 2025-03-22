@@ -8,7 +8,7 @@
       <v-list-item-title>{{ item.label }}</v-list-item-title>
 
       <v-list-item-subtitle>
-        {{ item.nbMunicipalities }} municipalities
+        {{ $t('nbMunicipality', item.nbMunicipalities) }}
       </v-list-item-subtitle>
     </v-list-item>
   </v-list>

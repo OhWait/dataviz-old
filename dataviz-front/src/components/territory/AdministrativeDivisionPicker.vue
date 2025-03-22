@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row>
       <v-col cols="3">
-        <AdministrativeDivision
+        <SearchAdministrative
           :currentGranularity="granularity"
           :data="data"
           :isLoading="isLoading"
@@ -13,19 +13,19 @@
       </v-col>
 
       <v-col cols="9">
-        <Map />
+        <Map :granularity="granularity" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
+import { IMunicipality } from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import { useAdministrativeDivisionStore } from '@/store/administrativeDivisionStore';
-import AdministrativeDivision from '@/components/territory/AdministrativeDivision.vue';
+import SearchAdministrative from '@/components/territory/SearchAdministrative.vue';
 import Map from '@/components/territory/Map.vue';
 import { computed, onMounted, ref } from 'vue';
-import { IMunicipality } from '@/@types/dataviz/administrativeDivision';
 
 const store = useAdministrativeDivisionStore();
 const itemsPerPage = 10;
@@ -33,17 +33,17 @@ const itemsPerPage = 10;
 // Computed
 const granularity = ref<Granularity>(Granularity.Municipalitie);
 const isLoading = computed(
-  () => store.getLoadingMunicipality || store.getLoadingPiic || store.getLoadingDepartment
+  () =>
+    store.getLoadingMunicipality ||
+    store.getLoadingPiic ||
+    store.getLoadingDepartment
 );
 const data = computed(() => {
   if (granularity.value === Granularity.Municipalitie) {
     return store.getMunicipalities;
   }
 
-  if (
-    granularity.value ===
-    Granularity.PublicInstitutionForIntermunicipaleCooperation
-  ) {
+  if (granularity.value === Granularity.Piic) {
     return store.getPiics;
   }
 

@@ -19,7 +19,7 @@ class Department
     #[ORM\OneToMany(targetEntity: Affiliation::class, mappedBy: 'department')]
     private Collection $affiliations;
 
-    private DepartmentNbMunicipalities $nbMunicipalities;
+    private ?DepartmentNbMunicipalities $nbMunicipalities = null;
 
     public function __construct(
         #[ORM\Embedded(columnPrefix: false)]
@@ -72,7 +72,7 @@ class Department
         return $this->affiliations;
     }
 
-    public function nbMunicipalities(): DepartmentNbMunicipalities
+    public function nbMunicipalities(): ?DepartmentNbMunicipalities
     {
         return $this->nbMunicipalities;
     }

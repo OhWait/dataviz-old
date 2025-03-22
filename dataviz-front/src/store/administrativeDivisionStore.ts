@@ -53,7 +53,7 @@ export const useAdministrativeDivisionStore = defineStore(
         switch (granularity) {
           case Granularity.Municipalitie:
             return this.fetchMunicipalities(payload);
-          case Granularity.PublicInstitutionForIntermunicipaleCooperation:
+          case Granularity.Piic:
             return this.fetchPiics(payload);
           case Granularity.Department:
             return this.fetchDepartments(payload);
