@@ -19,19 +19,19 @@
 </template>
 
 <script setup lang="ts">
-import { IMunicipality } from '@/@types/dataviz/administrativeDivision';
+import { IMunicipalityCollection } from '@/@types/dataviz/administrativeDivision';
 
 // Props
 defineProps<{
-  data: IMunicipality[];
+  data: IMunicipalityCollection[];
 }>();
 
 // Emits
 const emit = defineEmits<{
-  (e: 'select', municipality: IMunicipality): void;
+  (e: 'select', municipality: IMunicipalityCollection): void;
 }>();
 
 // Methods
-const selectMunicipality = (municipality: IMunicipality) =>
+const selectMunicipality = (municipality: IMunicipalityCollection) =>
   emit('select', municipality);
 </script>

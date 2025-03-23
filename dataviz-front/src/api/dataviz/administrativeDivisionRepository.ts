@@ -1,6 +1,6 @@
 import {
   IDepartmentCollection,
-  IMunicipality,
+  IMunicipalityCollection,
   IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
 import { api } from './datavizClient';
@@ -29,7 +29,7 @@ const getEntities = async <T>(
 };
 
 export const getMunicipalities = (payload: IAdministrativeDivisionPayload) =>
-  getEntities<IMunicipality>('municipality', payload);
+  getEntities<IMunicipalityCollection>('municipality', payload);
 
 export const getPiics = (payload: IAdministrativeDivisionPayload) =>
   getEntities<IPiicCollection>('piic', payload);

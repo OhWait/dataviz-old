@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import {
   IDepartmentCollection,
-  IMunicipality,
+  IMunicipalityCollection,
   IPiic,
   IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
@@ -76,7 +76,7 @@ let searchTimeout: NodeJS.Timeout | null = null;
 // Props
 defineProps<{
   data: HydraCollection<
-    IMunicipality | IPiicCollection | IDepartmentCollection
+    IMunicipalityCollection | IPiicCollection | IDepartmentCollection
   > | null;
   currentGranularity: Granularity | null;
   isLoading: boolean;
@@ -86,7 +86,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'search', value: string): void;
   (e: 'changeGranularity', granularity: Granularity): void;
-  (e: 'selectMunicipality', municipality: IMunicipality): void;
+  (e: 'selectMunicipality', municipality: IMunicipalityCollection): void;
   (e: 'selectPiic', piic: IPiic): void;
 }>();
 
@@ -111,12 +111,12 @@ const onSearch = () => {
   }, 1500);
 };
 
-const selectMunicipality = (municipality: IMunicipality) =>
+const selectMunicipality = (municipality: IMunicipalityCollection) =>
   emit('selectMunicipality', municipality);
 
 const isMunicipalityCollection = (
   data: any
-): data is HydraCollection<IMunicipality> => {
+): data is HydraCollection<IMunicipalityCollection> => {
   return (
     typeof data?.member === 'object' &&
     data?.member[0] &&

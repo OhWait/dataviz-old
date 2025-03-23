@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col cols="3">
+      <v-col cols="4">
         <SearchAdministrative
           :currentGranularity="granularity"
           :data="data"
@@ -10,28 +10,41 @@
           @search="handleSearch"
           @select-municipality="handleMunicipalitySelect"
         />
+
+        <SelectedAdministrativeDivision
+          :selected-territories="selected"
+          @remove-territory="handleRemoveMunicipality"
+        />
       </v-col>
 
-      <v-col cols="9">
-        <Map :granularity="granularity" />
+      <v-col cols="8">
+        <Map
+          ref="mapComponent"
+          :selected-municipalities="selected"
+          @select-municipality="handleMunicipalitySelect"
+          @select-piic="handlePiicSelect"
+        />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { IMunicipality } from '@/@types/dataviz/administrativeDivision';
+import { IMunicipality, IPiic } from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import { useAdministrativeDivisionStore } from '@/store/administrativeDivisionStore';
 import SearchAdministrative from '@/components/territory/SearchAdministrative.vue';
 import Map from '@/components/territory/Map.vue';
 import { computed, onMounted, ref } from 'vue';
+import SelectedAdministrativeDivision from './SelectedAdministrativeDivision.vue';
 
 const store = useAdministrativeDivisionStore();
 const itemsPerPage = 10;
+const selected = ref<IMunicipality[]>([]);
+const granularity = ref<Granularity>(Granularity.Municipalitie);
+const mapComponent = ref<InstanceType<typeof Map> | null>(null);
 
 // Computed
-const granularity = ref<Granularity>(Granularity.Municipalitie);
 const isLoading = computed(
   () =>
     store.getLoadingMunicipality ||
@@ -55,10 +68,10 @@ const data = computed(() => {
 });
 
 // Methods
-const handleGranularityChange = (gra: Granularity) => {
-  granularity.value = gra;
+const handleGranularityChange = (newGranularity: Granularity) => {
+  granularity.value = newGranularity;
   store.fetchAdministrativeDivision({
-    granularity: gra,
+    granularity: newGranularity,
     itemsPerPage,
   });
 };
@@ -71,7 +84,28 @@ const handleSearch = (label: string) =>
   });
 
 const handleMunicipalitySelect = (municipality: IMunicipality) => {
-  console.log(municipality);
+  const index = selected.value.findIndex(m => m.codgeo === municipality.codgeo);
+
+  if (index !== -1) {
+    selected.value.splice(index, 1);
+    mapComponent.value?.removeMunicipality(municipality);
+  } else {
+    selected.value = [...selected.value, municipality];
+    mapComponent.value?.activeMunicipality(municipality);
+  }
+};
+
+const handleRemoveMunicipality = (municipality: IMunicipality) => {
+  const index = selected.value.findIndex(m => m.codgeo === municipality.codgeo);
+
+  if (index !== -1) {
+    selected.value.splice(index, 1);
+    mapComponent.value?.removeMunicipality(municipality);
+  }
+};
+
+const handlePiicSelect = (piic: IPiic) => {
+  console.log(piic);
 };
 
 // LifeCycle

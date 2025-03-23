@@ -1,6 +1,6 @@
 import {
   IDepartmentCollection,
-  IMunicipality,
+  IMunicipalityCollection,
   IPiicCollection,
 } from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
@@ -18,7 +18,7 @@ export interface IGlobalPayload extends IAdministrativeDivisionPayload {
 }
 
 interface IAdministrativeDivisionState {
-  municipalities: HydraCollection<IMunicipality> | null;
+  municipalities: HydraCollection<IMunicipalityCollection> | null;
   isLoadingMunicipality: boolean;
   municipalityError: Error | null;
   piics: HydraCollection<IPiicCollection> | null;

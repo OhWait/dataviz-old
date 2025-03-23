@@ -3,71 +3,99 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { onMounted, ref, watch, nextTick } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.vectorgrid';
+import { IMunicipality, IPiic } from '@/@types/dataviz/administrativeDivision';
 
-interface IProperties {
-  id: number;
-  insee_com?: string;
-  nom?: string;
+interface IMunicipalityProperties {
+  insee_com: string;
+  nom: string;
 }
 
-const selectedFilters = reactive<{ codgeo: string }[]>([
-  { codgeo: '64102' },
-  { codgeo: '64024' },
-  { codgeo: '64122' },
-]);
+interface IPiicProperties {
+  annee: number;
+  epci: string;
+  libepci: string;
+}
 
 // TODO : Remove this when the issue is fixed
 // @ts-ignore
 L.DomEvent.fakeStop = () => true;
 
-// Methods
-const municipalityStyle = (properties: IProperties): L.PathOptions => {
-  const selectedCodes = selectedFilters.map(filter => filter.codgeo);
-  return {
-    weight: 0.5,
-    color: '#000000',
-    fillColor: selectedCodes.includes(properties.insee_com ?? '')
-      ? '#ffcc00'
-      : '#f0f0f0',
-    fillOpacity: selectedCodes.includes(properties.insee_com ?? '') ? 0.9 : 0.5,
-    fill: true,
-    dashArray: selectedCodes.includes(properties.insee_com ?? '') ? '' : '3,3',
-  };
-};
+// Déclaration des références réactives
+let map: L.Map;
+let municipalityLayer: L.VectorGrid.Protobuf;
+let piicLayer: L.VectorGrid.Protobuf;
 
-// Définition du style pour les Piics
+// Props et Événements
+const props = defineProps<{ selectedMunicipalities: IMunicipality[] }>();
+const emit = defineEmits<{
+  (e: 'selectMunicipality', municipality: IMunicipality): void;
+  (e: 'selectPiic', piic: IPiic): void;
+}>();
+
+// Methods
+const activeMunicipalityStyle = (): L.PathOptions => ({
+  weight: 0.5,
+  color: '#000000',
+  fillColor: '#ffcc00',
+  fillOpacity: 0.9,
+  fill: true,
+  dashArray: '3.3',
+});
+
+const defaultMunicipalityStyle = (): L.PathOptions => ({
+  weight: 0.5,
+  color: '#000000',
+  fillColor: '#f0f0f0',
+  fillOpacity: 0.5,
+  fill: true,
+  dashArray: '',
+});
+
 const piicStyle = (): L.PathOptions => ({
   weight: 1,
   color: 'red',
-  fillColor: 'blue',
-  fillOpacity: 0.5,
+  fill: false,
 });
 
-onMounted(() => {
-  const maxBounds = L.latLngBounds(
-    L.latLng(41.303, -5.141),
-    L.latLng(51.124, 9.662)
+const activeMunicipality = (municipality: IMunicipality) => {
+  municipalityLayer.setFeatureStyle(
+    // @ts-ignore
+    municipality.codgeo,
+    activeMunicipalityStyle()
   );
+};
+const removeMunicipality = (municipality: IMunicipality) => {
+  municipalityLayer.setFeatureStyle(
+    // @ts-ignore
+    municipality.codgeo,
+    defaultMunicipalityStyle()
+  );
+};
 
-  const map = L.map('map', {
+// Fonction d'initialisation de la carte
+const initMap = () => {
+  map = L.map('map', {
     center: [46.6031, 1.8883],
     zoom: 6,
     minZoom: 6,
     maxZoom: 12,
-    maxBounds,
+    maxBounds: L.latLngBounds(
+      L.latLng(41.303, -5.141),
+      L.latLng(51.124, 9.662)
+    ),
     maxBoundsViscosity: 1.0,
   });
 
-  const baseLayer = L.tileLayer(
+  const openStreetMap = L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       maxZoom: 19,
-    }
-  ).addTo(map);
+    } as L.TileLayerOptions
+  );
 
   const popup = L.popup({
     closeButton: false,
@@ -76,85 +104,62 @@ onMounted(() => {
     offset: [0, -10],
   });
 
-  // Couches vectorielles
-  const municipalityLayer = L.vectorGrid.protobuf(
-    'http://localhost:7800/territoire.municipality/{z}/{x}/{y}.pbf',
-    {
+  // Création des couches vectorielles
+  municipalityLayer = L.vectorGrid
+    .protobuf('http://localhost:7800/territoire.municipality/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
-        'territoire.municipality': ((
-          properties: IProperties
-        ): L.PathOptions => {
-          return municipalityStyle(properties);
-        }) as unknown as L.PathOptions,
+        'territoire.municipality': defaultMunicipalityStyle(),
       },
-      getFeatureId: (f: any) => f.properties.id,
-    }
-  );
+      getFeatureId: (f: any) => f.properties.insee_com,
+    })
+    .on('mousemove', (e: any) => {
+      const properties: IMunicipalityProperties = e.sourceTarget.properties;
+      popup
+        .setLatLng(e.latlng)
+        .setContent(`(${properties.insee_com}) ${properties.nom}`)
+        .openOn(map);
+    })
+    .on('mouseout', () => popup.remove())
+    .on('click', (e: any) => {
+      const properties: IMunicipalityProperties = e.sourceTarget.properties;
+      emit('selectMunicipality', {
+        codgeo: properties.insee_com,
+        label: properties.nom,
+      });
+    });
 
-  const piicLayer = L.vectorGrid.protobuf(
-    'http://localhost:7800/territoire.piic/{z}/{x}/{y}.pbf',
-    {
+  piicLayer = L.vectorGrid
+    .protobuf('http://localhost:7800/territoire.piic/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
         'territoire.piic': piicStyle(),
       },
-      getFeatureId: (f: any) => f.properties.id,
-    }
-  );
-
-  // Gestion des événements pour afficher un popup au survol
-  municipalityLayer.on('mousemove', (e: any) => {
-    const properties: IProperties = e.sourceTarget.properties;
-    if (properties?.insee_com && properties?.nom) {
+      getFeatureId: (f: any) => f.properties.epci,
+    })
+    .on('mousemove', (e: any) => {
+      const properties: IPiicProperties = e.sourceTarget.properties;
       popup
         .setLatLng(e.latlng)
-        .setContent(`(${properties.insee_com}) ${properties.nom}`)
+        .setContent(`(${properties.epci}) ${properties.libepci}`)
         .openOn(map);
-    } else {
-      console.error('No insee_com or nom property found', properties);
-    }
-  });
+    })
+    .on('mouseout', () => popup.remove())
+    .on('click', (e: any) => {
+      const piic: IPiicProperties = e.sourceTarget.properties;
+      emit('selectPiic', { epci: piic.epci, label: piic.libepci, nature: '' });
+    });
 
-  municipalityLayer.on('mouseout', () => popup.remove());
+  L.control.layers({ openStreetMap }, { Piics: piicLayer }).addTo(map);
 
-  // Gestion du clic pour sélectionner/désélectionner une commune
-  municipalityLayer.on('click', (e: any) => {
-    const properties: IProperties = e.sourceTarget.properties;
-    if (properties?.insee_com) {
-      const index = selectedFilters.findIndex(
-        filter => filter.codgeo === properties.insee_com
-      );
+  map.addLayer(openStreetMap).addLayer(municipalityLayer).addLayer(piicLayer);
+};
 
-      if (index === -1) {
-        selectedFilters.push({ codgeo: properties.insee_com });
-      } else {
-        selectedFilters.splice(index, 1);
-      }
+onMounted(() => nextTick(() => initMap()));
 
-      municipalityLayer.setFeatureStyle(
-        properties.id,
-        municipalityStyle(properties)
-      );
-    } else {
-      console.error('No insee_com property found', properties);
-    }
-  });
-
-  // Gestion des couches Leaflet
-  const overlayMaps = {
-    Municipalities: municipalityLayer,
-    Piics: piicLayer,
-  };
-
-  L.control.layers({ OpenStreetMap: baseLayer }, overlayMaps).addTo(map);
-
-  // Ajout des couches par défaut
-  municipalityLayer.addTo(map);
-  piicLayer.addTo(map);
-});
+defineExpose({ removeMunicipality, activeMunicipality });
 </script>
 
 <style>
