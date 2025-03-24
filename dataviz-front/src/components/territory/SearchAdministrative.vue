@@ -35,7 +35,7 @@
         isMunicipalityCollection(data)
       "
       :data="data.member"
-      @select="selectMunicipality"
+      @select="e => $emit('selectMunicipality', e)"
     />
 
     <PiicList
@@ -43,7 +43,7 @@
         currentGranularity === Granularity.Piic && isPiicCollection(data)
       "
       :data="data.member"
-      @select="selectPiic"
+      @select="e => $emit('selectPiic', e)"
     />
 
     <DepartmentList
@@ -52,12 +52,14 @@
         isDepartmentCollection(data)
       "
       :data="data.member"
+      @select="e => $emit('selectDepartment', e)"
     />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import {
+  IDepartment,
   IDepartmentCollection,
   IMunicipalityCollection,
   IPiic,
@@ -88,6 +90,7 @@ const emit = defineEmits<{
   (e: 'changeGranularity', granularity: Granularity): void;
   (e: 'selectMunicipality', municipality: IMunicipalityCollection): void;
   (e: 'selectPiic', piic: IPiic): void;
+  (e: 'selectDepartment', department: IDepartment): void;
 }>();
 
 // Variables
@@ -111,9 +114,6 @@ const onSearch = () => {
   }, 1500);
 };
 
-const selectMunicipality = (municipality: IMunicipalityCollection) =>
-  emit('selectMunicipality', municipality);
-
 const isMunicipalityCollection = (
   data: any
 ): data is HydraCollection<IMunicipalityCollection> => {
@@ -123,8 +123,6 @@ const isMunicipalityCollection = (
     data?.member[0].codgeo
   );
 };
-
-const selectPiic = (piic: IPiic) => emit('selectPiic', piic);
 
 const isPiicCollection = (
   data: any

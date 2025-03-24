@@ -3,7 +3,7 @@
     <v-list-item
       v-for="item in data"
       :key="item.epci"
-      @click="selectPiic(item)"
+      @click="$emit('select', item)"
     >
       <v-list-item-title>{{ item.label }}</v-list-item-title>
 
@@ -23,10 +23,7 @@ defineProps<{
 }>();
 
 // Emits
-const emit = defineEmits<{
+defineEmits<{
   (e: 'select', piic: IPiicCollection): void;
 }>();
-
-// Methods
-const selectPiic = (piic: IPiicCollection) => emit('select', piic);
 </script>

@@ -9,6 +9,8 @@
           @change-granularity="handleGranularityChange"
           @search="handleSearch"
           @select-municipality="handleMunicipalitySelect"
+          @select-piic="handlePiicSelect"
+          @select-department="handleDepartmentSelect"
         />
 
         <SelectedAdministrativeDivision
@@ -21,8 +23,6 @@
         <Map
           ref="mapComponent"
           :selected-municipalities="selected"
-          @select-municipality="handleMunicipalitySelect"
-          @select-piic="handlePiicSelect"
         />
       </v-col>
     </v-row>
@@ -30,7 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { IMunicipality, IPiic } from '@/@types/dataviz/administrativeDivision';
+import {
+  IDepartment,
+  IMunicipality,
+  IPiic,
+} from '@/@types/dataviz/administrativeDivision';
 import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 import { useAdministrativeDivisionStore } from '@/store/administrativeDivisionStore';
 import SearchAdministrative from '@/components/territory/SearchAdministrative.vue';
@@ -107,6 +111,9 @@ const handleRemoveMunicipality = (municipality: IMunicipality) => {
 const handlePiicSelect = (piic: IPiic) => {
   console.log(piic);
 };
+
+const handleDepartmentSelect = (department: IDepartment) =>
+  console.log(department);
 
 // LifeCycle
 onMounted(() =>

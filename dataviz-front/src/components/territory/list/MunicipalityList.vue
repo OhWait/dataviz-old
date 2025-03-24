@@ -3,7 +3,7 @@
     <v-list-item
       v-for="item in data"
       :key="item.codgeo"
-      @click="selectMunicipality(item)"
+      @click="$emit('select', item)"
     >
       <v-list-item-title>{{ item.label }}</v-list-item-title>
 
@@ -27,11 +27,7 @@ defineProps<{
 }>();
 
 // Emits
-const emit = defineEmits<{
+defineEmits<{
   (e: 'select', municipality: IMunicipalityCollection): void;
 }>();
-
-// Methods
-const selectMunicipality = (municipality: IMunicipalityCollection) =>
-  emit('select', municipality);
 </script>

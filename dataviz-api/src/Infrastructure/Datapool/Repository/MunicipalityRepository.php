@@ -44,6 +44,15 @@ class MunicipalityRepository extends DoctrineRepository implements MunicipalityR
         string $alias,
         PaginatedQueryInterface $query,
     ): QueryBuilder {
-        return $qb->orderBy(sprintf('%s.label.value', $alias), 'ASC');
+        if ($query->label) {
+            $qb
+                ->addSelect(sprintf(
+                    "SIMILARITY(%s.label.value, :label) AS HIDDEN similarity_score",
+                    $alias
+                ))
+                ->orderBy('similarity_score', 'DESC');
+        }
+
+        return $qb->addOrderBy(sprintf('%s.label.value', $alias), 'ASC');
     }
 }
