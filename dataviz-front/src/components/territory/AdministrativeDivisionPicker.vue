@@ -23,6 +23,9 @@
         <Map
           ref="mapComponent"
           :selected-municipalities="selected"
+          @select-municipality="handleMunicipalitySelect"
+          @select-piic="handlePiicSelect"
+          @select-department="handleDepartmentSelect"
         />
       </v-col>
     </v-row>

@@ -50,7 +50,7 @@ class MunicipalityRepository extends DoctrineRepository implements MunicipalityR
                     "SIMILARITY(%s.label.value, :label) AS HIDDEN similarity_score",
                     $alias
                 ))
-                ->orderBy('similarity_score', 'DESC');
+                ->addOrderBy('similarity_score', 'DESC');
         }
 
         return $qb->addOrderBy(sprintf('%s.label.value', $alias), 'ASC');
