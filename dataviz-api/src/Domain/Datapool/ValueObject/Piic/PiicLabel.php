@@ -10,7 +10,6 @@ use Webmozart\Assert\Assert;
 #[ORM\Embeddable]
 final class PiicLabel
 {
-    #[ORM\Id]
     #[ORM\Column(name: 'libepci', length: 255)]
     public readonly string $value;
 

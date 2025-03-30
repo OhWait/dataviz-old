@@ -10,8 +10,7 @@ use Webmozart\Assert\Assert;
 #[ORM\Embeddable]
 final class PiicNature
 {
-    #[ORM\Id]
-    #[ORM\Column(name: 'nature_epci', length: 255)]
+    #[ORM\Column(name: 'nature', length: 255)]
     public readonly string $value;
 
     public function __construct(string $value)

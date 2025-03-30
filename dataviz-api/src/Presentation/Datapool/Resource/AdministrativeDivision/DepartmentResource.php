@@ -4,18 +4,52 @@ declare(strict_types=1);
 
 namespace App\Presentation\Datapool\Resource\AdministrativeDivision;
 
+use ApiPlatform\Metadata as API;
+use ApiPlatform\OpenApi\Model;
 use App\Domain\Datapool\Model\AdministrativeDivision\Department;
+use App\Presentation\Datapool\Enum\AdministrativeGroupEnum;
+use App\Presentation\Datapool\State\Provider\AdministrativeDivision\DepartmentCollectionProvider;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[API\ApiResource(
+    routePrefix: '/administrative-division',
+    shortName: 'Department',
+    operations: [
+        new API\GetCollection(
+            uriTemplate: '/department',
+            normalizationContext: [
+                'groups' => [AdministrativeGroupEnum::DEPARTMENT],
+            ],
+            openapi: new Model\Operation(
+                tags: ['Administrative Division'],
+                summary: 'Liste des départements',
+                description: 'Récupère la liste de toutes les départements.',
+            ),
+            provider: DepartmentCollectionProvider::class,
+            parameters: [
+                new API\QueryParameter(
+                    key: 'label',
+                    schema: ['type' => 'string'],
+                )
+            ],
+        ),
+    ],
+)]
 class DepartmentResource
 {
     public function __construct(
         public int $year,
 
+        #[API\ApiProperty(identifier: true, required: true)]
+        #[Groups([AdministrativeGroupEnum::DEPARTMENT, AdministrativeGroupEnum::MUNICIPALITY])]
         public string $codedep,
 
+        #[Groups([AdministrativeGroupEnum::DEPARTMENT, AdministrativeGroupEnum::MUNICIPALITY])]
         public string $label,
-    ) {
-    }
+
+        #[Groups([AdministrativeGroupEnum::DEPARTMENT])]
+        public ?int $nbMunicipalities = 0,
+    ) {}
 
     public static function fromDomain(Department $model): self
     {
@@ -23,6 +57,7 @@ class DepartmentResource
             year: $model->year()->value,
             codedep: $model->code()->value,
             label: $model->label()->value,
+            nbMunicipalities: $model->nbMunicipalities()?->value,
         );
     }
 
@@ -34,7 +69,7 @@ class DepartmentResource
     public static function fromArrayDomain(array $models): array
     {
         return \array_map(
-            fn (Department $model) => self::fromDomain($model),
+            fn(Department $model) => self::fromDomain($model),
             $models,
         );
     }

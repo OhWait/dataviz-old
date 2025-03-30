@@ -39,7 +39,7 @@ final class MunicipalityFactory extends PersistentProxyObjectFactory
     {
         return [
             'year' => new MunicipalityYear((int) self::faker()->year()),
-            'typecom' => new MunicipalityTypecom(self::faker()->regexify('[A-Za-z]{4}')),
+            'typecom' => self::faker()->regexify('[A-Z]{3}'),
             'codgeo' => new MunicipalityCodgeo(self::faker()->regexify('\d{5}')),
             'label' => new MunicipalityLabel(self::faker()->word()),
             'reg' => self::faker()->regexify('[0-9]{2}'),

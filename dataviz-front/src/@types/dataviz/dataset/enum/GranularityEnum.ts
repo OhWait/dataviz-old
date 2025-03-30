@@ -1,7 +1,7 @@
 export enum Granularity {
   PointOfInterest = 'POI',
   Municipalitie = 'MUNICIPALITIE',
-  PublicInstitutionForIntermunicipaleCooperation = 'PIIC',
+  Piic = 'PIIC',
   Department = 'DEPARTMENT',
   Country = 'COUNTRY',
   Other = 'OTHER',

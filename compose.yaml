@@ -1,7 +1,7 @@
 services:
   dataviz-db:
     container_name: dataviz-db
-    image: postgres:17-alpine
+    image: postgis/postgis:17-3.4-alpine
     environment:
       - POSTGRES_DB=${POSTGRES_DB_API}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -11,12 +11,20 @@ services:
       - LC_ALL=fr_FR.UTF8
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./dataviz-db/init-postgis.sql:/docker-entrypoint-initdb.d/init-postgis.sql
     restart: always
 
   dataviz-front:
     container_name: dataviz-front
+    environment:
+      VITE_API_URL: ${API_URL}
+      VITE_TILE_URL: ${TILE_URL}
     entrypoint: /bin/sh
     tty: true
+    ports:
+      - target: 5173
+        published: 4040
+        protocol: tcp
     restart: always
 
   dataviz-api:
@@ -26,8 +34,8 @@ services:
       TRUSTED_PROXIES: ${TRUSTED_PROXIES}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS}
       POSTGRES_VERSION: 17
-      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
-      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}?serverVersion=17
       MERCURE_URL: ${API_CADDY_MERCURE_URL}
       MERCURE_PUBLIC_URL: ${API_CADDY_MERCURE_PUBLIC_URL}
       MERCURE_JWT_SECRET: ${API_CADDY_MERCURE_JWT_SECRET}
@@ -60,8 +68,8 @@ services:
       TRUSTED_PROXIES: ${TRUSTED_PROXIES}
       TRUSTED_HOSTS: ${TRUSTED_HOSTS}
       POSTGRES_VERSION: 17
-      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_API}?serverVersion=17
-      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:5432/${POSTGRES_DB_POOL}?serverVersion=17
+      DATABASE_URL_API: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_API}?serverVersion=17
+      DATABASE_URL_POOL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}?serverVersion=17
       MERCURE_URL: ${BO_CADDY_MERCURE_URL}
       MERCURE_PUBLIC_URL: ${BO_CADDY_MERCURE_PUBLIC_URL}
       MERCURE_JWT_SECRET: ${BO_CADDY_MERCURE_JWT_SECRET}
@@ -87,9 +95,24 @@ services:
     depends_on:
       - dataviz-db
 
+  dataviz-map:
+    container_name: dataviz-map
+    image: pramsey/pg_tileserv:latest
+    environment:
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@dataviz-db:${POSTGRES_PORT}/${POSTGRES_DB_POOL}"
+      PG_TILE_CACHE_PATH: /tmp/pg_tiles_cache
+      PG_TILE_CACHE_SIZE: 500MB
+    ports:
+      - "7800:7800"
+    volumes:
+      - pg_tiles_cache:/tmp/pg_tiles_cache
+    depends_on:
+      - dataviz-db
+
 volumes:
   dataviz_caddy_data:
   dataviz_caddy_config:
   dataviz_bo_caddy_data:
   dataviz_bo_caddy_config:
   db_data:
+  pg_tiles_cache:

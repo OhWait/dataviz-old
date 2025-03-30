@@ -11,7 +11,7 @@ use Webmozart\Assert\Assert;
 final class DepartmentCode
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'dep', length: 3)]
+    #[ORM\Column(name: 'codedep', length: 3)]
     public readonly string $value;
 
     public function __construct(string $value)

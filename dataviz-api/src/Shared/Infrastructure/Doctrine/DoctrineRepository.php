@@ -69,7 +69,7 @@ abstract class DoctrineRepository extends ServiceEntityRepository implements Rep
     /**
      * @return T[]
      */
-    private function items(PaginatedQueryInterface $query): array
+    protected function items(PaginatedQueryInterface $query): array
     {
         $qb = $this->createQueryBuilder('p');
         $this->withOrderBy($qb, 'p', $query);

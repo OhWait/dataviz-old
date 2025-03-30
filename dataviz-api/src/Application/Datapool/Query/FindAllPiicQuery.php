@@ -8,4 +8,11 @@ use App\Shared\Application\Query\AbstractPaginatedQuery;
 
 final readonly class FindAllPiicQuery extends AbstractPaginatedQuery
 {
+  public function __construct(
+      int $page,
+      int $itemsPerPage,
+      public ?string $label = null,
+  ) {
+      parent::__construct($page, $itemsPerPage);
+  }
 }

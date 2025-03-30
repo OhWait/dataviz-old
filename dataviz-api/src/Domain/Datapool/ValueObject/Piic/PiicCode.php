@@ -11,7 +11,7 @@ use Webmozart\Assert\Assert;
 final class PiicCode
 {
     #[ORM\Id]
-    #[ORM\Column(name: 'epci', length: 15)]
+    #[ORM\Column(name: 'codeepci', length: 15)]
     public readonly string $value;
 
     public function __construct(string $value)
