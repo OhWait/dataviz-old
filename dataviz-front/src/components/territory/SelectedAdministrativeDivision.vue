@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 import { IMunicipality } from '@/@types/dataviz/administrativeDivision';
-import { defineProps, defineEmits } from 'vue';
 
 defineProps<{
   selectedTerritories: IMunicipality[];

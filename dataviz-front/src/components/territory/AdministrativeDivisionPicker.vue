@@ -22,10 +22,12 @@
       <v-col cols="8">
         <Map
           ref="mapComponent"
+          :current-granularity="granularity"
           :selected-municipalities="selected"
           @select-municipality="handleMunicipalitySelect"
           @select-piic="handlePiicSelect"
           @select-department="handleDepartmentSelect"
+          @update-granularity="handleGranularityChange"
         />
       </v-col>
     </v-row>
@@ -76,6 +78,7 @@ const data = computed(() => {
 
 // Methods
 const handleGranularityChange = (newGranularity: Granularity) => {
+  console.log(newGranularity)
   granularity.value = newGranularity;
   store.fetchAdministrativeDivision({
     granularity: newGranularity,

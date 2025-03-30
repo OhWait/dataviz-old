@@ -128,7 +128,7 @@ const isPiicCollection = (
   data: any
 ): data is HydraCollection<IPiicCollection> => {
   return (
-    typeof data?.member === 'object' && data?.member[0] && data?.member[0].epci
+    typeof data?.member === 'object' && data?.member[0] && data?.member[0].codeepci
   );
 };
 
@@ -136,7 +136,7 @@ const isDepartmentCollection = (
   data: any
 ): data is HydraCollection<IDepartmentCollection> => {
   return (
-    typeof data?.member === 'object' && data?.member[0] && data?.member[0].dep
+    typeof data?.member === 'object' && data?.member[0] && data?.member[0].codedep
   );
 };
 </script>

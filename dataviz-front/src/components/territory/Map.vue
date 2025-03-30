@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue';
+import { onMounted, nextTick, watch } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.vectorgrid';
@@ -12,6 +12,7 @@ import {
   IMunicipality,
   IPiic,
 } from '@/@types/dataviz/administrativeDivision';
+import { Granularity } from '@/@types/dataviz/dataset/enum/GranularityEnum';
 
 // TODO : Remove this when the issue is fixed
 // @ts-ignore
@@ -24,11 +25,15 @@ let piicLayer: L.VectorGrid.Protobuf;
 let departmentLayer: L.VectorGrid.Protobuf;
 
 // Props et Événements
-const props = defineProps<{ selectedMunicipalities: IMunicipality[] }>();
+const props = defineProps<{
+  selectedMunicipalities: IMunicipality[];
+  currentGranularity: Granularity;
+}>();
 const emit = defineEmits<{
   (e: 'selectMunicipality', municipality: IMunicipality): void;
   (e: 'selectPiic', piic: IPiic): void;
   (e: 'selectDepartment', department: IDepartment): void;
+  (e: 'updateGranularity', granularity: Granularity): void;
 }>();
 
 // Methods
@@ -62,19 +67,25 @@ const departmentStyle = (): L.PathOptions => ({
   fill: false,
 });
 
-const activeMunicipality = (municipality: IMunicipality) => {
+const activeMunicipality = (municipality: IMunicipality) =>
   municipalityLayer.setFeatureStyle(
     // @ts-ignore
     municipality.codgeo,
     activeMunicipalityStyle()
   );
-};
-const removeMunicipality = (municipality: IMunicipality) => {
+
+const removeMunicipality = (municipality: IMunicipality) =>
   municipalityLayer.setFeatureStyle(
     // @ts-ignore
     municipality.codgeo,
     defaultMunicipalityStyle()
   );
+
+const updateLayers = (granularity: Granularity) => {
+  if (granularity === Granularity.Piic)
+    map.addLayer(piicLayer).removeLayer(departmentLayer);
+  if (granularity === Granularity.Department)
+    map.addLayer(departmentLayer).removeLayer(piicLayer);
 };
 
 // Fonction d'initialisation de la carte
@@ -107,11 +118,11 @@ const initMap = () => {
 
   // Création des couches vectorielles
   municipalityLayer = L.vectorGrid
-    .protobuf('http://localhost:7800/territoire.commune_2025/{z}/{x}/{y}.pbf', {
+    .protobuf('http://localhost:7800/territoire.municipality/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
-        'territoire.commune_2025': defaultMunicipalityStyle(),
+        'territoire.municipality': defaultMunicipalityStyle(),
       },
       getFeatureId: (f: any) => f.properties.codgeo,
     })
@@ -128,11 +139,11 @@ const initMap = () => {
     );
 
   piicLayer = L.vectorGrid
-    .protobuf('http://localhost:7800/territoire.epci_2025/{z}/{x}/{y}.pbf', {
+    .protobuf('http://localhost:7800/territoire.piic/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
-        'territoire.epci_2025': piicStyle(),
+        'territoire.piic': piicStyle(),
       },
       getFeatureId: (f: any) => f.properties.epci,
     })
@@ -147,20 +158,16 @@ const initMap = () => {
     .on('click', (e: any) => emit('selectPiic', e.sourceTarget.properties));
 
   departmentLayer = L.vectorGrid
-    .protobuf(
-      'http://localhost:7800/territoire.departement_2025/{z}/{x}/{y}.pbf',
-      {
-        rendererFactory: L.canvas.tile,
-        interactive: true,
-        vectorTileLayerStyles: {
-          'territoire.departement_2025': departmentStyle(),
-        },
-        getFeatureId: (f: any) => f.properties.epci,
-      }
-    )
+    .protobuf('http://localhost:7800/territoire.department/{z}/{x}/{y}.pbf', {
+      rendererFactory: L.canvas.tile,
+      interactive: true,
+      vectorTileLayerStyles: {
+        'territoire.department': departmentStyle(),
+      },
+      getFeatureId: (f: any) => f.properties.epci,
+    })
     .on('mousemove', (e: any) => {
       const properties: IDepartment = e.sourceTarget.properties;
-      console.log(properties);
       popup
         .setLatLng(e.latlng)
         .setContent(`(${properties.codedep}) ${properties.label}`)
@@ -181,13 +188,18 @@ const initMap = () => {
   map
     .addLayer(openStreetMap)
     .addLayer(municipalityLayer)
-    .addLayer(piicLayer)
-    .addLayer(departmentLayer);
+    .on('overlayadd', (e: any) => {
+      if (e.name === 'Piics') emit('updateGranularity', Granularity.Piic);
+      if (e.name === 'Departments')
+        emit('updateGranularity', Granularity.Department);
+    });
 };
 
 onMounted(() => nextTick(() => initMap()));
 
 defineExpose({ removeMunicipality, activeMunicipality });
+
+watch(() => props.currentGranularity, updateLayers);
 </script>
 
 <style>
