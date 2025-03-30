@@ -26,8 +26,8 @@ class DepartmentRepository extends DoctrineRepository implements DepartmentRepos
 
         if ($query->label) {
             $qb
-                ->andWhere('LOWER(p.label.value) LIKE LOWER(:label)')
-                ->setParameter('label', "%{$query->label}%");
+                ->andWhere('LOWER(p.libdep.value) LIKE LOWER(:libdep)')
+                ->setParameter('libdep', "%{$query->label}%");
         }
 
         $results = $qb
@@ -43,11 +43,6 @@ class DepartmentRepository extends DoctrineRepository implements DepartmentRepos
             fn(array $result) => new Department(
                 $result[0]->year(),
                 $result[0]->code(),
-                $result[0]->reg,
-                $result[0]->capital,
-                $result[0]->tncc,
-                $result[0]->ncc,
-                $result[0]->nccenr,
                 $result[0]->label(),
                 $result['nb'],
             ),

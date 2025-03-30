@@ -12,7 +12,7 @@
       </v-list-item-subtitle>
 
       <v-list-item-subtitle>
-        ({{ item.department.dep }}) {{ item.department.label }}
+        ({{ item.department.codedep }}) {{ item.department.label }}
       </v-list-item-subtitle>
     </v-list-item>
   </v-list>

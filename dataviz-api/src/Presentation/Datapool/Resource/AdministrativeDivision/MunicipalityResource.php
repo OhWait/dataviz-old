@@ -38,7 +38,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class MunicipalityResource
 {
     public function __construct(
-        public int $annee,
+        public int $year,
 
         #[API\ApiProperty(identifier: true, required: true)]
         #[Groups([AdministrativeGroupEnum::MUNICIPALITY])]
@@ -57,7 +57,7 @@ class MunicipalityResource
     public static function fromDomain(Municipality $model): self
     {
         return new self(
-            annee: $model->year()->value,
+            year: $model->year()->value,
             codgeo: $model->codgeo()->value,
             label: $model->label()->value,
             piic: $model->piic() ? PiicResource::fromDomain($model->piic()) : null,

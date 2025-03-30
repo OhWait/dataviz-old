@@ -2,7 +2,7 @@
   <v-list>
     <v-list-item
       v-for="item in data"
-      :key="item.dep"
+      :key="item.codedep"
       @click="$emit('select', item)"
     >
       <v-list-item-title>{{ item.label }}</v-list-item-title>

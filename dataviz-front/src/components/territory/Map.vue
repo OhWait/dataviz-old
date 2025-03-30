@@ -3,22 +3,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from 'vue';
+import { onMounted, nextTick } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.vectorgrid';
-import { IMunicipality, IPiic } from '@/@types/dataviz/administrativeDivision';
-
-interface IMunicipalityProperties {
-  insee_com: string;
-  nom: string;
-}
-
-interface IPiicProperties {
-  annee: number;
-  epci: string;
-  libepci: string;
-}
+import {
+  IDepartment,
+  IMunicipality,
+  IPiic,
+} from '@/@types/dataviz/administrativeDivision';
 
 // TODO : Remove this when the issue is fixed
 // @ts-ignore
@@ -28,12 +21,14 @@ L.DomEvent.fakeStop = () => true;
 let map: L.Map;
 let municipalityLayer: L.VectorGrid.Protobuf;
 let piicLayer: L.VectorGrid.Protobuf;
+let departmentLayer: L.VectorGrid.Protobuf;
 
 // Props et Événements
 const props = defineProps<{ selectedMunicipalities: IMunicipality[] }>();
 const emit = defineEmits<{
   (e: 'selectMunicipality', municipality: IMunicipality): void;
   (e: 'selectPiic', piic: IPiic): void;
+  (e: 'selectDepartment', department: IDepartment): void;
 }>();
 
 // Methods
@@ -58,6 +53,12 @@ const defaultMunicipalityStyle = (): L.PathOptions => ({
 const piicStyle = (): L.PathOptions => ({
   weight: 1,
   color: 'red',
+  fill: false,
+});
+
+const departmentStyle = (): L.PathOptions => ({
+  weight: 1,
+  color: 'blue',
   fill: false,
 });
 
@@ -106,55 +107,82 @@ const initMap = () => {
 
   // Création des couches vectorielles
   municipalityLayer = L.vectorGrid
-    .protobuf('http://localhost:7800/territoire.municipality/{z}/{x}/{y}.pbf', {
+    .protobuf('http://localhost:7800/territoire.commune_2025/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
-        'territoire.municipality': defaultMunicipalityStyle(),
+        'territoire.commune_2025': defaultMunicipalityStyle(),
       },
-      getFeatureId: (f: any) => f.properties.insee_com,
+      getFeatureId: (f: any) => f.properties.codgeo,
     })
     .on('mousemove', (e: any) => {
-      const properties: IMunicipalityProperties = e.sourceTarget.properties;
+      const properties: IMunicipality = e.sourceTarget.properties;
       popup
         .setLatLng(e.latlng)
-        .setContent(`(${properties.insee_com}) ${properties.nom}`)
+        .setContent(`(${properties.codgeo}) ${properties.label}`)
         .openOn(map);
     })
     .on('mouseout', () => popup.remove())
-    .on('click', (e: any) => {
-      const properties: IMunicipalityProperties = e.sourceTarget.properties;
-      emit('selectMunicipality', {
-        codgeo: properties.insee_com,
-        label: properties.nom,
-      });
-    });
+    .on('click', (e: any) =>
+      emit('selectMunicipality', e.sourceTarget.properties)
+    );
 
   piicLayer = L.vectorGrid
-    .protobuf('http://localhost:7800/territoire.piic/{z}/{x}/{y}.pbf', {
+    .protobuf('http://localhost:7800/territoire.epci_2025/{z}/{x}/{y}.pbf', {
       rendererFactory: L.canvas.tile,
       interactive: true,
       vectorTileLayerStyles: {
-        'territoire.piic': piicStyle(),
+        'territoire.epci_2025': piicStyle(),
       },
       getFeatureId: (f: any) => f.properties.epci,
     })
     .on('mousemove', (e: any) => {
-      const properties: IPiicProperties = e.sourceTarget.properties;
+      const properties: IPiic = e.sourceTarget.properties;
       popup
         .setLatLng(e.latlng)
-        .setContent(`(${properties.epci}) ${properties.libepci}`)
+        .setContent(`(${properties.codeepci}) ${properties.label}`)
         .openOn(map);
     })
     .on('mouseout', () => popup.remove())
-    .on('click', (e: any) => {
-      const piic: IPiicProperties = e.sourceTarget.properties;
-      emit('selectPiic', { epci: piic.epci, label: piic.libepci, nature: '' });
-    });
+    .on('click', (e: any) => emit('selectPiic', e.sourceTarget.properties));
 
-  L.control.layers({ openStreetMap }, { Piics: piicLayer }).addTo(map);
+  departmentLayer = L.vectorGrid
+    .protobuf(
+      'http://localhost:7800/territoire.departement_2025/{z}/{x}/{y}.pbf',
+      {
+        rendererFactory: L.canvas.tile,
+        interactive: true,
+        vectorTileLayerStyles: {
+          'territoire.departement_2025': departmentStyle(),
+        },
+        getFeatureId: (f: any) => f.properties.epci,
+      }
+    )
+    .on('mousemove', (e: any) => {
+      const properties: IDepartment = e.sourceTarget.properties;
+      console.log(properties);
+      popup
+        .setLatLng(e.latlng)
+        .setContent(`(${properties.codedep}) ${properties.label}`)
+        .openOn(map);
+    })
+    .on('mouseout', () => popup.remove())
+    .on('click', (e: any) =>
+      emit('selectDepartment', e.sourceTarget.properties)
+    );
 
-  map.addLayer(openStreetMap).addLayer(municipalityLayer).addLayer(piicLayer);
+  L.control
+    .layers(
+      { openStreetMap },
+      { Piics: piicLayer, Departments: departmentLayer }
+    )
+    .addTo(map);
+
+  map
+    .addLayer(openStreetMap)
+    .addLayer(municipalityLayer)
+    .addLayer(piicLayer)
+    .addLayer(departmentLayer);
 };
 
 onMounted(() => nextTick(() => initMap()));

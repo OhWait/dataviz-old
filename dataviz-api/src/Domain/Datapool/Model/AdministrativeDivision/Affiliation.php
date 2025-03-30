@@ -19,12 +19,12 @@ class Affiliation
 
     #[ORM\ManyToOne(inversedBy: 'affiliations')]
     #[ORM\JoinColumn(name: 'annee', referencedColumnName: 'annee')]
-    #[ORM\JoinColumn(name: 'epci', referencedColumnName: 'epci')]
+    #[ORM\JoinColumn(name: 'codeepci', referencedColumnName: 'codeepci')]
     private ?Piic $piic = null;
 
     #[ORM\ManyToOne(inversedBy: 'affiliations')]
     #[ORM\JoinColumn(name: 'annee', referencedColumnName: 'annee')]
-    #[ORM\JoinColumn(name: 'dep', referencedColumnName: 'dep')]
+    #[ORM\JoinColumn(name: 'codedep', referencedColumnName: 'codedep')]
     private Department $department;
 
     public function __construct(

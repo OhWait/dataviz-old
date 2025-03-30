@@ -3,6 +3,7 @@ export interface IDepartmentCollection extends IDepartment {
 };
 
 export interface IDepartment {
-  dep: string;
+  // year: number;
+  codedep: string;
   label: string;
 };

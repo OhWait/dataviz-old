@@ -42,7 +42,7 @@ class PiicResource
 
         #[API\ApiProperty(identifier: true, required: true)]
         #[Groups([AdministrativeGroupEnum::MUNICIPALITY, AdministrativeGroupEnum::PIIC])]
-        public string $epci,
+        public string $codeepci,
 
         #[Groups([AdministrativeGroupEnum::MUNICIPALITY, AdministrativeGroupEnum::PIIC])]
         public string $label,
@@ -58,7 +58,7 @@ class PiicResource
     {
         return new self(
             year: $model->year()->value,
-            epci: $model->code()->value,
+            codeepci: $model->code()->value,
             label: $model->label()->value,
             nature: $model->nature()->value,
             nbMunicipalities: $model->nbMunicipalities()?->value,

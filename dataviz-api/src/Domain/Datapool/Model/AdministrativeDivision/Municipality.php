@@ -26,12 +26,6 @@ class Municipality
         #[ORM\Embedded(columnPrefix: false)]
         private MunicipalityCodgeo $codgeo,
 
-        #[ORM\Column(length: 2, nullable: true)]
-        public ?string $reg,
-
-        #[ORM\Column(length: 3, nullable: true)]
-        public ?string $dep,
-
         #[ORM\Column(length: 4, nullable: true)]
         public ?string $ctcd,
 

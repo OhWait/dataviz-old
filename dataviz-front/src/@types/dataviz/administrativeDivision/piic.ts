@@ -3,7 +3,8 @@ export interface IPiicCollection extends IPiic{
 }
 
 export interface IPiic {
-  epci: string;
+  // year: number;
+  codeepci: string;
   label: string;
   nature: string;
 }

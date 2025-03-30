@@ -28,21 +28,6 @@ class Department
         #[ORM\Embedded(columnPrefix: false)]
         private DepartmentCode $code,
 
-        #[ORM\Column(length: 2, nullable: true)]
-        public ?string $reg,
-
-        #[ORM\Column(length: 5, nullable: true, name: 'cheflieu')]
-        public ?string $capital,
-
-        #[ORM\Column(length: 1, nullable: true)]
-        public ?string $tncc,
-
-        #[ORM\Column(length: 255)]
-        public string $ncc,
-
-        #[ORM\Column(length: 255)]
-        public string $nccenr,
-
         #[ORM\Embedded(columnPrefix: false)]
         private DepartmentLabel $label,
 

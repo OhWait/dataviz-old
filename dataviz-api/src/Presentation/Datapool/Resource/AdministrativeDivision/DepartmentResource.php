@@ -42,7 +42,7 @@ class DepartmentResource
 
         #[API\ApiProperty(identifier: true, required: true)]
         #[Groups([AdministrativeGroupEnum::DEPARTMENT, AdministrativeGroupEnum::MUNICIPALITY])]
-        public string $dep,
+        public string $codedep,
 
         #[Groups([AdministrativeGroupEnum::DEPARTMENT, AdministrativeGroupEnum::MUNICIPALITY])]
         public string $label,
@@ -55,7 +55,7 @@ class DepartmentResource
     {
         return new self(
             year: $model->year()->value,
-            dep: $model->code()->value,
+            codedep: $model->code()->value,
             label: $model->label()->value,
             nbMunicipalities: $model->nbMunicipalities()?->value,
         );
